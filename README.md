@@ -15,18 +15,22 @@ Najważniejsze założenia MVP:
 - eksport/import postępów jako kopia zapasowa JSON;
 - spokojny motyw: generyczne auta, pojazdy, tory i odznaki kierowcy.
 
-## Etap 1
+## Etap 2
 
-Aktualny stan obejmuje przygotowanie statycznej bazy ćwiczeń:
+Aktualny stan obejmuje podstawowy layout i nawigację bez działającego silnika sesji:
 
 - React + Vite + TypeScript;
 - podstawowe skrypty `dev`, `build`, `lint` i `preview`;
-- spokojny placeholder aplikacji;
-- minimalne katalogi pod przyszłe obszary: `content`, `session`, `progress`, `components`, `storage`.
+- ekran startowy;
+- ręczny wybór poziomu z opisem dla rodzica;
+- pusty ekran sesji;
+- panel postępów jako placeholder;
+- miejsce na reset danych;
+- minimalne katalogi pod przyszłe obszary: `content`, `session`, `progress`, `components`, `storage`;
 - statyczne pliki JSON: `levels.json`, `syllables.json`, `words.json`, `sentences.json`;
 - prostą walidację struktury danych.
 
-Sesja, wybór poziomu, ocena zadań i zapis postępów pojawią się w kolejnych etapach.
+Generowanie zadań, ocena wykonania, punkty i zapis postępów pojawią się w kolejnych etapach.
 
 ## Dokumentacja
 

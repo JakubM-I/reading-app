@@ -1,16 +1,22 @@
 :root {
   --color-bg: #eef4f3;
   --color-surface: #ffffff;
+  --color-soft: #f6faf8;
   --color-heading: #263238;
   --color-text: #3f4b51;
   --color-muted: #66777d;
   --color-border: #d6e1de;
+  --color-border-strong: #9eb8b0;
   --color-road: #cfe2dc;
   --color-line: #ffffff;
   --color-car: #2f7d7a;
   --color-window: #c9ebe6;
   --color-wheel: #2d3133;
   --color-light: #f5c85b;
+  --color-focus: #f5c85b;
+  --color-danger: #8f4a41;
+  --color-danger-border: #e0b6af;
+  --color-danger-bg: #fff5f3;
 
   font-family:
     system-ui,
@@ -62,7 +68,7 @@ h2 {
 h1 {
   max-width: 720px;
   margin-bottom: 0;
-  font-size: 3.25rem;
+  font-size: 2.85rem;
   font-weight: 850;
 }
 
@@ -77,6 +83,6 @@ p {
 
 @media (max-width: 860px) {
   h1 {
-    font-size: 2.35rem;
+    font-size: 2.25rem;
   }
 }
