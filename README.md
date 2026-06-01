@@ -1,67 +1,50 @@
-# Reading App
+# Czytanie krok po kroku
 
-Lokalna aplikacja edukacyjna wspierająca naukę czytania po polsku. Projekt jest tworzony jako indywidualne narzędzie do pracy rodzica z dzieckiem, ktore konczy pierwsza klase i ma trudnosc ze skladaniem sylab w wyrazy oraz z rozumieniem prostych zdan po przeczytaniu.
+Lokalna aplikacja edukacyjna wspierająca krótkie ćwiczenia czytania po polsku.
+Projekt jest tworzony jako spokojne, przewidywalne narzędzie do wspólnej pracy
+rodzica z dzieckiem.
 
-## Cel
+Najważniejsze założenia MVP:
 
-Celem pierwszej wersji jest stworzenie spokojnego, przewidywalnego narzedzia do krotkich sesji czytania. Aplikacja ma pomagac w przechodzeniu od sylaby do calego wyrazu, a nastepnie do prostego zdania.
-
-Najwazniejsze zalozenia:
-
-- wspolna praca rodzic + dziecko;
-- sesje trwajace okolo 3-6 minut;
-- jezyk polski;
+- wspólna praca rodzic + dziecko;
+- sesje trwające około 3-6 minut;
 - jeden lokalny profil dziecka;
-- brak kont, backendu i synchronizacji w MVP;
-- baza cwiczen zapisana jako pliki JSON w repo;
-- lokalny zapis punktow, historii sesji i trudnych slow;
-- eksport/import postepow jako kopia zapasowa JSON;
-- motyw wizualny: generyczne auta, wyscigi, pojazdy, tory i odznaki kierowcy.
+- brak kont, backendu i synchronizacji;
+- baza ćwiczeń zapisana jako statyczne pliki JSON w repozytorium;
+- lokalny zapis punktów, historii sesji i trudnych słów;
+- eksport/import postępów jako kopia zapasowa JSON;
+- spokojny motyw: generyczne auta, pojazdy, tory i odznaki kierowcy.
 
-## Zakres MVP
+## Etap 0
 
-Pierwsza wersja ma zawierac:
+Aktualny stan obejmuje wyłącznie przygotowanie repozytorium:
 
-- rozgrzewke liter i dwuznakow;
-- czytanie prowadzone w schemacie sylaba -> wyraz -> zdanie;
-- budowanie slow z sylab;
-- reczna ocene zadania przez rodzica;
-- punkty i proste odznaki;
-- podsumowanie dnia, tygodnia i miesiaca;
-- eksport i import postepow;
-- reset biezacej sesji oraz pelny reset postepow.
+- React + Vite + TypeScript;
+- podstawowe skrypty `dev`, `build`, `lint` i `preview`;
+- spokojny placeholder aplikacji;
+- minimalne katalogi pod przyszłe obszary: `content`, `session`, `progress`, `components`, `storage`.
 
-MVP nie obejmuje:
-
-- kont uzytkownikow;
-- backendu;
-- rozpoznawania mowy;
-- AI;
-- pelnej gry;
-- publicznego uzycia marek, postaci, nazw ani assetow chronionych prawami IP.
-
-## Planowany Stos Techniczny
-
-Docelowa pierwsza implementacja:
-
-- React;
-- Vite;
-- TypeScript;
-- statyczne pliki JSON z baza cwiczen;
-- lokalny zapis danych w przegladarce;
-- eksport/import postepow do pliku JSON;
-- uruchamianie lokalne na MacBooku;
-- pozniejszy deploy statyczny na Netlify.
-
-Na obecnym etapie repo zawiera tylko dokumentacje projektowa. Aplikacja nie zostala jeszcze wygenerowana.
+Ćwiczenia, dane JSON i zapis postępów pojawią się w kolejnych etapach.
 
 ## Dokumentacja
 
-- [Instrukcje dla agentow](AGENTS.md)
+- [Instrukcje dla agentów](AGENTS.md)
 - [Specyfikacja produktu](docs/PRODUCT_SPEC.md)
 - [Model nauki](docs/LEARNING_MODEL.md)
-- [Przeplyw UX](docs/UX_FLOW.md)
-- [Postepy i nagrody](docs/PROGRESS_AND_REWARDS.md)
-- [Plan tresci](docs/CONTENT_PLAN.md)
+- [Przepływ UX](docs/UX_FLOW.md)
+- [Postępy i nagrody](docs/PROGRESS_AND_REWARDS.md)
+- [Plan treści](docs/CONTENT_PLAN.md)
 - [Plan techniczny](docs/TECHNICAL_PLAN.md)
 - [Workflow realizacji](docs/IMPLEMENTATION_WORKFLOW.md)
+
+## Uruchamianie
+
+```bash
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```

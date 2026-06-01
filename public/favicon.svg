@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="Czytanie krok po kroku">
+  <rect width="48" height="48" rx="10" fill="#fffdf8"/>
+  <path d="M9 31h30" stroke="#d8e4df" stroke-width="6" stroke-linecap="round"/>
+  <path d="M14 27h20l4 4v5H10v-5l4-4Z" fill="#2f7d7a"/>
+  <path d="M18 22h12l4 5H14l4-5Z" fill="#c9ebe6"/>
+  <circle cx="17" cy="36" r="4" fill="#2d3133"/>
+  <circle cx="31" cy="36" r="4" fill="#2d3133"/>
+  <path d="M12 13h24" stroke="#f5c85b" stroke-width="4" stroke-linecap="round"/>
+  <path d="M12 19h16" stroke="#ddd8cc" stroke-width="4" stroke-linecap="round"/>
+</svg>
