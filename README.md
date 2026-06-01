@@ -15,16 +15,18 @@ Najważniejsze założenia MVP:
 - eksport/import postępów jako kopia zapasowa JSON;
 - spokojny motyw: generyczne auta, pojazdy, tory i odznaki kierowcy.
 
-## Etap 0
+## Etap 1
 
-Aktualny stan obejmuje wyłącznie przygotowanie repozytorium:
+Aktualny stan obejmuje przygotowanie statycznej bazy ćwiczeń:
 
 - React + Vite + TypeScript;
 - podstawowe skrypty `dev`, `build`, `lint` i `preview`;
 - spokojny placeholder aplikacji;
 - minimalne katalogi pod przyszłe obszary: `content`, `session`, `progress`, `components`, `storage`.
+- statyczne pliki JSON: `levels.json`, `syllables.json`, `words.json`, `sentences.json`;
+- prostą walidację struktury danych.
 
-Ćwiczenia, dane JSON i zapis postępów pojawią się w kolejnych etapach.
+Sesja, wybór poziomu, ocena zadań i zapis postępów pojawią się w kolejnych etapach.
 
 ## Dokumentacja
 
@@ -47,4 +49,10 @@ npm run dev
 
 ```bash
 npm run build
+```
+
+## Walidacja treści
+
+```bash
+npm run validate:content
 ```

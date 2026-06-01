@@ -1,0 +1,130 @@
+[
+  {
+    "id": "sentence-l1-mama-kolo",
+    "levelId": "level-1",
+    "text": "Mama ma koło.",
+    "question": "Co ma mama?",
+    "relatedWordIds": ["word-l1-mama", "word-l1-kolo"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l1-tata-kolo",
+    "levelId": "level-1",
+    "text": "Tata ma koło.",
+    "question": "Co ma tata?",
+    "relatedWordIds": ["word-l1-tata", "word-l1-kolo"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-auto-jedzie",
+    "levelId": "level-2",
+    "text": "Auto jedzie.",
+    "question": "Co jedzie?",
+    "relatedWordIds": ["word-l2-auto"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-kolo-duze",
+    "levelId": "level-2",
+    "text": "Koło jest duże.",
+    "question": "Jakie jest koło?",
+    "relatedWordIds": ["word-l1-kolo"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-tata-auto",
+    "levelId": "level-2",
+    "text": "Tata ma auto.",
+    "question": "Co ma tata?",
+    "relatedWordIds": ["word-l1-tata", "word-l2-auto"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-to-tor",
+    "levelId": "level-2",
+    "text": "To jest tor.",
+    "question": "Co to jest?",
+    "relatedWordIds": ["word-l2-tor"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-auto-stoi",
+    "levelId": "level-2",
+    "text": "Auto stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l2-auto"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-most-tu",
+    "levelId": "level-2",
+    "text": "Most jest tu.",
+    "question": "Gdzie jest most?",
+    "relatedWordIds": ["word-l2-most"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l3-auto-szosa",
+    "levelId": "level-3",
+    "text": "Auto jedzie po szosie.",
+    "question": "Gdzie jedzie auto?",
+    "relatedWordIds": ["word-l2-auto", "word-l3-szosa"],
+    "tags": ["dwuznak-sz", "pojazdy"]
+  },
+  {
+    "id": "sentence-l3-czapka",
+    "levelId": "level-3",
+    "text": "To jest czapka.",
+    "question": "Co to jest?",
+    "relatedWordIds": ["word-l3-czapka"],
+    "tags": ["dwuznak-cz"]
+  },
+  {
+    "id": "sentence-l3-chmura",
+    "levelId": "level-3",
+    "text": "Nad torem jest chmura.",
+    "question": "Co jest nad torem?",
+    "relatedWordIds": ["word-l2-tor", "word-l3-chmura"],
+    "tags": ["dwuznak-ch", "pojazdy"]
+  },
+  {
+    "id": "sentence-l3-rzeka",
+    "levelId": "level-3",
+    "text": "Rzeka jest daleko.",
+    "question": "Co jest daleko?",
+    "relatedWordIds": ["word-l3-rzeka"],
+    "tags": ["dwuznak-rz"]
+  },
+  {
+    "id": "sentence-l4-dzwig",
+    "levelId": "level-4",
+    "text": "Dźwig stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l4-dzwig"],
+    "tags": ["dwuznak-dź", "pojazdy"]
+  },
+  {
+    "id": "sentence-l4-dzwonek",
+    "levelId": "level-4",
+    "text": "Dzwonek dzwoni.",
+    "question": "Co dzwoni?",
+    "relatedWordIds": ["word-l4-dzwonek"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-dzem",
+    "levelId": "level-4",
+    "text": "To jest dżem.",
+    "question": "Co to jest?",
+    "relatedWordIds": ["word-l4-dzem"],
+    "tags": ["dwuznak-dż"]
+  },
+  {
+    "id": "sentence-l4-dziecko-kask",
+    "levelId": "level-4",
+    "text": "Dziecko ma kask.",
+    "question": "Co ma dziecko?",
+    "relatedWordIds": ["word-l4-dziecko", "word-l2-kask"],
+    "tags": ["dwuznak-dz", "pojazdy"]
+  }
+]

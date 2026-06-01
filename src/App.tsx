@@ -1,17 +1,18 @@
 import './App.css'
+import { contentSummary } from './content'
 
 const readinessItems = [
   {
-    label: 'Start',
-    value: 'miejsce jest przygotowane',
+    label: 'Poziomy',
+    value: `${contentSummary.levels}`,
   },
   {
-    label: 'Zakres',
-    value: 'bez ćwiczeń na tym etapie',
+    label: 'Wyrazy',
+    value: `${contentSummary.words}`,
   },
   {
-    label: 'Dalej',
-    value: 'pierwsza baza ćwiczeń',
+    label: 'Zdania',
+    value: `${contentSummary.sentences}`,
   },
 ]
 
@@ -19,11 +20,11 @@ function App() {
   return (
     <main className="app-shell" aria-labelledby="app-title">
       <section className="intro-section">
-        <p className="stage-label">Etap 0</p>
+        <p className="stage-label">Etap 1</p>
         <h1 id="app-title">Czytanie krok po kroku</h1>
         <p className="intro-copy">
-          Spokojne miejsce do krótkich ćwiczeń czytania po polsku. Teraz
-          przygotowany jest tylko techniczny start aplikacji.
+          Baza ćwiczeń jest przygotowana jako statyczne pliki. Sesja i wybór
+          poziomu pojawią się w kolejnym etapie.
         </p>
 
         <dl className="readiness-list" aria-label="Stan przygotowania">
@@ -50,8 +51,8 @@ function App() {
           <p className="stage-label">Następny krok</p>
           <h2 id="road-title">Baza ćwiczeń</h2>
           <p>
-            W kolejnym etapie dodamy poziomy, sylaby, wyrazy i krótkie zdania
-            do spokojnej pracy z czytaniem.
+            Dane obejmują sylaby, wyrazy, krótkie zdania oraz opisy poziomów
+            dla rodzica. Na tym etapie aplikacja ich jeszcze nie ćwiczy.
           </p>
         </div>
       </section>
