@@ -12,6 +12,42 @@ Zasady:
 - kazdy poziom musi miec opis dla rodzica;
 - slowa powinny miec recznie sprawdzony podzial na sylaby.
 
+## Wielkosc Bazy Docelowej
+
+Sesja pozostaje krotka i ma miec okolo 10 zadan. Baza cwiczen powinna jednak
+docelowo wystarczyc na okolo miesiac spokojnej pracy, czyli mniej wiecej 20-25
+krotkich sesji bez poczucia, ze aplikacja skonczyla sie po kilku dniach.
+
+Poziom nie jest traktowany jako jednorazowo zaliczony etap. Poziom oznacza
+zakres trudnosci, do ktorego rodzic moze wracac przez wiele sesji.
+
+Docelowo baza powinna zawierac orientacyjnie:
+
+- Poziom 1: 40-60 sylab, znakow i bardzo prostych slow;
+- Poziom 2: 60-90 prostych slow oraz 40-60 krotkich zdan;
+- Poziom 3: 50-70 slow z dwuznakami oraz 30-50 zdan;
+- Poziom 4: 35-50 trudniejszych slow oraz 25-40 zdan.
+
+Liczby sa kierunkiem, nie sztywnym limitem. Lepiej dodawac material stopniowo i
+sprawdzac go recznie, niz szybko wypelnic baze zbyt trudnymi albo malo
+przydatnymi slowami.
+
+## Powtarzanie Materialu
+
+Slowa, sylaby i zdania moga sie powtarzac, ale powtorki powinny wynikac z
+oceny rodzica i historii pracy.
+
+Regula dla MVP:
+
+- `Samodzielnie`: material nie wraca do aktywnej puli powtorek w najblizszych
+  sesjach;
+- `Z pomocą`: material wraca do puli powtorek;
+- `Trudne`: material wraca do puli powtorek z wyzszym priorytetem;
+- `Pomiń`: material wraca do puli powtorek, ale bez naliczania punktow za probe.
+
+Oznacza to, ze dziecko nie powinno stale widziec slow, ktore czyta juz pewnie.
+Aplikacja ma wracac przede wszystkim do elementow wymagajacych utrwalenia.
+
 ## Poziomy
 
 ### Poziom 1 - Proste Sylaby
@@ -152,5 +188,7 @@ Zdania:
 - JSON powinien byc traktowany jako zrodlo prawdy dla poziomow, sylab, slow, zdan i pytan.
 - Kazdy material powinien miec stabilny identyfikator.
 - Podzial na sylaby powinien byc reczny, nie generowany automatycznie w MVP.
+- Material oceniony jako `Samodzielnie` powinien wypasc z aktywnej puli powtorek.
+- Material oceniony jako `Z pomocą`, `Trudne` albo `Pomiń` powinien wracac w kolejnych sesjach.
 - Trudne slowa powinny wracac w kolejnych sesjach czesciej.
-- Na start nie dodawac zbyt wielu slow; lepsza jest mala, sprawdzona baza.
+- Na start mozna miec mala, sprawdzona baze, ale docelowy MVP powinien pokryc okolo miesiac pracy.

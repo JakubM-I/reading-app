@@ -28,6 +28,23 @@ Zasady:
 
 Punktacja ma byc jasno pokazana w podsumowaniu sesji.
 
+## Wplyw Oceny Na Powtorki
+
+Ocena rodzica decyduje nie tylko o punktach, ale tez o tym, czy material wraca
+do puli kolejnych sesji.
+
+Zasady:
+
+- `Samodzielnie`: material uznajemy za opanowany w biezacym cyklu i nie
+  powtarzamy go w najblizszych sesjach;
+- `Z pomocą`: material wraca do puli powtorek;
+- `Trudne`: material wraca do puli powtorek z wyzszym priorytetem;
+- `Pomiń`: material wraca do puli powtorek, ale za zadanie naliczane jest 0 punktow.
+
+Poziom nie powinien byc opisywany jako zaliczony. Aplikacja zapisuje wykonane
+sesje i stan materialu, ale rodzic nadal decyduje, kiedy zostac na poziomie,
+kiedy wrocic nizej i kiedy sprobowac trudniej.
+
 ## Odznaki
 
 Odznaki sa progowe i spokojne. Nie powinny wymagac perfekcji.
@@ -66,6 +83,10 @@ Kazde zadanie w historii moze zawierac:
 - slowo lub zdanie;
 - ocene rodzica;
 - zdobyte punkty.
+
+Dodatkowo zapis powinien pozwalac ustalic status materialu dla generatora
+powtorek, np. czy dany wyraz byl ostatnio przeczytany samodzielnie, z pomoca,
+oznaczony jako trudny albo pominiety.
 
 ## Podsumowanie Dnia
 
