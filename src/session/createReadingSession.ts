@@ -25,6 +25,7 @@ export const createReadingSession = (
     content.words.filter((word) => isAvailable(word.levelId)),
     levelId,
   )
+  const wordsWithSyllableSplit = words.filter((word) => word.syllables.length > 1)
   const sentences = prioritizeLevel(
     content.sentences.filter((sentence) => isAvailable(sentence.levelId)),
     levelId,
@@ -43,8 +44,10 @@ export const createReadingSession = (
     }),
   )
 
-  const guidedReadingTasks = takeLooped(words, SESSION_TASK_COUNT.guidedReading).map(
-    (word, index): SessionTask => ({
+  const guidedReadingTasks = takeLooped(
+    wordsWithSyllableSplit,
+    SESSION_TASK_COUNT.guidedReading,
+  ).map((word, index): SessionTask => ({
       id: `guided-${index + 1}-${word.id}`,
       kind: 'guided-reading',
       title: 'Czytanie prowadzone',
@@ -53,12 +56,10 @@ export const createReadingSession = (
       supportText: word.text,
       materialId: word.id,
       reviewText: word.text,
-    }),
-  )
+    }))
 
-  const buildableWords = words.filter((word) => word.syllables.length > 1)
   const wordBuildingTasks = takeLooped(
-    buildableWords,
+    wordsWithSyllableSplit,
     SESSION_TASK_COUNT.wordBuilding,
   ).map(
     (word, index): SessionTask => ({
