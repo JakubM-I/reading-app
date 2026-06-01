@@ -57,6 +57,9 @@ export function StartScreen({
             <dd>{summary.sentences}</dd>
           </div>
         </dl>
+        <p className="panel-note">
+          Wynik sesji jest liczony tylko do odświeżenia strony.
+        </p>
 
         <div className="quiet-actions">
           <button type="button" className="secondary-button" disabled>

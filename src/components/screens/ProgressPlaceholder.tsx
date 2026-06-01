@@ -31,7 +31,7 @@ export function ProgressPlaceholder({ onBack }: ProgressPlaceholderProps) {
       </div>
 
       <p className="calm-note">
-        Dane postępów pojawią się po dodaniu lokalnego zapisu w dalszym etapie.
+        Etap 3 liczy wynik tylko w bieżącej sesji. Stały zapis pojawi się później.
       </p>
     </section>
   )
