@@ -1,5 +1,10 @@
 export { badgeThresholds } from './progressBadges'
 export {
+  createProgressBackup,
+  createProgressBackupFilename,
+  parseProgressBackup,
+} from './progressBackup'
+export {
   clearProgress,
   createEmptyProgress,
   loadProgress,
@@ -11,6 +16,7 @@ export type {
   PeriodProgressSummary,
   ProgressOverview,
 } from './progressSummary'
+export type { ParsedProgressBackup } from './progressBackup'
 export type {
   MaterialProgressRecord,
   ProgressBadge,

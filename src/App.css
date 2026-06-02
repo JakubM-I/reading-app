@@ -124,9 +124,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background:
-    linear-gradient(90deg, transparent 0 46%, rgba(255, 255, 255, 0.76) 46% 54%, transparent 54%),
-    var(--color-road);
+  background: var(--color-road);
 }
 
 .screen-main h2,
@@ -613,6 +611,62 @@ button:disabled {
   padding-left: 20px;
 }
 
+.backup-controls {
+  display: grid;
+  gap: 12px;
+}
+
+.backup-controls .quiet-actions {
+  margin-top: 0;
+}
+
+.backup-message,
+.import-confirmation {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-soft);
+}
+
+.import-confirmation {
+  display: grid;
+  gap: 12px;
+}
+
+.import-confirmation p,
+.backup-message {
+  color: var(--color-muted);
+  font-weight: 720;
+}
+
+.import-confirmation dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.import-confirmation div:not(.quiet-actions) {
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.import-confirmation dt {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  font-weight: 720;
+}
+
+.import-confirmation dd {
+  margin: 0;
+  color: var(--color-heading);
+  font-size: 1.25rem;
+  font-weight: 820;
+}
+
 .period-heading {
   display: grid;
   gap: 4px;
@@ -817,11 +871,21 @@ button:disabled {
     font-size: 2.5rem;
   }
 
+  .screen-main {
+    background: var(--color-road);
+  }
+
+  .import-confirmation dl {
+    grid-template-columns: 1fr;
+  }
+
   .guided-steps {
     grid-template-columns: 1fr;
   }
 
   .progress-details,
+  .progress-total-grid,
+  .period-grid,
   .rating-summary,
   .session-notes,
   .summary-board {

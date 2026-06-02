@@ -1,4 +1,5 @@
 import type { StoredProgress } from '../../progress'
+import { ProgressBackupControls } from './ProgressBackupControls'
 
 export interface StartScreenSummary {
   levels: number
@@ -9,6 +10,8 @@ export interface StartScreenSummary {
 interface StartScreenProps {
   summary: StartScreenSummary
   progress: StoredProgress
+  onExportProgress: () => void
+  onImportProgress: (progress: StoredProgress) => void
   onStart: () => void
   onProgress: () => void
   onReset: () => void
@@ -17,6 +20,8 @@ interface StartScreenProps {
 export function StartScreen({
   summary,
   progress,
+  onExportProgress,
+  onImportProgress,
   onStart,
   onProgress,
   onReset,
@@ -65,13 +70,13 @@ export function StartScreen({
           Postępy zapisują się lokalnie w tej przeglądarce.
         </p>
 
+        <ProgressBackupControls
+          progress={progress}
+          onExportProgress={onExportProgress}
+          onImportProgress={onImportProgress}
+        />
+
         <div className="quiet-actions">
-          <button type="button" className="secondary-button" disabled>
-            Eksport postępów
-          </button>
-          <button type="button" className="secondary-button" disabled>
-            Import postępów
-          </button>
           <button type="button" className="text-button" onClick={onReset}>
             Reset danych
           </button>

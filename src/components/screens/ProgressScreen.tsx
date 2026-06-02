@@ -2,13 +2,21 @@ import {
   getProgressOverview,
   type StoredProgress,
 } from '../../progress'
+import { ProgressBackupControls } from './ProgressBackupControls'
 
 interface ProgressScreenProps {
   progress: StoredProgress
   onBack: () => void
+  onExportProgress: () => void
+  onImportProgress: (progress: StoredProgress) => void
 }
 
-export function ProgressScreen({ progress, onBack }: ProgressScreenProps) {
+export function ProgressScreen({
+  progress,
+  onBack,
+  onExportProgress,
+  onImportProgress,
+}: ProgressScreenProps) {
   const overview = getProgressOverview(progress)
   const periods = [overview.today, overview.week, overview.month]
 
@@ -133,14 +141,11 @@ export function ProgressScreen({ progress, onBack }: ProgressScreenProps) {
 
         <section>
           <h3>Kopia zapasowa</h3>
-          <div className="quiet-actions">
-            <button type="button" className="secondary-button" disabled>
-              Eksportuj postępy
-            </button>
-            <button type="button" className="secondary-button" disabled>
-              Importuj postępy
-            </button>
-          </div>
+          <ProgressBackupControls
+            progress={progress}
+            onExportProgress={onExportProgress}
+            onImportProgress={onImportProgress}
+          />
         </section>
       </div>
     </section>

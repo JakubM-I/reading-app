@@ -14,6 +14,8 @@ import type { ContentLevel } from './content/contentTypes'
 import {
   clearProgress,
   createEmptyProgress,
+  createProgressBackup,
+  createProgressBackupFilename,
   loadProgress,
   recordCompletedSession,
   saveProgress,
@@ -94,6 +96,28 @@ function App() {
     setView('start')
   }
 
+  const exportProgressBackup = () => {
+    const backup = createProgressBackup(progress)
+    const blob = new Blob([backup], { type: 'application/json' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+
+    link.href = url
+    link.download = createProgressBackupFilename()
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
+  const importProgressBackup = (nextProgress: StoredProgress) => {
+    saveProgress(nextProgress)
+    setProgress(nextProgress)
+    setLatestSessionBadges([])
+    setActiveSession(null)
+    setView('progress')
+  }
+
   const resetAllProgress = () => {
     clearProgress()
     setProgress(createEmptyProgress())
@@ -105,7 +129,7 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <p className="stage-label">Etap 8</p>
+          <p className="stage-label">Etap 9</p>
           <h1>Czytanie krok po kroku</h1>
         </div>
 
@@ -141,6 +165,8 @@ function App() {
         <StartScreen
           summary={startSummary}
           progress={progress}
+          onExportProgress={exportProgressBackup}
+          onImportProgress={importProgressBackup}
           onStart={() => setView('levels')}
           onProgress={() => setView('progress')}
           onReset={() => setView('reset')}
@@ -165,7 +191,12 @@ function App() {
         />
       )}
       {view === 'progress' && (
-        <ProgressScreen progress={progress} onBack={() => setView('start')} />
+        <ProgressScreen
+          progress={progress}
+          onBack={() => setView('start')}
+          onExportProgress={exportProgressBackup}
+          onImportProgress={importProgressBackup}
+        />
       )}
       {view === 'reset' && (
         <ResetScreen
