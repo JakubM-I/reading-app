@@ -38,6 +38,7 @@ export const createReadingSession = (
   const guidedReadingWords = wordsWithSyllableSplit.filter((word) =>
     findSentenceForWord(word, sentences),
   )
+  const wordBuildingWords = prioritizeDistinctSyllableWords(wordsWithSyllableSplit)
 
   const warmupTasks = takeLooped(syllables, SESSION_TASK_COUNT.warmup).map(
     (syllable, index): SessionTask => ({
@@ -79,7 +80,7 @@ export const createReadingSession = (
   })
 
   const wordBuildingTasks = takeLooped(
-    wordsWithSyllableSplit,
+    wordBuildingWords,
     SESSION_TASK_COUNT.wordBuilding,
   ).map(
     (word, index): SessionTask => ({
@@ -87,10 +88,15 @@ export const createReadingSession = (
       kind: 'word-building',
       title: 'Budowanie słowa',
       prompt: 'Ułóż słowo z części.',
-      displayText: word.syllables.join('  +  '),
+      displayText: word.text,
       supportText: word.text,
       materialId: word.id,
       reviewText: word.text,
+      wordBuilding: {
+        targetWord: word.text,
+        syllables: word.syllables,
+        tiles: buildWordTiles(word.syllables),
+      },
     }),
   )
 
@@ -138,10 +144,31 @@ const takeLooped = <Item,>(items: readonly Item[], count: number): Item[] => {
   return Array.from({ length: count }, (_, index) => items[index % items.length])
 }
 
+const prioritizeDistinctSyllableWords = (words: readonly ContentWord[]) => [
+  ...words.filter(hasDistinctSyllables),
+  ...words.filter((word) => !hasDistinctSyllables(word)),
+]
+
+const hasDistinctSyllables = (word: ContentWord) =>
+  new Set(word.syllables).size > 1
+
 const findSentenceForWord = (
   word: ContentWord,
   sentences: readonly ContentSentence[],
 ) => sentences.find((sentence) => sentence.relatedWordIds.includes(word.id))
+
+const buildWordTiles = (syllables: string[]) => {
+  const tiles = syllables.map((text, index) => ({
+    id: `tile-${index + 1}`,
+    text,
+  }))
+
+  if (tiles.length < 2) {
+    return tiles
+  }
+
+  return [...tiles.slice(1), tiles[0]]
+}
 
 const getWarmupMaterialLabel = (kind: SyllableKind) => {
   if (kind === 'digraph') {

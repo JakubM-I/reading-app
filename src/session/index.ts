@@ -9,4 +9,6 @@ export type {
   SessionSummary,
   SessionTask,
   SessionTaskKind,
+  WordBuildingTaskContent,
+  WordBuildingTile,
 } from './sessionTypes'

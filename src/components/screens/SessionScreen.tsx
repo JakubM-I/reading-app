@@ -51,8 +51,7 @@ export function SessionScreen({
     ratingReadiness.sessionId === session.id ? ratingReadiness.readyTaskIds : {}
   const canRateCurrentTask =
     !currentTask ||
-    currentTask.kind !== 'guided-reading' ||
-    !currentTask.guidedReading ||
+    !taskNeedsCompletion(currentTask) ||
     readyTaskIds[currentTask.id] === true
 
   const markCurrentTaskReadyForRating = () => {
@@ -117,7 +116,7 @@ export function SessionScreen({
           </>
         ) : (
           <p className="panel-note parent-waiting-note">
-            Najpierw przejdź przez kroki czytania.
+            {getWaitingNote(currentTask)}
           </p>
         )}
 
@@ -132,4 +131,16 @@ export function SessionScreen({
       </aside>
     </section>
   )
+}
+
+const taskNeedsCompletion = (task: NonNullable<ReturnType<typeof getCurrentTask>>) =>
+  (task.kind === 'guided-reading' && Boolean(task.guidedReading)) ||
+  (task.kind === 'word-building' && Boolean(task.wordBuilding))
+
+const getWaitingNote = (task: ReturnType<typeof getCurrentTask>) => {
+  if (task?.kind === 'word-building') {
+    return 'Najpierw ułóż słowo z sylab.'
+  }
+
+  return 'Najpierw przejdź przez kroki czytania.'
 }

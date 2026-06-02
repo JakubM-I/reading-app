@@ -1,6 +1,7 @@
 import type { SessionTask } from '../../session'
 import { GuidedReadingTaskPanel } from './GuidedReadingTaskPanel'
 import { WarmupTaskPanel } from './WarmupTaskPanel'
+import { WordBuildingTaskPanel } from './WordBuildingTaskPanel'
 
 interface SessionTaskPanelProps {
   task: SessionTask
@@ -15,6 +16,16 @@ export function SessionTaskPanel({ task, onReadyForRating }: SessionTaskPanelPro
   if (task.kind === 'guided-reading') {
     return (
       <GuidedReadingTaskPanel
+        key={task.id}
+        task={task}
+        onReadyForRating={onReadyForRating}
+      />
+    )
+  }
+
+  if (task.kind === 'word-building') {
+    return (
+      <WordBuildingTaskPanel
         key={task.id}
         task={task}
         onReadyForRating={onReadyForRating}
