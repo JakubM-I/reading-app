@@ -1,4 +1,4 @@
-import type { ExerciseContent } from '../content/contentTypes'
+import type { ExerciseContent, SyllableKind } from '../content/contentTypes'
 import type { ReadingSession, SessionTask } from './sessionTypes'
 
 const SESSION_TASK_COUNT = {
@@ -36,9 +36,9 @@ export const createReadingSession = (
       id: `warmup-${index + 1}-${syllable.id}`,
       kind: 'warmup',
       title: 'Rozgrzewka',
-      prompt: 'Przeczytaj spokojnie.',
+      prompt: 'Przeczytaj na głos.',
       displayText: syllable.text,
-      supportText: syllable.kind === 'digraph' ? 'Dwuznak' : 'Sylaba',
+      supportText: getWarmupMaterialLabel(syllable.kind),
       materialId: syllable.id,
       reviewText: syllable.text,
     }),
@@ -116,4 +116,16 @@ const takeLooped = <Item,>(items: readonly Item[], count: number): Item[] => {
   }
 
   return Array.from({ length: count }, (_, index) => items[index % items.length])
+}
+
+const getWarmupMaterialLabel = (kind: SyllableKind) => {
+  if (kind === 'digraph') {
+    return 'Dwuznak'
+  }
+
+  if (kind === 'trigraph') {
+    return 'Trójznak'
+  }
+
+  return 'Sylaba'
 }

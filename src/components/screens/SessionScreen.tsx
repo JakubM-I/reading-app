@@ -1,12 +1,12 @@
 import type { ContentLevel } from '../../content/contentTypes'
 import {
   getCurrentTask,
-  getSessionSummary,
-  ratingLabels,
   ratingOptions,
   type ReadingSession,
   type SessionRating,
 } from '../../session'
+import { SessionSummary } from './SessionSummary'
+import { SessionTaskPanel } from './SessionTaskPanel'
 
 interface SessionScreenProps {
   level: ContentLevel
@@ -51,15 +51,7 @@ export function SessionScreen({
           <span>{currentTask?.title}</span>
         </div>
 
-        {currentTask && (
-          <article className="task-panel">
-            <p className="task-title">{currentTask.prompt}</p>
-            <p className="task-display">{currentTask.displayText}</p>
-            {currentTask.supportText && (
-              <p className="task-support">{currentTask.supportText}</p>
-            )}
-          </article>
-        )}
+        {currentTask && <SessionTaskPanel task={currentTask} />}
       </div>
 
       <aside className="parent-panel session-panel" aria-label="Panel rodzica">
@@ -88,93 +80,6 @@ export function SessionScreen({
           </button>
         </div>
       </aside>
-    </section>
-  )
-}
-
-interface SessionSummaryProps {
-  session: ReadingSession
-  onBack: () => void
-  onReset: () => void
-  onReturnHome: () => void
-}
-
-function SessionSummary({
-  session,
-  onBack,
-  onReset,
-  onReturnHome,
-}: SessionSummaryProps) {
-  const summary = getSessionSummary(session)
-
-  return (
-    <section className="screen-section" aria-labelledby="summary-title">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">Podsumowanie</p>
-          <h2 id="summary-title">Sesja zakończona</h2>
-        </div>
-        <button type="button" className="secondary-button" onClick={onReturnHome}>
-          Wróć do startu
-        </button>
-      </div>
-
-      <dl className="summary-board">
-        <div>
-          <dt>Punkty</dt>
-          <dd>{summary.totalPoints}</dd>
-        </div>
-        <div>
-          <dt>Zadania</dt>
-          <dd>{summary.totalTasks}</dd>
-        </div>
-      </dl>
-
-      <div className="rating-summary" aria-label="Oceny w sesji">
-        {ratingOptions.map((option) => (
-          <div key={option.value}>
-            <span>{ratingLabels[option.value]}</span>
-            <strong>{summary.counts[option.value]}</strong>
-          </div>
-        ))}
-      </div>
-
-      <div className="session-notes">
-        <SummaryList title="Trudne" items={summary.difficultTasks} emptyText="Brak" />
-        <SummaryList title="Pominięte" items={summary.skippedTasks} emptyText="Brak" />
-      </div>
-
-      <div className="primary-actions">
-        <button type="button" className="primary-button" onClick={onReset}>
-          Powtórz poziom
-        </button>
-        <button type="button" className="secondary-button" onClick={onBack}>
-          Wybierz inny poziom
-        </button>
-      </div>
-    </section>
-  )
-}
-
-interface SummaryListProps {
-  title: string
-  items: string[]
-  emptyText: string
-}
-
-function SummaryList({ title, items, emptyText }: SummaryListProps) {
-  return (
-    <section>
-      <h3>{title}</h3>
-      {items.length > 0 ? (
-        <ul>
-          {items.map((item, index) => (
-            <li key={`${item}-${index}`}>{item}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>{emptyText}</p>
-      )}
     </section>
   )
 }
