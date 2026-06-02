@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ContentLevel } from '../../content/contentTypes'
+import type { ProgressBadge } from '../../progress'
 import {
   getCurrentTask,
   ratingOptions,
@@ -12,6 +13,7 @@ import { SessionTaskPanel } from './SessionTaskPanel'
 interface SessionScreenProps {
   level: ContentLevel
   session: ReadingSession
+  earnedBadges: ProgressBadge[]
   onBack: () => void
   onRateTask: (rating: SessionRating) => void
   onReset: () => void
@@ -21,6 +23,7 @@ interface SessionScreenProps {
 export function SessionScreen({
   level,
   session,
+  earnedBadges,
   onBack,
   onRateTask,
   onReset,
@@ -38,6 +41,7 @@ export function SessionScreen({
     return (
       <SessionSummary
         session={session}
+        earnedBadges={earnedBadges}
         onBack={onBack}
         onReset={onReset}
         onReturnHome={onReturnHome}

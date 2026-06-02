@@ -4,10 +4,12 @@ import {
   ratingOptions,
   type ReadingSession,
 } from '../../session'
+import type { ProgressBadge } from '../../progress'
 import { SummaryList } from './SummaryList'
 
 interface SessionSummaryProps {
   session: ReadingSession
+  earnedBadges: ProgressBadge[]
   onBack: () => void
   onReset: () => void
   onReturnHome: () => void
@@ -15,6 +17,7 @@ interface SessionSummaryProps {
 
 export function SessionSummary({
   session,
+  earnedBadges,
   onBack,
   onReset,
   onReturnHome,
@@ -60,6 +63,17 @@ export function SessionSummary({
         <SummaryList title="Trudne" items={summary.difficultTasks} emptyText="Brak" />
         <SummaryList title="Pominięte" items={summary.skippedTasks} emptyText="Brak" />
       </div>
+
+      {earnedBadges.length > 0 && (
+        <section className="earned-badges" aria-label="Nowe odznaki">
+          <h3>Nowa odznaka</h3>
+          <ul>
+            {earnedBadges.map((badge) => (
+              <li key={badge.id}>{badge.label}</li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="primary-actions">
         <button type="button" className="primary-button" onClick={onReset}>

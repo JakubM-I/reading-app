@@ -1,3 +1,5 @@
+import type { StoredProgress } from '../../progress'
+
 export interface StartScreenSummary {
   levels: number
   words: number
@@ -6,6 +8,7 @@ export interface StartScreenSummary {
 
 interface StartScreenProps {
   summary: StartScreenSummary
+  progress: StoredProgress
   onStart: () => void
   onProgress: () => void
   onReset: () => void
@@ -13,6 +16,7 @@ interface StartScreenProps {
 
 export function StartScreen({
   summary,
+  progress,
   onStart,
   onProgress,
   onReset,
@@ -42,23 +46,23 @@ export function StartScreen({
         <dl className="summary-grid">
           <div>
             <dt>Punkty łączne</dt>
-            <dd>0</dd>
+            <dd>{progress.totalPoints}</dd>
+          </div>
+          <div>
+            <dt>Sesje</dt>
+            <dd>{progress.sessions.length}</dd>
+          </div>
+          <div>
+            <dt>Odznaki</dt>
+            <dd>{progress.badges.length}</dd>
           </div>
           <div>
             <dt>Poziomy</dt>
             <dd>{summary.levels}</dd>
           </div>
-          <div>
-            <dt>Wyrazy</dt>
-            <dd>{summary.words}</dd>
-          </div>
-          <div>
-            <dt>Zdania</dt>
-            <dd>{summary.sentences}</dd>
-          </div>
         </dl>
         <p className="panel-note">
-          Wynik sesji jest liczony tylko do odświeżenia strony.
+          Postępy zapisują się lokalnie w tej przeglądarce.
         </p>
 
         <div className="quiet-actions">
