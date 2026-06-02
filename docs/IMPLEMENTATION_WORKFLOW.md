@@ -121,6 +121,13 @@ Zakres:
 - przechodzenie etapami bez automatycznego tempa;
 - pytanie o sens jako element ustny oceniany przez rodzica.
 
+Uwagi:
+
+- do czytania prowadzonego z podzialem na sylaby wybierac slowa z co najmniej
+  dwiema sylabami;
+- slowa jednosylabowe moga pojawic sie w innych typach zadan, ale nie powinny
+  udawac cwiczenia skladania z sylab.
+
 Rezultat:
 
 - dziecko moze przeczytac slowo etapami;
@@ -138,6 +145,14 @@ Zakres:
 - pole odpowiedzi;
 - mozliwosc cofniecia wybranej sylaby;
 - ocena rodzica po wykonaniu.
+
+Uwagi:
+
+- to cwiczenie musi roznic sie od czytania prowadzonego realna interakcja;
+- finalny ekran nie powinien byc tylko statycznym zapisem `au + to` zamiast
+  `au-to`;
+- kafelki moga byc pokazane w zmienionej kolejnosci, aby dziecko aktywnie
+  skladalo wyraz.
 
 Rezultat:
 

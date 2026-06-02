@@ -77,6 +77,23 @@ Biezaca sesja powinna przechowywac:
 
 Reset biezacej sesji usuwa tylko stan tej sesji i nie zapisuje jej w historii.
 
+## Dobor Zadan I Powtorki
+
+Generator sesji powinien traktowac poziom jako zakres trudnosci, nie jako
+jednorazowo zaliczony etap. Rodzic moze wiele razy wybrac ten sam poziom.
+
+Docelowo generator powinien korzystac z lokalnej historii ocen:
+
+- material oceniony jako `Samodzielnie` nie trafia do aktywnej puli powtorek w
+  najblizszych sesjach;
+- material oceniony jako `Z pomocą` wraca do puli powtorek;
+- material oceniony jako `Trudne` wraca do puli z wyzszym priorytetem;
+- material oceniony jako `Pomiń` wraca do puli, ale bez punktow za wykonanie.
+
+Jesli w wybranym poziomie brakuje nowego materialu, generator moze dobrac
+material z wczesniejszych poziomow albo powtorzyc elementy wymagajace utrwalenia.
+Nie powinien jednak stale powtarzac elementow, ktore dziecko czyta samodzielnie.
+
 ## Zapis Postepow
 
 Na MVP wystarczy lokalny zapis w przegladarce, ale musi istniec eksport/import jako kopia zapasowa.
@@ -84,6 +101,7 @@ Na MVP wystarczy lokalny zapis w przegladarce, ale musi istniec eksport/import j
 Zapis obejmuje:
 
 - historie zakonczonych sesji;
+- historie ocen dla materialu, aby generator mogl decydowac o powtorkach;
 - punkty laczne;
 - odznaki;
 - trudne slowa;
