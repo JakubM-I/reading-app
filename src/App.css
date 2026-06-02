@@ -553,6 +553,22 @@ button:disabled {
   margin-top: 22px;
 }
 
+.progress-total-grid,
+.period-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.progress-total-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.period-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 22px;
+}
+
+.period-panel,
 .progress-details section {
   padding: 18px;
   border: 1px solid var(--color-border);
@@ -560,8 +576,32 @@ button:disabled {
   background: var(--color-surface);
 }
 
+.progress-total-grid div {
+  min-height: 92px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.progress-total-grid h3,
 .progress-details h3 {
   margin: 0 0 10px;
+}
+
+.progress-total-grid h3,
+.period-stats dt {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  font-weight: 720;
+}
+
+.progress-total-grid p,
+.period-stats dd {
+  margin: 0;
+  color: var(--color-heading);
+  font-size: 1.55rem;
+  font-weight: 820;
 }
 
 .progress-details p,
@@ -570,6 +610,56 @@ button:disabled {
 }
 
 .progress-details ul {
+  padding-left: 20px;
+}
+
+.period-heading {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.period-heading h3,
+.period-heading p {
+  margin: 0;
+}
+
+.period-heading p,
+.period-lists p {
+  color: var(--color-muted);
+}
+
+.period-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.period-stats div {
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-soft);
+}
+
+.period-lists {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.period-lists h4 {
+  margin: 0 0 6px;
+  color: var(--color-heading);
+}
+
+.period-lists ul,
+.period-lists p {
+  margin: 0;
+}
+
+.period-lists ul {
   padding-left: 20px;
 }
 

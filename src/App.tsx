@@ -105,7 +105,7 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <p className="stage-label">Etap 7</p>
+          <p className="stage-label">Etap 8</p>
           <h1>Czytanie krok po kroku</h1>
         </div>
 
