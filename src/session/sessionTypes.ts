@@ -19,6 +19,24 @@ export interface RatingOption {
   points: number
 }
 
+export interface GuidedReadingTaskContent {
+  syllables: string[]
+  word: string
+  sentence: string
+  question: string
+}
+
+export interface WordBuildingTile {
+  id: string
+  text: string
+}
+
+export interface WordBuildingTaskContent {
+  targetWord: string
+  syllables: string[]
+  tiles: WordBuildingTile[]
+}
+
 export interface SessionTask {
   id: string
   kind: SessionTaskKind
@@ -28,6 +46,8 @@ export interface SessionTask {
   supportText?: string
   materialId: SyllableId | WordId | SentenceId
   reviewText?: string
+  guidedReading?: GuidedReadingTaskContent
+  wordBuilding?: WordBuildingTaskContent
 }
 
 export interface SessionAnswer {

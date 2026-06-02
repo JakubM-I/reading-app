@@ -1,3 +1,6 @@
+import type { StoredProgress } from '../../progress'
+import { ProgressBackupControls } from './ProgressBackupControls'
+
 export interface StartScreenSummary {
   levels: number
   words: number
@@ -6,6 +9,9 @@ export interface StartScreenSummary {
 
 interface StartScreenProps {
   summary: StartScreenSummary
+  progress: StoredProgress
+  onExportProgress: () => void
+  onImportProgress: (progress: StoredProgress) => void
   onStart: () => void
   onProgress: () => void
   onReset: () => void
@@ -13,6 +19,9 @@ interface StartScreenProps {
 
 export function StartScreen({
   summary,
+  progress,
+  onExportProgress,
+  onImportProgress,
   onStart,
   onProgress,
   onReset,
@@ -42,32 +51,32 @@ export function StartScreen({
         <dl className="summary-grid">
           <div>
             <dt>Punkty łączne</dt>
-            <dd>0</dd>
+            <dd>{progress.totalPoints}</dd>
+          </div>
+          <div>
+            <dt>Sesje</dt>
+            <dd>{progress.sessions.length}</dd>
+          </div>
+          <div>
+            <dt>Odznaki</dt>
+            <dd>{progress.badges.length}</dd>
           </div>
           <div>
             <dt>Poziomy</dt>
             <dd>{summary.levels}</dd>
           </div>
-          <div>
-            <dt>Wyrazy</dt>
-            <dd>{summary.words}</dd>
-          </div>
-          <div>
-            <dt>Zdania</dt>
-            <dd>{summary.sentences}</dd>
-          </div>
         </dl>
         <p className="panel-note">
-          Wynik sesji jest liczony tylko do odświeżenia strony.
+          Postępy zapisują się lokalnie w tej przeglądarce.
         </p>
 
+        <ProgressBackupControls
+          progress={progress}
+          onExportProgress={onExportProgress}
+          onImportProgress={onImportProgress}
+        />
+
         <div className="quiet-actions">
-          <button type="button" className="secondary-button" disabled>
-            Eksport postępów
-          </button>
-          <button type="button" className="secondary-button" disabled>
-            Import postępów
-          </button>
           <button type="button" className="text-button" onClick={onReset}>
             Reset danych
           </button>

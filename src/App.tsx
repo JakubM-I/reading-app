@@ -2,8 +2,8 @@ import { useState } from 'react'
 import './App.css'
 import {
   LevelScreen,
-  ProgressPlaceholder,
-  ResetPlaceholder,
+  ProgressScreen,
+  ResetScreen,
   SessionScreen,
   StartScreen,
   type LevelOption,
@@ -11,6 +11,17 @@ import {
 } from './components/screens'
 import { contentSummary, exerciseContent } from './content'
 import type { ContentLevel } from './content/contentTypes'
+import {
+  clearProgress,
+  createEmptyProgress,
+  createProgressBackup,
+  createProgressBackupFilename,
+  loadProgress,
+  recordCompletedSession,
+  saveProgress,
+  type ProgressBadge,
+  type StoredProgress,
+} from './progress'
 import {
   createReadingSession,
   rateCurrentTask,
@@ -40,10 +51,13 @@ function App() {
   const [view, setView] = useState<AppView>('start')
   const [selectedLevelId, setSelectedLevelId] = useState(levels[0]?.id ?? '')
   const [activeSession, setActiveSession] = useState<ReadingSession | null>(null)
+  const [progress, setProgress] = useState<StoredProgress>(() => loadProgress())
+  const [latestSessionBadges, setLatestSessionBadges] = useState<ProgressBadge[]>([])
   const selectedLevel = levels.find((level) => level.id === selectedLevelId) ?? levels[0]
 
   const chooseLevel = (level: ContentLevel) => {
     setSelectedLevelId(level.id)
+    setLatestSessionBadges([])
     setActiveSession(createReadingSession(level.id, exerciseContent))
     setView('session')
   }
@@ -53,21 +67,61 @@ function App() {
       return
     }
 
+    setLatestSessionBadges([])
     setActiveSession(createReadingSession(selectedLevel.id, exerciseContent))
     setView('session')
   }
 
   const rateTask = (rating: SessionRating) => {
-    setActiveSession((session) => {
-      if (!session) {
-        return session
-      }
+    if (!activeSession) {
+      return
+    }
 
-      return rateCurrentTask(session, rating)
-    })
+    const nextSession = rateCurrentTask(activeSession, rating)
+    setActiveSession(nextSession)
+
+    if (activeSession.status === 'active' && nextSession.status === 'completed') {
+      const nextProgress = recordCompletedSession(progress, nextSession)
+      const previousBadgeIds = new Set(progress.badges.map((badge) => badge.id))
+      const newBadges = nextProgress.badges.filter(
+        (badge) => !previousBadgeIds.has(badge.id),
+      )
+      saveProgress(nextProgress)
+      setProgress(nextProgress)
+      setLatestSessionBadges(newBadges)
+    }
   }
 
   const returnHome = () => {
+    setView('start')
+  }
+
+  const exportProgressBackup = () => {
+    const backup = createProgressBackup(progress)
+    const blob = new Blob([backup], { type: 'application/json' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+
+    link.href = url
+    link.download = createProgressBackupFilename()
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
+  const importProgressBackup = (nextProgress: StoredProgress) => {
+    saveProgress(nextProgress)
+    setProgress(nextProgress)
+    setLatestSessionBadges([])
+    setActiveSession(null)
+    setView('progress')
+  }
+
+  const resetAllProgress = () => {
+    clearProgress()
+    setProgress(createEmptyProgress())
+    setActiveSession(null)
     setView('start')
   }
 
@@ -75,7 +129,7 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <p className="stage-label">Etap 3</p>
+          <p className="stage-label">Etap 9</p>
           <h1>Czytanie krok po kroku</h1>
         </div>
 
@@ -110,6 +164,9 @@ function App() {
       {view === 'start' && (
         <StartScreen
           summary={startSummary}
+          progress={progress}
+          onExportProgress={exportProgressBackup}
+          onImportProgress={importProgressBackup}
           onStart={() => setView('levels')}
           onProgress={() => setView('progress')}
           onReset={() => setView('reset')}
@@ -126,6 +183,7 @@ function App() {
         <SessionScreen
           level={selectedLevel}
           session={activeSession}
+          earnedBadges={latestSessionBadges}
           onBack={() => setView('levels')}
           onRateTask={rateTask}
           onReset={resetCurrentSession}
@@ -133,9 +191,20 @@ function App() {
         />
       )}
       {view === 'progress' && (
-        <ProgressPlaceholder onBack={() => setView('start')} />
+        <ProgressScreen
+          progress={progress}
+          onBack={() => setView('start')}
+          onExportProgress={exportProgressBackup}
+          onImportProgress={importProgressBackup}
+        />
       )}
-      {view === 'reset' && <ResetPlaceholder onBack={() => setView('start')} />}
+      {view === 'reset' && (
+        <ResetScreen
+          progress={progress}
+          onBack={() => setView('start')}
+          onResetProgress={resetAllProgress}
+        />
+      )}
     </main>
   )
 }
