@@ -1,4 +1,9 @@
-import type { ExerciseContent, SyllableKind } from '../content/contentTypes'
+import type {
+  ContentSentence,
+  ContentWord,
+  ExerciseContent,
+  SyllableKind,
+} from '../content/contentTypes'
 import type { ReadingSession, SessionTask } from './sessionTypes'
 
 const SESSION_TASK_COUNT = {
@@ -30,6 +35,9 @@ export const createReadingSession = (
     content.sentences.filter((sentence) => isAvailable(sentence.levelId)),
     levelId,
   )
+  const guidedReadingWords = wordsWithSyllableSplit.filter((word) =>
+    findSentenceForWord(word, sentences),
+  )
 
   const warmupTasks = takeLooped(syllables, SESSION_TASK_COUNT.warmup).map(
     (syllable, index): SessionTask => ({
@@ -45,18 +53,30 @@ export const createReadingSession = (
   )
 
   const guidedReadingTasks = takeLooped(
-    wordsWithSyllableSplit,
+    guidedReadingWords.length > 0 ? guidedReadingWords : wordsWithSyllableSplit,
     SESSION_TASK_COUNT.guidedReading,
-  ).map((word, index): SessionTask => ({
+  ).map((word, index): SessionTask => {
+    const sentence = findSentenceForWord(word, sentences)
+
+    return {
       id: `guided-${index + 1}-${word.id}`,
       kind: 'guided-reading',
       title: 'Czytanie prowadzone',
-      prompt: 'Najpierw sylaby, potem cały wyraz.',
+      prompt: 'Czytaj po kolei.',
       displayText: word.syllables.join(' - '),
       supportText: word.text,
       materialId: word.id,
       reviewText: word.text,
-    }))
+      guidedReading: sentence
+        ? {
+            syllables: word.syllables,
+            word: word.text,
+            sentence: sentence.text,
+            question: sentence.question,
+          }
+        : undefined,
+    }
+  })
 
   const wordBuildingTasks = takeLooped(
     wordsWithSyllableSplit,
@@ -117,6 +137,11 @@ const takeLooped = <Item,>(items: readonly Item[], count: number): Item[] => {
 
   return Array.from({ length: count }, (_, index) => items[index % items.length])
 }
+
+const findSentenceForWord = (
+  word: ContentWord,
+  sentences: readonly ContentSentence[],
+) => sentences.find((sentence) => sentence.relatedWordIds.includes(word.id))
 
 const getWarmupMaterialLabel = (kind: SyllableKind) => {
   if (kind === 'digraph') {

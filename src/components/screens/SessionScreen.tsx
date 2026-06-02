@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ContentLevel } from '../../content/contentTypes'
 import {
   getCurrentTask,
@@ -25,6 +26,14 @@ export function SessionScreen({
   onReset,
   onReturnHome,
 }: SessionScreenProps) {
+  const [ratingReadiness, setRatingReadiness] = useState<{
+    sessionId: string
+    readyTaskIds: Record<string, boolean>
+  }>({
+    sessionId: session.id,
+    readyTaskIds: {},
+  })
+
   if (session.status === 'completed') {
     return (
       <SessionSummary
@@ -38,6 +47,34 @@ export function SessionScreen({
 
   const currentTask = getCurrentTask(session)
   const currentTaskNumber = session.answers.length + 1
+  const readyTaskIds =
+    ratingReadiness.sessionId === session.id ? ratingReadiness.readyTaskIds : {}
+  const canRateCurrentTask =
+    !currentTask ||
+    currentTask.kind !== 'guided-reading' ||
+    !currentTask.guidedReading ||
+    readyTaskIds[currentTask.id] === true
+
+  const markCurrentTaskReadyForRating = () => {
+    if (!currentTask) {
+      return
+    }
+
+    setRatingReadiness((currentReadiness) => {
+      const currentReadyTaskIds =
+        currentReadiness.sessionId === session.id
+          ? currentReadiness.readyTaskIds
+          : {}
+
+      return {
+        sessionId: session.id,
+        readyTaskIds: {
+          ...currentReadyTaskIds,
+          [currentTask.id]: true,
+        },
+      }
+    })
+  }
 
   return (
     <section className="session-layout" aria-labelledby="session-title">
@@ -51,25 +88,38 @@ export function SessionScreen({
           <span>{currentTask?.title}</span>
         </div>
 
-        {currentTask && <SessionTaskPanel task={currentTask} />}
+        {currentTask && (
+          <SessionTaskPanel
+            task={currentTask}
+            onReadyForRating={markCurrentTaskReadyForRating}
+          />
+        )}
       </div>
 
       <aside className="parent-panel session-panel" aria-label="Panel rodzica">
         <h2>Oceń wykonanie zadania</h2>
-        <p className="panel-note">Po wyborze aplikacja przejdzie dalej.</p>
-        <div className="rating-list">
-          {ratingOptions.map((option) => (
-            <button
-              type="button"
-              className="rating-button"
-              key={option.value}
-              onClick={() => onRateTask(option.value)}
-            >
-              <span>{option.label}</span>
-              <span>{option.points} pkt</span>
-            </button>
-          ))}
-        </div>
+        {canRateCurrentTask ? (
+          <>
+            <p className="panel-note">Po wyborze aplikacja przejdzie dalej.</p>
+            <div className="rating-list">
+              {ratingOptions.map((option) => (
+                <button
+                  type="button"
+                  className="rating-button"
+                  key={option.value}
+                  onClick={() => onRateTask(option.value)}
+                >
+                  <span>{option.label}</span>
+                  <span>{option.points} pkt</span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="panel-note parent-waiting-note">
+            Najpierw przejdź przez kroki czytania.
+          </p>
+        )}
 
         <div className="quiet-actions">
           <button type="button" className="secondary-button" onClick={onBack}>

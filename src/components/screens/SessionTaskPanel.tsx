@@ -1,13 +1,25 @@
 import type { SessionTask } from '../../session'
+import { GuidedReadingTaskPanel } from './GuidedReadingTaskPanel'
 import { WarmupTaskPanel } from './WarmupTaskPanel'
 
 interface SessionTaskPanelProps {
   task: SessionTask
+  onReadyForRating?: () => void
 }
 
-export function SessionTaskPanel({ task }: SessionTaskPanelProps) {
+export function SessionTaskPanel({ task, onReadyForRating }: SessionTaskPanelProps) {
   if (task.kind === 'warmup') {
     return <WarmupTaskPanel task={task} />
+  }
+
+  if (task.kind === 'guided-reading') {
+    return (
+      <GuidedReadingTaskPanel
+        key={task.id}
+        task={task}
+        onReadyForRating={onReadyForRating}
+      />
+    )
   }
 
   return (

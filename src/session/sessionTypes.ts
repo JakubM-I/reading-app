@@ -19,6 +19,13 @@ export interface RatingOption {
   points: number
 }
 
+export interface GuidedReadingTaskContent {
+  syllables: string[]
+  word: string
+  sentence: string
+  question: string
+}
+
 export interface SessionTask {
   id: string
   kind: SessionTaskKind
@@ -28,6 +35,7 @@ export interface SessionTask {
   supportText?: string
   materialId: SyllableId | WordId | SentenceId
   reviewText?: string
+  guidedReading?: GuidedReadingTaskContent
 }
 
 export interface SessionAnswer {

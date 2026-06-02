@@ -68,6 +68,7 @@ Nie uzywaj nazw marek jako nazw poziomow, motywow, assetow, komponentow ani dany
 - Baze cwiczen trzymaj w wersjonowanych plikach JSON, nie w localStorage.
 - Postepy zapisuj lokalnie w przegladarce i zapewnij eksport/import do pliku JSON.
 - Preferuj lokalne, proste struktury danych, ktore da sie pozniej przeniesc do trwalszego storage.
+- Kazdy komponent React powinien byc w osobnym pliku. Plik powinien miec nazwe glownego komponentu, ktory eksportuje.
 
 ## Definicja Gotowosci Dla Implementacji MVP
 
