@@ -4,6 +4,7 @@ import type {
   ExerciseContent,
   SyllableKind,
 } from '../content/contentTypes'
+import type { MaterialProgressRecord } from '../progress/progressTypes'
 import type { ReadingSession, SessionTask } from './sessionTypes'
 
 const SESSION_TASK_COUNT = {
@@ -13,32 +14,63 @@ const SESSION_TASK_COUNT = {
   sentence: 1,
 }
 
+interface CreateReadingSessionOptions {
+  materialProgress?: Record<string, MaterialProgressRecord>
+  sessionIndex?: number
+}
+
 export const createReadingSession = (
   levelId: string,
   content: ExerciseContent,
+  options: CreateReadingSessionOptions = {},
 ): ReadingSession => {
   const levelOrder = content.levels.find((level) => level.id === levelId)?.order ?? 1
   const levelOrderById = new Map(content.levels.map((level) => [level.id, level.order]))
+  const materialProgress = options.materialProgress ?? {}
+  const sessionIndex = options.sessionIndex ?? 0
   const isAvailable = (itemLevelId: string) =>
     (levelOrderById.get(itemLevelId) ?? 0) <= levelOrder
 
-  const syllables = prioritizeLevel(
-    content.syllables.filter((syllable) => isAvailable(syllable.levelId)),
+  const syllables = sortByMaterialPriority(
+    prioritizeLevel(
+      content.syllables.filter((syllable) => isAvailable(syllable.levelId)),
+      levelId,
+    ),
     levelId,
+    materialProgress,
+    sessionIndex,
   )
-  const words = prioritizeLevel(
-    content.words.filter((word) => isAvailable(word.levelId)),
+  const words = sortByMaterialPriority(
+    prioritizeLevel(
+      content.words.filter((word) => isAvailable(word.levelId)),
+      levelId,
+    ),
     levelId,
+    materialProgress,
+    sessionIndex + 17,
   )
   const wordsWithSyllableSplit = words.filter((word) => word.syllables.length > 1)
-  const sentences = prioritizeLevel(
-    content.sentences.filter((sentence) => isAvailable(sentence.levelId)),
+  const sentences = sortByMaterialPriority(
+    prioritizeLevel(
+      content.sentences.filter((sentence) => isAvailable(sentence.levelId)),
+      levelId,
+    ),
     levelId,
+    materialProgress,
+    sessionIndex + 31,
   )
   const guidedReadingWords = wordsWithSyllableSplit.filter((word) =>
     findSentenceForWord(word, sentences),
   )
-  const wordBuildingWords = prioritizeDistinctSyllableWords(wordsWithSyllableSplit)
+  const guidedReadingSelection = takeLooped(
+    guidedReadingWords.length > 0 ? guidedReadingWords : wordsWithSyllableSplit,
+    SESSION_TASK_COUNT.guidedReading,
+  )
+  const guidedReadingWordIds = new Set(guidedReadingSelection.map((word) => word.id))
+  const wordBuildingWords = prioritizeDistinctSyllableWords([
+    ...wordsWithSyllableSplit.filter((word) => !guidedReadingWordIds.has(word.id)),
+    ...wordsWithSyllableSplit.filter((word) => guidedReadingWordIds.has(word.id)),
+  ])
 
   const warmupTasks = takeLooped(syllables, SESSION_TASK_COUNT.warmup).map(
     (syllable, index): SessionTask => ({
@@ -53,10 +85,7 @@ export const createReadingSession = (
     }),
   )
 
-  const guidedReadingTasks = takeLooped(
-    guidedReadingWords.length > 0 ? guidedReadingWords : wordsWithSyllableSplit,
-    SESSION_TASK_COUNT.guidedReading,
-  ).map((word, index): SessionTask => {
+  const guidedReadingTasks = guidedReadingSelection.map((word, index): SessionTask => {
     const sentence = findSentenceForWord(word, sentences)
 
     return {
@@ -135,6 +164,73 @@ const prioritizeLevel = <Item extends { levelId: string }>(
   ...items.filter((item) => item.levelId === levelId),
   ...items.filter((item) => item.levelId !== levelId),
 ]
+
+const sortByMaterialPriority = <Item extends { id: string; levelId: string }>(
+  items: readonly Item[],
+  levelId: string,
+  progress: Record<string, MaterialProgressRecord>,
+  sessionIndex: number,
+) =>
+  [...items].sort((firstItem, secondItem) =>
+    comparePriority(
+      getMaterialPriority(firstItem, levelId, progress, sessionIndex),
+      getMaterialPriority(secondItem, levelId, progress, sessionIndex),
+    ),
+  )
+
+const getMaterialPriority = <Item extends { id: string; levelId: string }>(
+  item: Item,
+  levelId: string,
+  progress: Record<string, MaterialProgressRecord>,
+  sessionIndex: number,
+) => {
+  const record = progress[item.id]
+  const levelPriority = item.levelId === levelId ? 0 : 1
+
+  if (!record) {
+    return [10, levelPriority, stableRotation(item.id, sessionIndex)]
+  }
+
+  const lastPracticedAt = Date.parse(record.lastPracticedAt) || 0
+
+  if (record.lastRating === 'hard') {
+    return [0, levelPriority, -record.hardCount, lastPracticedAt]
+  }
+
+  if (record.lastRating === 'with-help') {
+    return [1, levelPriority, record.attempts, lastPracticedAt]
+  }
+
+  if (record.lastRating === 'skip') {
+    return [2, levelPriority, record.attempts, lastPracticedAt]
+  }
+
+  return [20, levelPriority, lastPracticedAt, record.attempts]
+}
+
+const comparePriority = (firstPriority: number[], secondPriority: number[]) => {
+  const length = Math.max(firstPriority.length, secondPriority.length)
+
+  for (let index = 0; index < length; index += 1) {
+    const difference = (firstPriority[index] ?? 0) - (secondPriority[index] ?? 0)
+
+    if (difference !== 0) {
+      return difference
+    }
+  }
+
+  return 0
+}
+
+const stableRotation = (value: string, sessionIndex: number) => {
+  let hash = sessionIndex + 1
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 9973
+  }
+
+  return hash
+}
 
 const takeLooped = <Item,>(items: readonly Item[], count: number): Item[] => {
   if (items.length === 0) {

@@ -58,7 +58,12 @@ function App() {
   const chooseLevel = (level: ContentLevel) => {
     setSelectedLevelId(level.id)
     setLatestSessionBadges([])
-    setActiveSession(createReadingSession(level.id, exerciseContent))
+    setActiveSession(
+      createReadingSession(level.id, exerciseContent, {
+        materialProgress: progress.materialProgress,
+        sessionIndex: progress.sessions.length,
+      }),
+    )
     setView('session')
   }
 
@@ -68,7 +73,12 @@ function App() {
     }
 
     setLatestSessionBadges([])
-    setActiveSession(createReadingSession(selectedLevel.id, exerciseContent))
+    setActiveSession(
+      createReadingSession(selectedLevel.id, exerciseContent, {
+        materialProgress: progress.materialProgress,
+        sessionIndex: progress.sessions.length,
+      }),
+    )
     setView('session')
   }
 
@@ -129,7 +139,6 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <p className="stage-label">Etap 9</p>
           <h1>Czytanie krok po kroku</h1>
         </div>
 
