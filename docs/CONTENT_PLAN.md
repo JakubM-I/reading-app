@@ -32,6 +32,16 @@ Liczby sa kierunkiem, nie sztywnym limitem. Lepiej dodawac material stopniowo i
 sprawdzac go recznie, niz szybko wypelnic baze zbyt trudnymi albo malo
 przydatnymi slowami.
 
+Stan bazy MVP po etapie 10:
+
+- 118 sylab, znakow i elementow do rozgrzewki;
+- 107 slow z recznym podzialem na sylaby;
+- 65 krotkich zdan z pytaniami o sens.
+
+Taka pula jest traktowana jako baza gotowa do pierwszego regularnego uzycia.
+Dalsze rozszerzanie powinno byc spokojnym dopisywaniem sprawdzonych elementow,
+a nie warunkiem uruchomienia MVP.
+
 ## Powtarzanie Materialu
 
 Slowa, sylaby i zdania moga sie powtarzac, ale powtorki powinny wynikac z

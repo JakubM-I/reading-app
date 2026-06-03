@@ -215,12 +215,18 @@ Rezultat:
 - import odtwarza lokalny zapis;
 - eksport nie zawiera bazy cwiczen.
 
-## Etap 10 - Dopolerowanie MVP
+## Etap 10 - Zamkniecie Bazy I Dopolerowanie MVP
 
 Cel: przygotowac pierwsza wersje do regularnego domowego uzycia.
 
 Zakres:
 
+- rozbudowanie statycznej bazy cwiczen do puli gotowej na regularne sesje domowe;
+- sprawdzenie, czy kolejne sesje tego samego poziomu nie zaczynaja stale od tych samych cwiczen;
+- uwzglednienie historii materialu w generatorze sesji:
+  - `Samodzielnie` odsuwa material na pozniej;
+  - `Z pomocą`, `Trudne` i `Pomiń` przywracaja material do powtorek;
+  - `Trudne` ma wyzszy priorytet niz zwykla powtorka;
 - sprawdzenie pelnego flow;
 - uproszczenie tekstow w UI;
 - poprawa czytelnosci na MacBooku;
@@ -231,6 +237,8 @@ Zakres:
 Rezultat:
 
 - aplikacja jest gotowa do pierwszych prawdziwych sesji;
+- baza cwiczen jest wystarczajaca do wielokrotnego wracania do poziomow;
+- ponowne przejscie tego samego poziomu korzysta z rotacji materialu i historii ocen;
 - MVP nie zawiera funkcji spoza ustalonego zakresu;
 - dokumentacja zgadza sie z implementacja.
 
@@ -249,16 +257,16 @@ Po kazdym etapie nalezy sprawdzic:
 
 Kolejne etapy powinny byc realizowane w tej kolejnosci:
 
-1. Przygotowanie repo.
-2. Statyczna baza cwiczen JSON.
-3. Layout i nawigacja.
-4. Silnik sesji bez zapisu.
-5. Rozgrzewka.
-6. Czytanie prowadzone.
-7. Budowanie slow.
-8. Lokalny zapis postepow.
-9. Panel postepow.
-10. Eksport/import.
-11. Dopolerowanie MVP.
+0. Przygotowanie repo.
+1. Statyczna baza cwiczen JSON.
+2. Layout i nawigacja.
+3. Silnik sesji bez zapisu.
+4. Rozgrzewka.
+5. Czytanie prowadzone.
+6. Budowanie slow.
+7. Lokalny zapis postepow.
+8. Panel postepow.
+9. Eksport/import.
+10. Zamkniecie bazy, rotacji materialu i dopolerowanie MVP.
 
 Nie nalezy laczyc wielu etapow w jedna duza zmiane, chyba ze uzytkownik wyraznie o to poprosi.
