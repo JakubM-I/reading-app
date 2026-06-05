@@ -2,6 +2,7 @@ import { useState } from 'react'
 import finishFlagAsset from '../../assets/flaga_mety_asset.png'
 import garageAsset from '../../assets/garaz_asset.png'
 import progressCarAsset from '../../assets/progrss-car.png'
+import raceTrackAsset from '../../assets/race-track.png'
 import type { ContentLevel } from '../../content/contentTypes'
 import type { ProgressBadge } from '../../progress'
 import {
@@ -104,25 +105,32 @@ export function SessionScreen({
         </div>
 
         <div className="reading-road" aria-label="Postęp sesji">
-          <div className="road-track">
-            {roadSteps.map((step) => (
+          <div className="road-track" style={{ backgroundImage: `url(${raceTrackAsset})` }}>
+            <div className="road-inner">
+              {roadSteps.map((step) => {
+                const fraction = (step - 1) / Math.max(session.tasks.length - 1, 1)
+                const leftPercent = fraction * 100
+                return (
+                  <span
+                    className={step <= currentTaskNumber ? 'road-step active' : 'road-step'}
+                    key={step}
+                    style={{ left: `${leftPercent}%` }}
+                    aria-current={step === currentTaskNumber ? 'step' : undefined}
+                  >
+                    {step}
+                  </span>
+                )
+              })}
               <span
-                className={step <= currentTaskNumber ? 'road-step active' : 'road-step'}
-                key={step}
-                aria-current={step === currentTaskNumber ? 'step' : undefined}
+                className="road-car"
+                style={{
+                  left: `${((currentTaskNumber - 1) / Math.max(session.tasks.length - 1, 1)) * 100}%`,
+                }}
+                aria-hidden="true"
               >
-                {step}
+                <img src={progressCarAsset} alt="" />
               </span>
-            ))}
-            <span
-              className="road-car"
-              style={{
-                left: `${5 + ((currentTaskNumber - 1) / Math.max(session.tasks.length - 1, 1)) * 90}%`,
-              }}
-              aria-hidden="true"
-            >
-              <img src={progressCarAsset} alt="" />
-            </span>
+            </div>
           </div>
           <span className="finish-garage" aria-hidden="true">
             <img src={garageAsset} alt="" />
