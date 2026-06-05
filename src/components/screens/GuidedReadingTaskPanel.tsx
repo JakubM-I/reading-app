@@ -3,6 +3,7 @@ import type { SessionTask } from '../../session'
 
 interface GuidedReadingTaskPanelProps {
   task: SessionTask
+  taskCounterLabel: string
   onReadyForRating?: () => void
 }
 
@@ -10,6 +11,7 @@ const guidedStepLabels = ['Sylaby', 'Wyraz', 'Zdanie']
 
 export function GuidedReadingTaskPanel({
   task,
+  taskCounterLabel,
   onReadyForRating,
 }: GuidedReadingTaskPanelProps) {
   const [stepIndex, setStepIndex] = useState(0)
@@ -19,6 +21,7 @@ export function GuidedReadingTaskPanel({
   if (!content) {
     return (
       <article className="task-panel">
+        <p className="task-counter">{taskCounterLabel}</p>
         <p className="task-title">{task.prompt}</p>
         <p className="task-display">{task.displayText}</p>
         {task.supportText && <p className="task-support">{task.supportText}</p>}
@@ -42,6 +45,7 @@ export function GuidedReadingTaskPanel({
 
   return (
     <article className="task-panel guided-task" aria-label="Czytanie prowadzone">
+      <p className="task-counter">{taskCounterLabel}</p>
       <ol className="guided-steps" aria-label="Kroki czytania">
         {guidedStepLabels.map((label, index) => (
           <li

@@ -561,10 +561,6 @@ button:disabled {
   font-weight: 700;
 }
 
-.session-layout {
-  grid-template-columns: minmax(0, 1fr) 260px;
-}
-
 .session-area {
   padding: 0 0 20px;
   overflow: hidden;
@@ -582,34 +578,45 @@ button:disabled {
 
 .reading-road {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 42px;
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) 70px;
+  gap: 18px;
   align-items: center;
-  padding: 26px 28px 24px;
+  padding: 30px 32px 28px;
 }
 
 .road-track {
   position: relative;
-  min-height: 86px;
+  min-height: 128px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 0 36px;
-  border: 10px solid var(--color-asphalt);
+  padding: 0 42px;
+  border: 12px solid var(--color-asphalt);
   border-radius: 999px;
   background:
-    repeating-linear-gradient(90deg, transparent 0 26px, rgba(255, 255, 255, 0.86) 26px 38px, transparent 38px 64px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.86) 28px 40px, transparent 40px 68px) center calc(100% - 22px) / 100% 4px no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.86) 28px 40px, transparent 40px 68px) center 22px / 100% 4px no-repeat,
     #5a6870;
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.34);
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.34),
+    0 8px 18px rgba(31, 45, 56, 0.08);
+}
+
+.road-track::before {
+  position: absolute;
+  inset: 24px 30px;
+  border-radius: 999px;
+  content: "";
+  background: var(--color-surface);
 }
 
 .road-step {
   position: relative;
   top: 0;
-  z-index: 1;
+  z-index: 2;
   display: inline-grid;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   flex: 0 0 auto;
   margin: 0;
@@ -617,7 +624,7 @@ button:disabled {
   border-radius: 50%;
   color: var(--color-heading);
   background: #f8faf9;
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 820;
   transform: translateY(-50%);
 }
@@ -637,48 +644,68 @@ button:disabled {
 
 .road-car {
   position: absolute;
-  bottom: 10px;
-  width: 46px;
-  height: 25px;
-  border-radius: 14px 16px 8px 8px;
-  background: var(--color-car);
+  bottom: 21px;
+  z-index: 2;
+  width: 66px;
+  height: 38px;
   transform: translateX(-50%);
   transition: left 160ms ease;
 }
 
-.road-car::before {
-  position: absolute;
-  top: 4px;
-  left: 13px;
-  width: 22px;
-  height: 9px;
-  border-radius: 10px 10px 2px 2px;
-  content: "";
-  background: #d7eef3;
-}
-
-.road-car::after {
-  position: absolute;
-  right: 7px;
-  bottom: -4px;
-  left: 7px;
-  height: 9px;
-  content: "";
-  background:
-    radial-gradient(circle at 0 50%, #273038 0 5px, transparent 6px),
-    radial-gradient(circle at 100% 50%, #273038 0 5px, transparent 6px);
+.road-car img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 
 .finish-garage {
-  color: var(--color-asphalt);
-  font-size: 2.25rem;
-  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 0;
+}
+
+.finish-garage img:first-child {
+  width: 58px;
+  height: auto;
+}
+
+.finish-garage img:last-child {
+  width: 34px;
+  height: auto;
+  margin-top: -4px;
+}
+
+.session-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.session-task-column {
+  min-width: 0;
+  display: grid;
+}
+
+.task-counter {
+  position: relative;
+  justify-self: start;
+  width: fit-content;
+  margin: 0 0 6px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  color: var(--color-heading);
+  background: var(--color-mint);
+  font-size: 0.92rem;
+  font-weight: 780;
 }
 
 .task-panel {
+  position: relative;
   min-height: 318px;
   display: grid;
-  align-content: center;
+  align-content: start;
   gap: 18px;
   padding: 34px;
   border: 1px solid var(--color-border);
@@ -1396,9 +1423,9 @@ button:disabled {
   }
 
   .screen-grid,
-  .session-layout,
   .garage-start,
-  .progress-dashboard {
+  .progress-dashboard,
+  .session-workspace {
     grid-template-columns: 1fr;
   }
 
@@ -1462,24 +1489,45 @@ button:disabled {
   }
 
   .reading-road {
-    grid-template-columns: 1fr;
-    padding: 20px 16px;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 18px 14px;
   }
 
   .road-track {
-    min-height: 66px;
-    overflow: hidden;
+    min-height: 92px;
+    padding: 0 12px;
+    overflow: visible;
   }
 
   .road-step {
-    width: 26px;
-    height: 26px;
-    font-size: 0.78rem;
+    width: 24px;
+    height: 24px;
+    font-size: 0.72rem;
+  }
+
+  .road-car {
+    bottom: 15px;
+    width: 48px;
+    height: 28px;
+  }
+
+  .finish-garage img:first-child {
+    width: 42px;
+  }
+
+  .finish-garage img:last-child {
+    width: 24px;
   }
 
   .task-panel {
     min-height: 280px;
     padding: 24px 16px;
+  }
+
+  .task-counter {
+    padding: 7px 14px;
+    font-size: 0.84rem;
   }
 
   .guided-steps {

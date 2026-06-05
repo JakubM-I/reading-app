@@ -2,11 +2,13 @@ import type { SessionTask } from '../../session'
 
 interface WarmupTaskPanelProps {
   task: SessionTask
+  taskCounterLabel: string
 }
 
-export function WarmupTaskPanel({ task }: WarmupTaskPanelProps) {
+export function WarmupTaskPanel({ task, taskCounterLabel }: WarmupTaskPanelProps) {
   return (
     <article className="task-panel warmup-task" aria-label="Rozgrzewka">
+      <p className="task-counter">{taskCounterLabel}</p>
       <div className="warmup-meta">
         <span>{task.supportText}</span>
         <span>Rozgrzewka</span>

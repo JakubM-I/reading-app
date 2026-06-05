@@ -3,11 +3,13 @@ import type { SessionTask, WordBuildingTile } from '../../session'
 
 interface WordBuildingTaskPanelProps {
   task: SessionTask
+  taskCounterLabel: string
   onReadyForRating?: () => void
 }
 
 export function WordBuildingTaskPanel({
   task,
+  taskCounterLabel,
   onReadyForRating,
 }: WordBuildingTaskPanelProps) {
   const [selectedTileIds, setSelectedTileIds] = useState<string[]>([])
@@ -17,6 +19,7 @@ export function WordBuildingTaskPanel({
   if (!content) {
     return (
       <article className="task-panel">
+        <p className="task-counter">{taskCounterLabel}</p>
         <p className="task-title">{task.prompt}</p>
         <p className="task-display">{task.displayText}</p>
         {task.supportText && <p className="task-support">{task.supportText}</p>}
@@ -54,6 +57,7 @@ export function WordBuildingTaskPanel({
 
   return (
     <article className="task-panel word-building-task" aria-label="Budowanie słowa">
+      <p className="task-counter">{taskCounterLabel}</p>
       <p className="task-title">{task.prompt}</p>
 
       <div className="word-answer" aria-label="Ułożone sylaby">

@@ -5,12 +5,17 @@ import { WordBuildingTaskPanel } from './WordBuildingTaskPanel'
 
 interface SessionTaskPanelProps {
   task: SessionTask
+  taskCounterLabel: string
   onReadyForRating?: () => void
 }
 
-export function SessionTaskPanel({ task, onReadyForRating }: SessionTaskPanelProps) {
+export function SessionTaskPanel({
+  task,
+  taskCounterLabel,
+  onReadyForRating,
+}: SessionTaskPanelProps) {
   if (task.kind === 'warmup') {
-    return <WarmupTaskPanel task={task} />
+    return <WarmupTaskPanel task={task} taskCounterLabel={taskCounterLabel} />
   }
 
   if (task.kind === 'guided-reading') {
@@ -18,6 +23,7 @@ export function SessionTaskPanel({ task, onReadyForRating }: SessionTaskPanelPro
       <GuidedReadingTaskPanel
         key={task.id}
         task={task}
+        taskCounterLabel={taskCounterLabel}
         onReadyForRating={onReadyForRating}
       />
     )
@@ -28,6 +34,7 @@ export function SessionTaskPanel({ task, onReadyForRating }: SessionTaskPanelPro
       <WordBuildingTaskPanel
         key={task.id}
         task={task}
+        taskCounterLabel={taskCounterLabel}
         onReadyForRating={onReadyForRating}
       />
     )
@@ -35,6 +42,7 @@ export function SessionTaskPanel({ task, onReadyForRating }: SessionTaskPanelPro
 
   return (
     <article className="task-panel">
+      <p className="task-counter">{taskCounterLabel}</p>
       <p className="task-title">{task.prompt}</p>
       <p className="task-display">{task.displayText}</p>
       {task.supportText && <p className="task-support">{task.supportText}</p>}

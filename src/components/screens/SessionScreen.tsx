@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import finishFlagAsset from '../../assets/flaga_mety_asset.png'
+import garageAsset from '../../assets/garaz_asset.png'
+import progressCarAsset from '../../assets/progrss-car.png'
 import type { ContentLevel } from '../../content/contentTypes'
 import type { ProgressBadge } from '../../progress'
 import {
@@ -82,7 +85,7 @@ export function SessionScreen({
   }
 
   return (
-    <section className="session-layout session-screen" aria-labelledby="session-title">
+    <section className="session-screen" aria-labelledby="session-title">
       <div className="session-area">
         <div className="session-topbar">
           <button type="button" className="secondary-button compact-action" onClick={onBack}>
@@ -117,53 +120,63 @@ export function SessionScreen({
                 left: `${5 + ((currentTaskNumber - 1) / Math.max(session.tasks.length - 1, 1)) * 90}%`,
               }}
               aria-hidden="true"
-            />
+            >
+              <img src={progressCarAsset} alt="" />
+            </span>
           </div>
-          <span className="finish-garage" aria-hidden="true">▣</span>
+          <span className="finish-garage" aria-hidden="true">
+            <img src={garageAsset} alt="" />
+            <img src={finishFlagAsset} alt="" />
+          </span>
         </div>
 
-        {currentTask && (
-          <SessionTaskPanel
-            task={currentTask}
-            onReadyForRating={markCurrentTaskReadyForRating}
-          />
-        )}
-      </div>
+        <div className="session-workspace">
+          <div className="session-task-column">
+            {currentTask && (
+              <SessionTaskPanel
+                task={currentTask}
+                taskCounterLabel={`Zadanie ${currentTaskNumber} z ${session.tasks.length}`}
+                onReadyForRating={markCurrentTaskReadyForRating}
+              />
+            )}
+          </div>
 
-      <aside className="parent-panel session-panel" aria-label="Panel rodzica">
-        <h2>Panel rodzica</h2>
-        <p className="panel-note">Oceń wykonanie zadania</p>
-        {canRateCurrentTask ? (
-          <>
-            <div className="rating-list">
-              {ratingOptions.map((option) => (
-                <button
-                  type="button"
-                  className="rating-button"
-                  key={option.value}
-                  onClick={() => onRateTask(option.value)}
-                >
-                  <span>
-                    <span aria-hidden="true">{ratingIcons[option.value]}</span>
-                    {option.label}
-                  </span>
-                  <span>{option.points} pkt</span>
-                </button>
-              ))}
+          <aside className="parent-panel session-panel" aria-label="Panel rodzica">
+            <h2>Panel rodzica</h2>
+            <p className="panel-note">Oceń wykonanie zadania</p>
+            {canRateCurrentTask ? (
+              <>
+                <div className="rating-list">
+                  {ratingOptions.map((option) => (
+                    <button
+                      type="button"
+                      className="rating-button"
+                      key={option.value}
+                      onClick={() => onRateTask(option.value)}
+                    >
+                      <span>
+                        <span aria-hidden="true">{ratingIcons[option.value]}</span>
+                        {option.label}
+                      </span>
+                      <span>{option.points} pkt</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="panel-note parent-waiting-note">
+                {getWaitingNote(currentTask)}
+              </p>
+            )}
+
+            <div className="quiet-actions">
+              <button type="button" className="text-button" onClick={onReset}>
+                Resetuj bieżącą sesję
+              </button>
             </div>
-          </>
-        ) : (
-          <p className="panel-note parent-waiting-note">
-            {getWaitingNote(currentTask)}
-          </p>
-        )}
-
-        <div className="quiet-actions">
-          <button type="button" className="text-button" onClick={onReset}>
-            Resetuj bieżącą sesję
-          </button>
+          </aside>
         </div>
-      </aside>
+      </div>
     </section>
   )
 }
