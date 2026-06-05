@@ -60,6 +60,11 @@ export function WordBuildingTaskPanel({
       <p className="task-counter">{taskCounterLabel}</p>
       <p className="task-title">{task.prompt}</p>
 
+      <div className="word-building-target">
+        <span>Słowo</span>
+        <strong lang="pl">{content.targetWord}</strong>
+      </div>
+
       <div className="word-answer" aria-label="Ułożone sylaby">
         {content.syllables.map((_, index) => {
           const tile = selectedTiles[index]

@@ -720,9 +720,12 @@ button:disabled {
   gap: 18px;
 }
 
-.guided-task,
-.word-building-task {
+.guided-task {
   gap: 22px;
+}
+
+.word-building-task {
+  gap: 12px;
 }
 
 .guided-task button {
@@ -829,6 +832,27 @@ button:disabled {
   gap: 18px;
 }
 
+.word-building-target {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.word-building-target span {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.word-building-target strong {
+  color: var(--color-heading);
+  font-size: clamp(1.9rem, 4vw, 2.4rem);
+  font-weight: 850;
+  line-height: 1.05;
+}
+
 .guided-question {
   width: min(100%, 520px);
   display: grid;
@@ -862,7 +886,7 @@ button:disabled {
 .word-answer {
   min-height: 98px;
   align-items: center;
-  padding-bottom: 20px;
+  padding: 4px 0 20px;
   border-bottom: 1px solid var(--color-border);
 }
 
