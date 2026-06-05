@@ -775,27 +775,27 @@ button:disabled {
 
 .task-display,
 .warmup-display,
-.guided-word,
-.guided-sentence p {
+.reading-word,
+.reading-sentence {
   color: var(--color-heading);
   font-weight: 850;
   line-height: 1.1;
-}
-
-.task-display {
-  font-size: 3.6rem;
+  margin: 0;
 }
 
 .warmup-display {
-  margin: 0;
-  font-size: clamp(4.2rem, 16vw, 7.5rem);
+  font-size: clamp(3.2rem, 11vw, 5.2rem);
   letter-spacing: 0;
 }
 
-.guided-word,
-.guided-sentence p {
-  margin: 0;
-  font-size: clamp(3rem, 9vw, 4.9rem);
+.reading-word,
+.task-display {
+  font-size: clamp(2.2rem, 7vw, 3.2rem);
+  letter-spacing: 0;
+}
+
+.reading-sentence {
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
   letter-spacing: 0;
 }
 

@@ -1,5 +1,6 @@
 import type { SessionTask } from '../../session'
 import { GuidedReadingTaskPanel } from './GuidedReadingTaskPanel'
+import { SentenceComprehensionTaskPanel } from './SentenceComprehensionTaskPanel'
 import { WarmupTaskPanel } from './WarmupTaskPanel'
 import { WordBuildingTaskPanel } from './WordBuildingTaskPanel'
 
@@ -36,6 +37,16 @@ export function SessionTaskPanel({
         task={task}
         taskCounterLabel={taskCounterLabel}
         onReadyForRating={onReadyForRating}
+      />
+    )
+  }
+
+  if (task.kind === 'sentence-comprehension') {
+    return (
+      <SentenceComprehensionTaskPanel
+        key={task.id}
+        task={task}
+        taskCounterLabel={taskCounterLabel}
       />
     )
   }

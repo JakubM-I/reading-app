@@ -69,14 +69,14 @@ export function GuidedReadingTaskPanel({
       )}
 
       {isWordStep && (
-        <p className="guided-word" lang="pl">
+        <p className="reading-word" lang="pl">
           {content.word}
         </p>
       )}
 
       {isSentenceStep && (
         <div className="guided-sentence">
-          <p lang="pl">{content.sentence}</p>
+          <p className="reading-sentence" lang="pl">{content.sentence}</p>
           <div className="guided-question">
             <span>Pytanie</span>
             <strong>{content.question}</strong>
