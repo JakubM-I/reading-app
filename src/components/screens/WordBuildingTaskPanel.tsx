@@ -56,14 +56,15 @@ export function WordBuildingTaskPanel({
     <article className="task-panel word-building-task" aria-label="Budowanie słowa">
       <p className="task-title">{task.prompt}</p>
 
-      <div className="word-building-target">
-        <span>Słowo</span>
-        <strong lang="pl">{content.targetWord}</strong>
-      </div>
-
       <div className="word-answer" aria-label="Ułożone sylaby">
-        {selectedTiles.length > 0 ? (
-          selectedTiles.map((tile) => (
+        {content.syllables.map((_, index) => {
+          const tile = selectedTiles[index]
+
+          if (!tile) {
+            return <span className="word-answer-slot" key={`slot-${index}`} />
+          }
+
+          return (
             <button
               type="button"
               className="word-answer-tile"
@@ -73,10 +74,8 @@ export function WordBuildingTaskPanel({
             >
               {tile.text}
             </button>
-          ))
-        ) : (
-          <span>Tu układasz słowo</span>
-        )}
+          )
+        })}
       </div>
 
       <div className="word-tile-bank" aria-label="Kafelki sylab">

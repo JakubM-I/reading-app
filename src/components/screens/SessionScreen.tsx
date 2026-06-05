@@ -51,6 +51,8 @@ export function SessionScreen({
 
   const currentTask = getCurrentTask(session)
   const currentTaskNumber = session.answers.length + 1
+  const roadSteps = Array.from({ length: session.tasks.length }, (_, index) => index + 1)
+  const currentTaskKindLabel = currentTask?.title ?? 'Zadanie'
   const readyTaskIds =
     ratingReadiness.sessionId === session.id ? ratingReadiness.readyTaskIds : {}
   const canRateCurrentTask =
@@ -80,15 +82,44 @@ export function SessionScreen({
   }
 
   return (
-    <section className="session-layout" aria-labelledby="session-title">
+    <section className="session-layout session-screen" aria-labelledby="session-title">
       <div className="session-area">
-        <p className="eyebrow">Sesja</p>
-        <h2 id="session-title">{level.name}</h2>
-        <div className="progress-line" aria-label="Postęp sesji">
-          <span>
-            {currentTaskNumber} / {session.tasks.length}
-          </span>
-          <span>{currentTask?.title}</span>
+        <div className="session-topbar">
+          <button type="button" className="secondary-button compact-action" onClick={onBack}>
+            ← Powrót
+          </button>
+          <h2 id="session-title">
+            Poziom {level.order} <span>·</span> {currentTaskKindLabel}
+          </h2>
+          <button
+            type="button"
+            className="secondary-button compact-action"
+            onClick={onReturnHome}
+          >
+            Zakończ sesję
+          </button>
+        </div>
+
+        <div className="reading-road" aria-label="Postęp sesji">
+          <div className="road-track">
+            {roadSteps.map((step) => (
+              <span
+                className={step <= currentTaskNumber ? 'road-step active' : 'road-step'}
+                key={step}
+                aria-current={step === currentTaskNumber ? 'step' : undefined}
+              >
+                {step}
+              </span>
+            ))}
+            <span
+              className="road-car"
+              style={{
+                left: `${5 + ((currentTaskNumber - 1) / Math.max(session.tasks.length - 1, 1)) * 90}%`,
+              }}
+              aria-hidden="true"
+            />
+          </div>
+          <span className="finish-garage" aria-hidden="true">▣</span>
         </div>
 
         {currentTask && (
@@ -100,10 +131,10 @@ export function SessionScreen({
       </div>
 
       <aside className="parent-panel session-panel" aria-label="Panel rodzica">
-        <h2>Oceń wykonanie zadania</h2>
+        <h2>Panel rodzica</h2>
+        <p className="panel-note">Oceń wykonanie zadania</p>
         {canRateCurrentTask ? (
           <>
-            <p className="panel-note">Po wyborze aplikacja przejdzie dalej.</p>
             <div className="rating-list">
               {ratingOptions.map((option) => (
                 <button
@@ -112,7 +143,10 @@ export function SessionScreen({
                   key={option.value}
                   onClick={() => onRateTask(option.value)}
                 >
-                  <span>{option.label}</span>
+                  <span>
+                    <span aria-hidden="true">{ratingIcons[option.value]}</span>
+                    {option.label}
+                  </span>
                   <span>{option.points} pkt</span>
                 </button>
               ))}
@@ -125,9 +159,6 @@ export function SessionScreen({
         )}
 
         <div className="quiet-actions">
-          <button type="button" className="secondary-button" onClick={onBack}>
-            Zmień poziom
-          </button>
           <button type="button" className="text-button" onClick={onReset}>
             Resetuj bieżącą sesję
           </button>
@@ -140,6 +171,13 @@ export function SessionScreen({
 const taskNeedsCompletion = (task: NonNullable<ReturnType<typeof getCurrentTask>>) =>
   (task.kind === 'guided-reading' && Boolean(task.guidedReading)) ||
   (task.kind === 'word-building' && Boolean(task.wordBuilding))
+
+const ratingIcons: Record<SessionRating, string> = {
+  independent: '★',
+  'with-help': '●',
+  hard: '▲',
+  skip: '⌂',
+}
 
 const getWaitingNote = (task: ReturnType<typeof getCurrentTask>) => {
   if (task?.kind === 'word-building') {

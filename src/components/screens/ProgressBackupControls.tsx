@@ -56,10 +56,10 @@ export function ProgressBackupControls({
     <div className="backup-controls">
       <div className="quiet-actions">
         <button type="button" className="secondary-button" onClick={onExportProgress}>
-          Eksportuj postępy
+          Eksportuj
         </button>
         <button type="button" className="secondary-button" onClick={chooseImportFile}>
-          Importuj postępy
+          Importuj
         </button>
       </div>
 

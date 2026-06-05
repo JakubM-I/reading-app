@@ -28,37 +28,54 @@ export function StartScreen({
 }: StartScreenProps) {
   return (
     <section className="screen-grid" aria-labelledby="start-title">
-      <div className="screen-main">
-        <p className="eyebrow">Start</p>
-        <h2 id="start-title">Spokojna sesja czytania</h2>
-        <p className="lead-text">
-          Wybierz poziom, zobacz opis dla rodzica i przejdź do pustego ekranu
-          sesji.
-        </p>
+      <div className="screen-main garage-start">
+        <div className="garage-copy">
+          <p className="eyebrow">Czytanie krok po kroku</p>
+          <h2 id="start-title">
+            Czytanie <span>krok po kroku</span>
+          </h2>
+          <p className="lead-text">
+            Trenuj sylaby. Czytaj słowa. Zbieraj odznaki kierowcy.
+          </p>
 
-        <div className="primary-actions">
-          <button type="button" className="primary-button" onClick={onStart}>
-            Rozpocznij sesję
-          </button>
-          <button type="button" className="secondary-button" onClick={onProgress}>
-            Panel postępów
-          </button>
+          <div className="primary-actions">
+            <button type="button" className="primary-button icon-button" onClick={onStart}>
+              <span aria-hidden="true">◉</span>
+              Rozpocznij sesję
+            </button>
+            <button type="button" className="secondary-button" onClick={onProgress}>
+              Postępy
+            </button>
+          </div>
+        </div>
+
+        <div className="garage-scene" aria-hidden="true">
+          <div className="garage-window" />
+          <div className="garage-lamp" />
+          <div className="garage-shelf" />
+          <div className="garage-cabinet" />
+          <div className="garage-tires" />
+          <div className="garage-cone" />
+          <div className="garage-track" />
+          <div className="garage-car">
+            <span />
+          </div>
         </div>
       </div>
 
       <aside className="parent-panel" aria-label="Panel rodzica">
         <h2>Panel rodzica</h2>
-        <dl className="summary-grid">
+        <dl className="summary-grid parent-stats">
           <div>
-            <dt>Punkty łączne</dt>
+            <dt><span aria-hidden="true">★</span> Punkty</dt>
             <dd>{progress.totalPoints}</dd>
           </div>
           <div>
-            <dt>Sesje</dt>
+            <dt><span aria-hidden="true">⚑</span> Sesje</dt>
             <dd>{progress.sessions.length}</dd>
           </div>
           <div>
-            <dt>Odznaki</dt>
+            <dt><span aria-hidden="true">⬟</span> Odznaki</dt>
             <dd>{progress.badges.length}</dd>
           </div>
           <div>
@@ -66,10 +83,6 @@ export function StartScreen({
             <dd>{summary.levels}</dd>
           </div>
         </dl>
-        <p className="panel-note">
-          Postępy zapisują się lokalnie w tej przeglądarce.
-        </p>
-
         <ProgressBackupControls
           progress={progress}
           onExportProgress={onExportProgress}
@@ -77,8 +90,9 @@ export function StartScreen({
         />
 
         <div className="quiet-actions">
-          <button type="button" className="text-button" onClick={onReset}>
-            Reset danych
+          <button type="button" className="text-button settings-button" onClick={onReset}>
+            <span aria-hidden="true">⚙</span>
+            Ustawienia
           </button>
         </div>
       </aside>

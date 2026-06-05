@@ -140,6 +140,7 @@ function App() {
       <header className="app-header">
         <div>
           <h1>Czytanie krok po kroku</h1>
+          <p>Jedno dziecko · Wsparcie rodzica · Bez presji i bez czasu</p>
         </div>
 
         <nav className="app-nav" aria-label="Główna nawigacja">
