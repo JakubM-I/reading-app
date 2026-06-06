@@ -4,6 +4,22 @@ import {
   type StoredProgress,
 } from '../../progress'
 import { ProgressBackupControls } from './ProgressBackupControls'
+import badgesIcon from '../../assets/odznaki.png'
+import pointsIcon from '../../assets/punkty.png'
+import sessionsIcon from '../../assets/sesje.png'
+import firstRideBadge from '../../assets/pierwszy-przejazd.png'
+import trainingDriverBadge from '../../assets/kierowca-treningowy.png'
+import trackMasterBadge from '../../assets/mistrz-toru.png'
+import superMechanicBadge from '../../assets/super-mechanik.png'
+import garageLegendBadge from '../../assets/legenda-garazu.png'
+
+const badgeImages: Record<string, string> = {
+  'first-ride': firstRideBadge,
+  'training-driver': trainingDriverBadge,
+  'track-master': trackMasterBadge,
+  'super-mechanic': superMechanicBadge,
+  'garage-legend': garageLegendBadge,
+}
 
 interface ProgressScreenProps {
   progress: StoredProgress
@@ -35,20 +51,29 @@ export function ProgressScreen({
           ← Powrót
         </button>
         <h2 id="progress-title">Postępy</h2>
-        <span className="home-mark" aria-hidden="true">⌂</span>
+        <span className="home-mark" aria-hidden="true" />
       </div>
 
       <div className="progress-total-grid" aria-label="Podsumowanie łączne">
         <div>
-          <h3>Punkty <span aria-hidden="true">★</span></h3>
+          <h3>
+            Punkty
+            <img src={pointsIcon} alt="" className="progress-block-icon" aria-hidden="true" />
+          </h3>
           <p>{overview.totalPoints}</p>
         </div>
         <div>
-          <h3>Sesje <span aria-hidden="true">⚑</span></h3>
+          <h3>
+            Sesje
+            <img src={sessionsIcon} alt="" className="progress-block-icon" aria-hidden="true" />
+          </h3>
           <p>{overview.totalSessions}</p>
         </div>
         <div>
-          <h3>Odznaki <span aria-hidden="true">⬟</span></h3>
+          <h3>
+            Odznaki
+            <img src={badgesIcon} alt="" className="progress-block-icon" aria-hidden="true" />
+          </h3>
           <p>
             {overview.badges.length} <span>/ {badgeThresholds.length}</span>
           </p>
@@ -105,22 +130,22 @@ export function ProgressScreen({
         <section className="badge-shelf" aria-label="Półka odznak">
           <h3>Półka odznak</h3>
           <div className="badge-grid">
-            {badgeThresholds.map((badge, index) => {
+            {badgeThresholds.map((badge) => {
               const isEarned = earnedBadgeIds.has(badge.id)
 
               return (
                 <div className={isEarned ? 'driver-badge earned' : 'driver-badge'} key={badge.id}>
-                  <span aria-hidden="true">{badgeIcons[index] ?? '⬟'}</span>
+                  <img
+                    src={badgeImages[badge.id]}
+                    alt=""
+                    className="badge-image"
+                    aria-hidden="true"
+                  />
                   <p>{badge.label}</p>
                 </div>
               )
             })}
-            {badgeThresholds.length % 3 !== 0 && (
-              <div className="driver-badge empty" aria-hidden="true">
-                <span />
-                <p>&nbsp;</p>
-              </div>
-            )}
+
           </div>
         </section>
       </div>
@@ -140,7 +165,7 @@ export function ProgressScreen({
   )
 }
 
-const badgeIcons = ['⌁', '◉', '▤', '▦', '✚']
+
 
 const formatSessionDate = (value: string) => {
   const date = new Date(value)
