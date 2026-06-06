@@ -941,6 +941,19 @@ button:disabled {
   padding: 10px 18px;
 }
 
+.word-building-message {
+  width: min(100%, 520px);
+  justify-self: center;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #d9c993;
+  border-radius: 8px;
+  color: var(--color-heading);
+  background: #fff8de;
+  font-size: 1rem;
+  font-weight: 740;
+}
+
 .word-building-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1139,7 +1152,7 @@ button:disabled {
   gap: 6px;
 }
 
-.period-tabs span {
+.period-tabs button {
   padding: 7px 10px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -1147,12 +1160,19 @@ button:disabled {
   background: var(--color-soft);
   font-size: 0.82rem;
   font-weight: 740;
+  font-family: inherit;
+  cursor: pointer;
 }
 
-.period-tabs span.active {
+.period-tabs button.active {
   color: var(--color-car-dark);
   border-color: #a9d7d1;
   background: var(--color-mint);
+}
+
+.period-tabs button:focus-visible {
+  outline: 3px solid rgba(42, 130, 117, 0.22);
+  outline-offset: 2px;
 }
 
 .activity-list {
