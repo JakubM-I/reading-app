@@ -137,39 +137,6 @@ function App() {
 
   return (
     <main className="app-shell">
-      <header className="app-header">
-        <div>
-          <h1>Czytanie krok po kroku</h1>
-        </div>
-
-        <nav className="app-nav" aria-label="Główna nawigacja">
-          <button
-            type="button"
-            className={view === 'start' ? 'nav-button active' : 'nav-button'}
-            aria-current={view === 'start' ? 'page' : undefined}
-            onClick={() => setView('start')}
-          >
-            Start
-          </button>
-          <button
-            type="button"
-            className={view === 'levels' ? 'nav-button active' : 'nav-button'}
-            aria-current={view === 'levels' ? 'page' : undefined}
-            onClick={() => setView('levels')}
-          >
-            Poziomy
-          </button>
-          <button
-            type="button"
-            className={view === 'progress' ? 'nav-button active' : 'nav-button'}
-            aria-current={view === 'progress' ? 'page' : undefined}
-            onClick={() => setView('progress')}
-          >
-            Postępy
-          </button>
-        </nav>
-      </header>
-
       {view === 'start' && (
         <StartScreen
           summary={startSummary}
@@ -186,6 +153,7 @@ function App() {
           levels={levelOptions}
           onBack={() => setView('start')}
           onChooseLevel={chooseLevel}
+          onProgress={() => setView('progress')}
         />
       )}
       {view === 'session' && selectedLevel && activeSession && (

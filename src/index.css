@@ -1,22 +1,28 @@
 :root {
-  --color-bg: #eef4f3;
+  --color-bg: #f7faf9;
   --color-surface: #ffffff;
-  --color-soft: #f6faf8;
-  --color-heading: #263238;
-  --color-text: #3f4b51;
-  --color-muted: #66777d;
-  --color-border: #d6e1de;
-  --color-border-strong: #9eb8b0;
+  --color-soft: #f1f7f5;
+  --color-mint: #e8f6f1;
+  --color-heading: #1f2d38;
+  --color-text: #35444c;
+  --color-muted: #60727a;
+  --color-border: #d9e3e0;
+  --color-border-strong: #afc7c1;
   --color-road: #cfe2dc;
   --color-line: #ffffff;
-  --color-car: #2f7d7a;
+  --color-car: #1ea7a1;
+  --color-car-dark: #087c78;
   --color-window: #c9ebe6;
   --color-wheel: #2d3133;
-  --color-light: #f5c85b;
-  --color-focus: #f5c85b;
+  --color-asphalt: #343a40;
+  --color-light: #ffc94d;
+  --color-light-strong: #e5a900;
+  --color-focus: #ffc94d;
   --color-danger: #8f4a41;
   --color-danger-border: #e0b6af;
   --color-danger-bg: #fff5f3;
+  --shadow-panel: 0 12px 26px rgba(31, 45, 56, 0.1);
+  --shadow-button: 0 5px 12px rgba(31, 45, 56, 0.08);
 
   font-family:
     system-ui,
