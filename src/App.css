@@ -487,7 +487,48 @@ button:disabled {
 
 .settings-button {
   width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  color: var(--color-car-dark);
+}
+
+.settings-button span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.parent-stat-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.parent-stats dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.parent-panel .parent-stats dt {
+  font-size: 1.05rem;
+}
+
+.settings-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.parent-panel .backup-controls .quiet-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.parent-panel .backup-controls .quiet-actions button {
+  flex: 1;
 }
 
 .section-heading,
@@ -1537,17 +1578,30 @@ button:disabled {
   right: 2%;
   top: 3%;
   bottom: 3%;
-  width: 30%;
+  width: 26%;
   z-index: 5;
   box-sizing: border-box;
   margin: 0;
   display: flex;
   flex-direction: column;
+  gap: 14px;
   background: rgba(230, 242, 240, 0.76);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.45);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+}
+
+.start-workspace .parent-panel h2 {
+  margin: 0;
+}
+
+.start-workspace .parent-panel .parent-stats {
+  margin: 0;
+}
+
+.start-workspace .parent-panel .quiet-actions {
+  margin: 0;
 }
 
 @media (max-width: 980px) {

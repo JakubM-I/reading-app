@@ -3,6 +3,10 @@ import { ProgressBackupControls } from './ProgressBackupControls'
 import logoHeaderAsset from '../../assets/logo-header.png'
 import mainBackgroundAsset from '../../assets/main-background_3.png'
 import mainLampAsset from '../../assets/main-lamp.png'
+import badgesIcon from '../../assets/odznaki.png'
+import pointsIcon from '../../assets/punkty.png'
+import sessionsIcon from '../../assets/sesje.png'
+import settingsIcon from './settings-icon.png'
 
 export interface StartScreenSummary {
   levels: number
@@ -21,7 +25,6 @@ interface StartScreenProps {
 }
 
 export function StartScreen({
-  summary,
   progress,
   onExportProgress,
   onImportProgress,
@@ -70,20 +73,25 @@ export function StartScreen({
           <h2>Panel rodzica</h2>
           <dl className="summary-grid parent-stats">
             <div>
-              <dt><span aria-hidden="true">★</span> Punkty</dt>
+              <dt>
+                <img src={pointsIcon} alt="" className="parent-stat-icon" aria-hidden="true" />
+                Punkty
+              </dt>
               <dd>{progress.totalPoints}</dd>
             </div>
             <div>
-              <dt><span aria-hidden="true">⚑</span> Sesje</dt>
+              <dt>
+                <img src={sessionsIcon} alt="" className="parent-stat-icon" aria-hidden="true" />
+                Sesje
+              </dt>
               <dd>{progress.sessions.length}</dd>
             </div>
             <div>
-              <dt><span aria-hidden="true">⬟</span> Odznaki</dt>
+              <dt>
+                <img src={badgesIcon} alt="" className="parent-stat-icon" aria-hidden="true" />
+                Odznaki
+              </dt>
               <dd>{progress.badges.length}</dd>
-            </div>
-            <div>
-              <dt>Poziomy</dt>
-              <dd>{summary.levels}</dd>
             </div>
           </dl>
           <ProgressBackupControls
@@ -93,9 +101,12 @@ export function StartScreen({
           />
 
           <div className="quiet-actions">
-            <button type="button" className="text-button settings-button" onClick={onReset}>
-              <span aria-hidden="true">⚙</span>
-              Ustawienia
+            <button type="button" className="secondary-button settings-button" onClick={onReset}>
+              <span>
+                <img src={settingsIcon} alt="" className="settings-icon-img" aria-hidden="true" />
+                Ustawienia
+              </span>
+              <span aria-hidden="true">❯</span>
             </button>
           </div>
         </aside>
