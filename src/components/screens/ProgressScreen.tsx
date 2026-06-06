@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   badgeThresholds,
   getProgressOverview,
@@ -21,6 +22,14 @@ const badgeImages: Record<string, string> = {
   'garage-legend': garageLegendBadge,
 }
 
+type ProgressPeriodKey = 'today' | 'week' | 'month'
+
+const periodTabs: { key: ProgressPeriodKey; label: string }[] = [
+  { key: 'today', label: 'Dzisiaj' },
+  { key: 'week', label: 'Tydzień' },
+  { key: 'month', label: 'Miesiąc' },
+]
+
 interface ProgressScreenProps {
   progress: StoredProgress
   onBack: () => void
@@ -34,8 +43,10 @@ export function ProgressScreen({
   onExportProgress,
   onImportProgress,
 }: ProgressScreenProps) {
+  const [activePeriodKey, setActivePeriodKey] =
+    useState<ProgressPeriodKey>('today')
   const overview = getProgressOverview(progress)
-  const periods = [overview.today, overview.week, overview.month]
+  const activePeriod = overview[activePeriodKey]
   const earnedBadgeIds = new Set(overview.badges.map((badge) => badge.id))
   const latestSessions = [...progress.sessions]
     .sort(
@@ -84,12 +95,21 @@ export function ProgressScreen({
         <div className="progress-column">
           <section className="period-panel activity-panel">
             <div className="period-heading">
-              <h3>Aktywność</h3>
+              <div>
+                <h3>Aktywność</h3>
+                <p>{activePeriod.rangeLabel}</p>
+              </div>
               <div className="period-tabs" aria-label="Okres">
-                {periods.map((period, index) => (
-                  <span className={index === 0 ? 'active' : ''} key={period.label}>
-                    {period.label.replace('Ten ', '')}
-                  </span>
+                {periodTabs.map((period) => (
+                  <button
+                    type="button"
+                    className={activePeriodKey === period.key ? 'active' : ''}
+                    key={period.key}
+                    aria-pressed={activePeriodKey === period.key}
+                    onClick={() => setActivePeriodKey(period.key)}
+                  >
+                    {period.label}
+                  </button>
                 ))}
               </div>
             </div>
@@ -97,15 +117,15 @@ export function ProgressScreen({
             <dl className="activity-list">
               <div>
                 <dt>Zadania wykonane</dt>
-                <dd>{overview.today.tasks} / 10</dd>
+                <dd>{activePeriod.tasks}</dd>
               </div>
               <div>
                 <dt>Punkty zdobyte</dt>
-                <dd>{overview.today.points}</dd>
+                <dd>{activePeriod.points}</dd>
               </div>
               <div>
                 <dt>Nowe odznaki</dt>
-                <dd>{overview.today.badges.length}</dd>
+                <dd>{activePeriod.badges.length}</dd>
               </div>
             </dl>
           </section>

@@ -14,6 +14,7 @@ export function WordBuildingTaskPanel({
 }: WordBuildingTaskPanelProps) {
   const [selectedTileIds, setSelectedTileIds] = useState<string[]>([])
   const [isReadyForRating, setIsReadyForRating] = useState(false)
+  const [checkMessage, setCheckMessage] = useState('')
   const content = task.wordBuilding
 
   if (!content) {
@@ -35,22 +36,34 @@ export function WordBuildingTaskPanel({
     (tile) => !selectedTileIds.includes(tile.id),
   )
   const isComplete = selectedTiles.length === content.tiles.length
+  const isCorrect =
+    isComplete &&
+    selectedTiles.every((tile, index) => tile.text === content.syllables[index])
 
   const selectTile = (tileId: string) => {
+    setCheckMessage('')
     setSelectedTileIds((currentTileIds) => [...currentTileIds, tileId])
   }
 
   const removeTile = (tileId: string) => {
+    setCheckMessage('')
     setSelectedTileIds((currentTileIds) =>
       currentTileIds.filter((currentTileId) => currentTileId !== tileId),
     )
   }
 
   const undoLastTile = () => {
+    setCheckMessage('')
     setSelectedTileIds((currentTileIds) => currentTileIds.slice(0, -1))
   }
 
-  const markReadyForRating = () => {
+  const checkWord = () => {
+    if (!isCorrect) {
+      setCheckMessage('Sprawdź kolejność sylab i spróbuj jeszcze raz.')
+      return
+    }
+
+    setCheckMessage('')
     setIsReadyForRating(true)
     onReadyForRating?.()
   }
@@ -101,6 +114,12 @@ export function WordBuildingTaskPanel({
         ))}
       </div>
 
+      {checkMessage && (
+        <p className="word-building-message" role="status">
+          {checkMessage}
+        </p>
+      )}
+
       <div className="word-building-actions">
         <button
           type="button"
@@ -114,9 +133,9 @@ export function WordBuildingTaskPanel({
           type="button"
           className="primary-button compact"
           disabled={!isComplete || isReadyForRating}
-          onClick={markReadyForRating}
+          onClick={checkWord}
         >
-          {isReadyForRating ? 'Gotowe do oceny' : 'Przejdź do oceny'}
+          {isReadyForRating ? 'Gotowe do oceny' : 'Sprawdź'}
         </button>
       </div>
     </article>
