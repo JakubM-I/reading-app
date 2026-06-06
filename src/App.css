@@ -425,6 +425,7 @@ button:disabled {
 
 .parent-panel {
   background: linear-gradient(180deg, rgba(232, 246, 241, 0.96), #ffffff);
+  padding: 24px 20px;
 }
 
 .parent-panel h2 {
@@ -669,7 +670,7 @@ button:disabled {
 
 .session-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr) 300px;
   gap: 18px;
   align-items: stretch;
 }
@@ -939,9 +940,10 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   border-color: var(--color-border);
   text-align: left;
+  white-space: nowrap;
 }
 
 .rating-button:hover {
@@ -951,12 +953,16 @@ button:disabled {
 .rating-button span:first-child {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-weight: 760;
+  white-space: nowrap;
 }
 
-.rating-button span:first-child span {
-  color: var(--color-light-strong);
+.rating-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .rating-button span:last-child {

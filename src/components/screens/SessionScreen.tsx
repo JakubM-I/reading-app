@@ -3,6 +3,10 @@ import finishFlagAsset from '../../assets/flaga_mety_asset.png'
 import garageAsset from '../../assets/garaz_asset.png'
 import progressCarAsset from '../../assets/progrss-car.png'
 import raceTrackAsset from '../../assets/race-track.png'
+import independentIcon from '../../assets/samodzielnie.png'
+import withHelpIcon from '../../assets/z-pomoca.png'
+import hardIcon from '../../assets/trudne.png'
+import skipIcon from '../../assets/pominiete.png'
 import type { ContentLevel } from '../../content/contentTypes'
 import type { ProgressBadge } from '../../progress'
 import {
@@ -163,7 +167,12 @@ export function SessionScreen({
                       onClick={() => onRateTask(option.value)}
                     >
                       <span>
-                        <span aria-hidden="true">{ratingIcons[option.value]}</span>
+                        <img
+                          src={ratingIcons[option.value]}
+                          alt=""
+                          className="rating-icon"
+                          aria-hidden="true"
+                        />
                         {option.label}
                       </span>
                       <span>{option.points} pkt</span>
@@ -194,10 +203,10 @@ const taskNeedsCompletion = (task: NonNullable<ReturnType<typeof getCurrentTask>
   (task.kind === 'word-building' && Boolean(task.wordBuilding))
 
 const ratingIcons: Record<SessionRating, string> = {
-  independent: '★',
-  'with-help': '●',
-  hard: '▲',
-  skip: '⌂',
+  independent: independentIcon,
+  'with-help': withHelpIcon,
+  hard: hardIcon,
+  skip: skipIcon,
 }
 
 const getWaitingNote = (task: ReturnType<typeof getCurrentTask>) => {
