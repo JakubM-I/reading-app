@@ -5,10 +5,13 @@ export type {
   GuidedReadingTaskContent,
   ReadingSession,
   SessionAnswer,
+  SessionModule,
   SessionRating,
   SessionSummary,
   SessionTask,
   SessionTaskKind,
+  SyllabificationSupportMode,
+  SyllabificationTaskContent,
   WordBuildingTaskContent,
   WordBuildingTile,
 } from './sessionTypes'

@@ -101,6 +101,28 @@ for (const word of words) {
   assert(levelById.has(word.levelId), `${word.id}: unknown levelId "${word.levelId}"`)
   assert(isNonEmptyString(word.text), `${word.id}: text is required`)
   assert(isStringArray(word.syllables), `${word.id}: syllables must be a non-empty string array`)
+  assert(
+    Number.isInteger(word.syllableCount),
+    `${word.id}: syllableCount must be an integer`,
+  )
+  assert(
+    word.syllableCount === word.syllables.length,
+    `${word.id}: syllableCount must match syllables length`,
+  )
+  assert(
+    typeof word.suitableForSyllabification === 'boolean',
+    `${word.id}: suitableForSyllabification must be a boolean`,
+  )
+  assert(
+    !word.suitableForSyllabification || word.syllables.length >= 2,
+    `${word.id}: words suitable for syllabification must have at least two syllables`,
+  )
+  if (word.syllabificationTags !== undefined) {
+    assert(
+      isStringArray(word.syllabificationTags),
+      `${word.id}: syllabificationTags must be a non-empty string array when present`,
+    )
+  }
   assert(isStringArray(word.tags), `${word.id}: tags must be a non-empty string array`)
   assert(
     normalize(word.syllables.join('')) === normalize(word.text),
@@ -144,6 +166,12 @@ for (const level of levels) {
   assert(
     words.some((word) => word.levelId === level.id),
     `${level.id}: expected at least one word`,
+  )
+  assert(
+    words.some(
+      (word) => word.levelId === level.id && word.suitableForSyllabification,
+    ),
+    `${level.id}: expected at least one word suitable for syllabification`,
   )
   assert(
     sentences.some((sentence) => sentence.levelId === level.id),

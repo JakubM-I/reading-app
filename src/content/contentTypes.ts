@@ -26,6 +26,9 @@ export interface ContentWord {
   levelId: LevelId
   text: string
   syllables: string[]
+  syllableCount: number
+  suitableForSyllabification: boolean
+  syllabificationTags?: string[]
   tags: string[]
 }
 
