@@ -4,27 +4,39 @@
     "order": 1,
     "name": "Poziom 1 - proste sylaby",
     "parentDescription": "Łatwe sylaby otwarte i bardzo proste słowa dwusylabowe. Dobry poziom na rozgrzewkę i budowanie pewności.",
-    "focus": ["sylaby otwarte", "proste słowa dwusylabowe"]
+    "focus": ["sylaby otwarte", "proste słowa dwusylabowe"],
+    "syllabificationName": "Proste sylaby",
+    "syllabificationDescription": "Najłatwiejsze wyrazy do spokojnego dzielenia na sylaby. Dobry zakres na rozgrzewkę i budowanie pewności.",
+    "syllabificationFocus": ["sylaby otwarte", "2 sylaby", "łatwy start"]
   },
   {
     "id": "level-2",
     "order": 2,
     "name": "Poziom 2 - proste słowa i zdania",
     "parentDescription": "Łatwe słowa znane z codzienności i motywu pojazdów, z pierwszymi krótkimi zdaniami.",
-    "focus": ["krótkie zdania", "słowa codzienne", "pojazdy"]
+    "focus": ["krótkie zdania", "słowa codzienne", "pojazdy"],
+    "syllabificationName": "Proste słowa",
+    "syllabificationDescription": "Codzienne słowa do dzielenia na sylaby, z łagodnym przejściem od dwóch do większej liczby sylab.",
+    "syllabificationFocus": ["słowa codzienne", "2-3 sylaby", "spokojne tempo"]
   },
   {
     "id": "level-3",
     "order": 3,
     "name": "Poziom 3 - dwuznaki podstawowe",
     "parentDescription": "Utrwalanie częstszych dwuznaków, które mogą utrudniać płynne czytanie.",
-    "focus": ["ch", "sz", "cz", "rz"]
+    "focus": ["ch", "sz", "cz", "rz"],
+    "syllabificationName": "Częste dwuznaki",
+    "syllabificationDescription": "Słowa z częstymi dwuznakami, w których dziecko ćwiczy spokojne szukanie granic sylab.",
+    "syllabificationFocus": ["ch", "sz", "cz", "rz"]
   },
   {
     "id": "level-4",
     "order": 4,
     "name": "Poziom 4 - trudniejsze dwuznaki",
     "parentDescription": "Trudniejszy poziom z elementami dz, dź i dż. Używać spokojnie i krótko, raczej jako utrwalanie niż długi blok.",
-    "focus": ["dz", "dź", "dż"]
+    "focus": ["dz", "dź", "dż"],
+    "syllabificationName": "Trudniejsze połączenia",
+    "syllabificationDescription": "Krótszy, spokojny zakres dla słów z dz, dź i dż. Najlepiej traktować go jako utrwalanie.",
+    "syllabificationFocus": ["dz", "dź", "dż"]
   }
 ]

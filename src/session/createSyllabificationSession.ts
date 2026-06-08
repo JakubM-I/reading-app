@@ -83,7 +83,7 @@ const createSyllabificationTask = (
   title: getTaskTitle(kind),
   prompt: getTaskPrompt(kind, supportMode),
   displayText: getDisplayText(word, supportMode),
-  supportText: getSupportText(word, kind, supportMode),
+  supportText: getSupportText(word, supportMode),
   materialId: word.id,
   reviewText: word.text,
   syllabification: {
@@ -169,14 +169,13 @@ const getDisplayText = (
 
 const getSupportText = (
   word: ContentWord,
-  kind: SessionTaskKind,
   supportMode: SyllabificationSupportMode,
 ) => {
   if (supportMode === 'full-help') {
     return `Całe słowo: ${word.text}`
   }
 
-  if (supportMode === 'partial-help' || kind === 'syllable-count') {
+  if (supportMode === 'partial-help') {
     return `${word.syllableCount} sylaby`
   }
 

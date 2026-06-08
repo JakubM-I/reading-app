@@ -80,6 +80,18 @@ for (const level of levels) {
     `${level.id}: parentDescription is required`,
   )
   assert(isStringArray(level.focus), `${level.id}: focus must be a non-empty string array`)
+  assert(
+    isNonEmptyString(level.syllabificationName),
+    `${level.id}: syllabificationName is required`,
+  )
+  assert(
+    isNonEmptyString(level.syllabificationDescription),
+    `${level.id}: syllabificationDescription is required`,
+  )
+  assert(
+    isStringArray(level.syllabificationFocus),
+    `${level.id}: syllabificationFocus must be a non-empty string array`,
+  )
 }
 
 const sortedOrders = levels.map((level) => level.order).sort((a, b) => a - b)

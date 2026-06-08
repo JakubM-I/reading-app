@@ -573,6 +573,13 @@ button:disabled {
   gap: 14px;
 }
 
+.mode-context {
+  margin: 0 0 14px;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
 .level-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -959,6 +966,85 @@ button:disabled {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+.syllabification-task {
+  gap: 16px;
+}
+
+.syllabification-task .guided-syllables {
+  margin-top: -2px;
+}
+
+.syllabification-task .secondary-button.compact {
+  justify-self: center;
+}
+
+.syllable-count-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.syllable-count-button {
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--color-heading);
+  background: var(--color-surface);
+  font-size: 1.2rem;
+  font-weight: 820;
+}
+
+.syllable-count-button.selected {
+  color: var(--color-car-dark);
+  border-color: var(--color-car);
+  background: var(--color-mint);
+}
+
+.split-word {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-heading);
+  font-size: clamp(2.2rem, 7vw, 3.2rem);
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.split-letter-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.split-letter {
+  min-width: 0.72em;
+  text-align: center;
+}
+
+.split-marker {
+  width: 32px;
+  min-width: 32px;
+  min-height: 58px;
+  padding: 0;
+  color: transparent;
+  border: 1px dashed var(--color-border-strong);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: none;
+}
+
+.split-marker.selected {
+  color: var(--color-car-dark);
+  border-color: var(--color-car);
+  background: var(--color-mint);
+}
+
+.syllabification-hint strong {
+  font-size: 1.05rem;
 }
 
 .task-support {

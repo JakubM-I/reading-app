@@ -1,6 +1,7 @@
 import type { SessionTask } from '../../session'
 import { GuidedReadingTaskPanel } from './GuidedReadingTaskPanel'
 import { SentenceComprehensionTaskPanel } from './SentenceComprehensionTaskPanel'
+import { SyllabificationTaskPanel } from './SyllabificationTaskPanel'
 import { WarmupTaskPanel } from './WarmupTaskPanel'
 import { WordBuildingTaskPanel } from './WordBuildingTaskPanel'
 
@@ -47,6 +48,17 @@ export function SessionTaskPanel({
         key={task.id}
         task={task}
         taskCounterLabel={taskCounterLabel}
+      />
+    )
+  }
+
+  if (task.module === 'syllabification') {
+    return (
+      <SyllabificationTaskPanel
+        key={task.id}
+        task={task}
+        taskCounterLabel={taskCounterLabel}
+        onReadyForRating={onReadyForRating}
       />
     )
   }

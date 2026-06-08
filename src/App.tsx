@@ -26,6 +26,7 @@ import {
 } from './progress'
 import {
   createReadingSession,
+  createSyllabificationSession,
   rateCurrentTask,
   type ReadingSession,
   type SessionRating,
@@ -49,6 +50,9 @@ const levelOptions: LevelOption[] = levels.map((level) => ({
   wordCount: exerciseContent.words.filter((word) => word.levelId === level.id).length,
   sentenceCount: exerciseContent.sentences.filter(
     (sentence) => sentence.levelId === level.id,
+  ).length,
+  syllabificationWordCount: exerciseContent.words.filter(
+    (word) => word.levelId === level.id && word.suitableForSyllabification,
   ).length,
 }))
 
@@ -93,11 +97,25 @@ function App() {
 
   const chooseSyllabificationMode = (mode: SyllabificationSupportMode) => {
     setSelectedSyllabificationMode(mode)
+    startSyllabificationSession(selectedLevel.id, mode)
   }
 
   const startReadingSession = (levelId: string) => {
     setActiveSession(
       createReadingSession(levelId, exerciseContent, {
+        materialProgress: progress.materialProgress,
+        sessionIndex: progress.sessions.length,
+      }),
+    )
+    setView('session')
+  }
+
+  const startSyllabificationSession = (
+    levelId: string,
+    mode: SyllabificationSupportMode,
+  ) => {
+    setActiveSession(
+      createSyllabificationSession(levelId, mode, exerciseContent, {
         materialProgress: progress.materialProgress,
         sessionIndex: progress.sessions.length,
       }),
@@ -111,6 +129,11 @@ function App() {
     }
 
     setLatestSessionBadges([])
+    if (selectedModule === 'syllabification' && selectedSyllabificationMode) {
+      startSyllabificationSession(selectedLevel.id, selectedSyllabificationMode)
+      return
+    }
+
     startReadingSession(selectedLevel.id)
   }
 
@@ -190,6 +213,7 @@ function App() {
       {view === 'levels' && (
         <LevelScreen
           levels={levelOptions}
+          module={selectedModule}
           onBack={() => setView('modules')}
           onChooseLevel={chooseLevel}
           onProgress={() => setView('progress')}
@@ -208,7 +232,11 @@ function App() {
           level={selectedLevel}
           session={activeSession}
           earnedBadges={latestSessionBadges}
-          onBack={() => setView(selectedModule === 'reading' ? 'levels' : 'modules')}
+          onBack={() =>
+            setView(
+              selectedModule === 'reading' ? 'levels' : 'syllabification-mode',
+            )
+          }
           onRateTask={rateTask}
           onReset={resetCurrentSession}
           onReturnHome={returnHome}

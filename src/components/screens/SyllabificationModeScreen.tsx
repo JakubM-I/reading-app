@@ -52,21 +52,11 @@ export function SyllabificationModeScreen({
       </header>
 
       <div className="levels-workspace">
-        <div className="level-list">
-          <article className="level-card">
-            <div>
-              <p className="level-order">Poziom {level.order}</p>
-              <h3>{level.name}</h3>
-              <p>{level.parentDescription}</p>
-            </div>
-            <div className="level-meta" aria-label="Moduł">
-              <span>Sylabizowanie</span>
-            </div>
-            <button type="button" className="secondary-button compact" onClick={onBack}>
-              Zmień poziom
-            </button>
-          </article>
+        <p className="mode-context">
+          Poziom {level.order}: {level.name}
+        </p>
 
+        <div className="level-list">
           {supportModeOptions.map((option) => (
             <article className="level-card" key={option.mode}>
               <div>
@@ -90,22 +80,6 @@ export function SyllabificationModeScreen({
               </button>
             </article>
           ))}
-
-          {selectedMode && (
-            <article className="level-card">
-              <div>
-                <p className="level-order">Następny etap</p>
-                <h3>Sesja sylabizowania</h3>
-                <p>
-                  Tryb został wybrany. Generator sesji sylabizowania zostanie
-                  dodany w etapie 3.
-                </p>
-              </div>
-              <div className="level-meta" aria-label="Status">
-                <span>Gotowe do etapu 3</span>
-              </div>
-            </article>
-          )}
         </div>
       </div>
     </section>

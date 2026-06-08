@@ -200,7 +200,25 @@ export function SessionScreen({
 
 const taskNeedsCompletion = (task: NonNullable<ReturnType<typeof getCurrentTask>>) =>
   (task.kind === 'guided-reading' && Boolean(task.guidedReading)) ||
-  (task.kind === 'word-building' && Boolean(task.wordBuilding))
+  (task.kind === 'word-building' && Boolean(task.wordBuilding)) ||
+  needsSyllabificationCompletion(task)
+
+const needsSyllabificationCompletion = (
+  task: NonNullable<ReturnType<typeof getCurrentTask>>,
+) => {
+  if (!task.syllabification) {
+    return false
+  }
+
+  if (task.kind === 'syllable-build' || task.kind === 'syllable-split') {
+    return true
+  }
+
+  return (
+    task.syllabification.supportMode === 'independent' &&
+    (task.kind === 'syllable-count' || task.kind === 'syllable-say')
+  )
+}
 
 const ratingIcons: Record<SessionRating, string> = {
   independent: independentIcon,
@@ -212,6 +230,15 @@ const ratingIcons: Record<SessionRating, string> = {
 const getWaitingNote = (task: ReturnType<typeof getCurrentTask>) => {
   if (task?.kind === 'word-building') {
     return 'Najpierw ułóż słowo z sylab.'
+  }
+
+  if (
+    task?.kind === 'syllable-count' ||
+    task?.kind === 'syllable-say' ||
+    task?.kind === 'syllable-build' ||
+    task?.kind === 'syllable-split'
+  ) {
+    return 'Najpierw wykonaj zadanie i kliknij „Sprawdź”.'
   }
 
   return 'Najpierw przejdź przez kroki czytania.'
