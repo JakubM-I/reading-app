@@ -2,10 +2,12 @@ import { useState } from 'react'
 import './App.css'
 import {
   LevelScreen,
+  ModuleChoiceScreen,
   ProgressScreen,
   ResetScreen,
   SessionScreen,
   StartScreen,
+  SyllabificationModeScreen,
   type LevelOption,
   type StartScreenSummary,
 } from './components/screens'
@@ -27,9 +29,18 @@ import {
   rateCurrentTask,
   type ReadingSession,
   type SessionRating,
+  type SessionModule,
+  type SyllabificationSupportMode,
 } from './session'
 
-type AppView = 'start' | 'levels' | 'session' | 'progress' | 'reset'
+type AppView =
+  | 'start'
+  | 'modules'
+  | 'levels'
+  | 'syllabification-mode'
+  | 'session'
+  | 'progress'
+  | 'reset'
 
 const levels = [...exerciseContent.levels].sort((a, b) => a.order - b.order)
 
@@ -49,17 +60,44 @@ const startSummary: StartScreenSummary = {
 
 function App() {
   const [view, setView] = useState<AppView>('start')
+  const [selectedModule, setSelectedModule] = useState<SessionModule>('reading')
   const [selectedLevelId, setSelectedLevelId] = useState(levels[0]?.id ?? '')
+  const [selectedSyllabificationMode, setSelectedSyllabificationMode] =
+    useState<SyllabificationSupportMode | undefined>(undefined)
   const [activeSession, setActiveSession] = useState<ReadingSession | null>(null)
   const [progress, setProgress] = useState<StoredProgress>(() => loadProgress())
   const [latestSessionBadges, setLatestSessionBadges] = useState<ProgressBadge[]>([])
   const selectedLevel = levels.find((level) => level.id === selectedLevelId) ?? levels[0]
 
+  const chooseModule = (module: SessionModule) => {
+    setSelectedModule(module)
+    setLatestSessionBadges([])
+    setActiveSession(null)
+    setSelectedSyllabificationMode(undefined)
+    setView('levels')
+  }
+
   const chooseLevel = (level: ContentLevel) => {
     setSelectedLevelId(level.id)
     setLatestSessionBadges([])
+
+    if (selectedModule === 'syllabification') {
+      setActiveSession(null)
+      setSelectedSyllabificationMode(undefined)
+      setView('syllabification-mode')
+      return
+    }
+
+    startReadingSession(level.id)
+  }
+
+  const chooseSyllabificationMode = (mode: SyllabificationSupportMode) => {
+    setSelectedSyllabificationMode(mode)
+  }
+
+  const startReadingSession = (levelId: string) => {
     setActiveSession(
-      createReadingSession(level.id, exerciseContent, {
+      createReadingSession(levelId, exerciseContent, {
         materialProgress: progress.materialProgress,
         sessionIndex: progress.sessions.length,
       }),
@@ -73,13 +111,7 @@ function App() {
     }
 
     setLatestSessionBadges([])
-    setActiveSession(
-      createReadingSession(selectedLevel.id, exerciseContent, {
-        materialProgress: progress.materialProgress,
-        sessionIndex: progress.sessions.length,
-      }),
-    )
-    setView('session')
+    startReadingSession(selectedLevel.id)
   }
 
   const rateTask = (rating: SessionRating) => {
@@ -143,17 +175,32 @@ function App() {
           progress={progress}
           onExportProgress={exportProgressBackup}
           onImportProgress={importProgressBackup}
-          onStart={() => setView('levels')}
+          onStart={() => setView('modules')}
           onProgress={() => setView('progress')}
           onReset={() => setView('reset')}
+        />
+      )}
+      {view === 'modules' && (
+        <ModuleChoiceScreen
+          onBack={() => setView('start')}
+          onChooseModule={chooseModule}
+          onProgress={() => setView('progress')}
         />
       )}
       {view === 'levels' && (
         <LevelScreen
           levels={levelOptions}
-          onBack={() => setView('start')}
+          onBack={() => setView('modules')}
           onChooseLevel={chooseLevel}
           onProgress={() => setView('progress')}
+        />
+      )}
+      {view === 'syllabification-mode' && selectedLevel && (
+        <SyllabificationModeScreen
+          level={selectedLevel}
+          selectedMode={selectedSyllabificationMode}
+          onBack={() => setView('levels')}
+          onChooseMode={chooseSyllabificationMode}
         />
       )}
       {view === 'session' && selectedLevel && activeSession && (
@@ -161,7 +208,7 @@ function App() {
           level={selectedLevel}
           session={activeSession}
           earnedBadges={latestSessionBadges}
-          onBack={() => setView('levels')}
+          onBack={() => setView(selectedModule === 'reading' ? 'levels' : 'modules')}
           onRateTask={rateTask}
           onReset={resetCurrentSession}
           onReturnHome={returnHome}
