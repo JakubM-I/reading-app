@@ -40,6 +40,7 @@ Zakres:
 - przygotowac poziomy, sylaby, slowa i zdania;
 - dodac stabilne identyfikatory;
 - dodac reczny podzial slow na sylaby;
+- dodac liczbe sylab i oznaczenie, czy slowo nadaje sie do sylabizowania;
 - dodac prosta walidacje albo test sprawdzajacy poprawnosc struktury danych.
 
 Pliki danych:
@@ -53,6 +54,7 @@ Rezultat:
 
 - aplikacja lub test potrafi wczytac baze cwiczen;
 - kazdy poziom ma opis dla rodzica;
+- slowa przydatne do sylabizowania sa oznaczone w danych;
 - dane nie sa zapisywane w localStorage.
 
 ## Etap 2 - Podstawowy Layout I Nawigacja
@@ -62,7 +64,9 @@ Cel: stworzyc szkielet aplikacji bez pelnego dzialania cwiczen.
 Zakres:
 
 - ekran startowy;
+- wybor modulu: `Sylabizowanie` albo `Czytanie`;
 - wybor poziomu z opisem;
+- wybor trybu pomocy dla sylabizowania;
 - pusty ekran sesji;
 - panel postepow jako placeholder;
 - miejsce na reset danych;
@@ -70,7 +74,7 @@ Zakres:
 
 Rezultat:
 
-- mozna przejsc ze startu do wyboru poziomu i ekranu sesji;
+- mozna przejsc ze startu do wyboru modulu, poziomu i ekranu sesji;
 - UI jest czytelny na MacBooku;
 - aplikacja nadal nie potrzebuje kont ani backendu.
 
@@ -80,7 +84,8 @@ Cel: uruchomic jedna sesje w pamieci aplikacji, bez trwalego zapisu.
 
 Zakres:
 
-- generowanie listy zadan dla wybranego poziomu;
+- generowanie listy zadan dla wybranego modulu i poziomu;
+- brak sesji mieszanych;
 - postep sesji, np. `4 / 10`;
 - przechodzenie miedzy zadaniami;
 - reset biezacej sesji bez zapisu;
@@ -89,12 +94,42 @@ Zakres:
 Rezultat:
 
 - mozna przejsc cala sesje od startu do podsumowania;
+- sesja ma zapisany modul: `syllabification` albo `reading`;
 - punkty sa liczone w pamieci;
 - po odswiezeniu strony postep sesji moze zniknac.
 
-## Etap 4 - Rozgrzewka Liter I Dwuznakow
+## Etap 4 - Modul Sylabizowania
 
-Cel: zaimplementowac pierwszy realny typ zadania.
+Cel: dodac osobny modul cwiczenia podzialu slow na sylaby.
+
+Zakres:
+
+- osobna sesja `Sylabizowanie`;
+- tryby pomocy: `Z pomocą`, `Z podpowiedzią`, `Samodzielnie`;
+- zadanie liczenia sylab;
+- zadanie mowienia slowa sylabami;
+- zadanie ukladania slowa z kafelkow sylab albo wskazywania kolejnych sylab;
+- zadanie wstawiania podzialu sylabowego;
+- krotka sciaga/podpowiedz do sylabizowania;
+- ocena rodzica po kazdym zadaniu.
+
+Uwagi:
+
+- nie dodawac sesji mieszanych;
+- nie dodawac zadania wyboru poprawnego wariantu z kilku odpowiedzi;
+- na start wybierac slowa dwu- i trzysylabowe;
+- podzial slow na sylaby pozostaje reczny, zgodny z danymi JSON.
+
+Rezultat:
+
+- dziecko moze przejsc osobna sesje sylabizowania;
+- rodzic moze wybrac tryb pomocy;
+- zadania licza punkty tak samo jak pozostale;
+- podsumowanie sesji pokazuje oceny i punkty.
+
+## Etap 5 - Rozgrzewka Liter I Dwuznakow
+
+Cel: zaimplementowac pierwszy realny typ zadania w module czytania.
 
 Zakres:
 
@@ -105,11 +140,11 @@ Zakres:
 
 Rezultat:
 
-- rozgrzewka dziala w ramach sesji;
+- rozgrzewka dziala w ramach sesji czytania;
 - rodzic moze ocenic kazde zadanie;
 - podsumowanie sesji pokazuje oceny i punkty.
 
-## Etap 5 - Czytanie Prowadzone
+## Etap 6 - Czytanie Prowadzone
 
 Cel: dodac glowne cwiczenie sylaba -> wyraz -> zdanie.
 
@@ -134,7 +169,7 @@ Rezultat:
 - podzial sylabowy znika przed czytaniem calego wyrazu;
 - rodzic ocenia wykonanie po zadaniu.
 
-## Etap 6 - Budowanie Slow Z Sylab
+## Etap 7 - Budowanie Slow Z Sylab
 
 Cel: dodac aktywne skladanie wyrazu.
 
@@ -160,13 +195,15 @@ Rezultat:
 - aplikacja nie wymaga przeciagania;
 - zadanie liczy punkty tak samo jak pozostale.
 
-## Etap 7 - Lokalny Zapis Postepow
+## Etap 8 - Lokalny Zapis Postepow
 
 Cel: zapisywac zakonczone sesje lokalnie.
 
 Zakres:
 
 - zapis historii sesji w przegladarce;
+- zapis modulu sesji i modulu zadania;
+- zapis trybu pomocy dla zadan sylabizowania;
 - punkty laczne;
 - odznaki progowe;
 - lista trudnych slow;
@@ -175,10 +212,11 @@ Zakres:
 Rezultat:
 
 - po odswiezeniu strony historia i punkty zostaja;
+- historia rozroznia sylabizowanie i czytanie;
 - reset sesji nie zapisuje wyniku;
 - pelny reset usuwa postepy, ale nie baze cwiczen.
 
-## Etap 8 - Panel Postepow
+## Etap 9 - Panel Postepow
 
 Cel: pokazac rodzicowi realny obraz pracy.
 
@@ -189,6 +227,8 @@ Zakres:
 - podsumowanie biezacego miesiaca;
 - punkty laczne;
 - liczba sesji;
+- wspolne podsumowanie obu modulow;
+- opcjonalny spokojny podzial na sesje sylabizowania i czytania;
 - ostatnie trudne slowa;
 - odznaki.
 
@@ -198,7 +238,7 @@ Rezultat:
 - dane moga sluzyc do realnej nagrody poza aplikacja;
 - panel nie wymaga backendu.
 
-## Etap 9 - Eksport I Import Postepow
+## Etap 10 - Eksport I Import Postepow
 
 Cel: zabezpieczyc dane przed utrata.
 
@@ -215,13 +255,14 @@ Rezultat:
 - import odtwarza lokalny zapis;
 - eksport nie zawiera bazy cwiczen.
 
-## Etap 10 - Zamkniecie Bazy I Dopolerowanie MVP
+## Etap 11 - Zamkniecie Bazy I Dopolerowanie MVP
 
 Cel: przygotowac pierwsza wersje do regularnego domowego uzycia.
 
 Zakres:
 
 - rozbudowanie statycznej bazy cwiczen do puli gotowej na regularne sesje domowe;
+- sprawdzenie, czy baza zawiera wystarczajaco slow do sylabizowania;
 - sprawdzenie, czy kolejne sesje tego samego poziomu nie zaczynaja stale od tych samych cwiczen;
 - uwzglednienie historii materialu w generatorze sesji:
   - `Samodzielnie` odsuwa material na pozniej;
@@ -238,6 +279,7 @@ Rezultat:
 
 - aplikacja jest gotowa do pierwszych prawdziwych sesji;
 - baza cwiczen jest wystarczajaca do wielokrotnego wracania do poziomow;
+- sylabizowanie i czytanie pozostaja osobnymi modulami;
 - ponowne przejscie tego samego poziomu korzysta z rotacji materialu i historii ocen;
 - MVP nie zawiera funkcji spoza ustalonego zakresu;
 - dokumentacja zgadza sie z implementacja.
@@ -261,12 +303,13 @@ Kolejne etapy powinny byc realizowane w tej kolejnosci:
 1. Statyczna baza cwiczen JSON.
 2. Layout i nawigacja.
 3. Silnik sesji bez zapisu.
-4. Rozgrzewka.
-5. Czytanie prowadzone.
-6. Budowanie slow.
-7. Lokalny zapis postepow.
-8. Panel postepow.
-9. Eksport/import.
-10. Zamkniecie bazy, rotacji materialu i dopolerowanie MVP.
+4. Modul sylabizowania.
+5. Rozgrzewka.
+6. Czytanie prowadzone.
+7. Budowanie slow.
+8. Lokalny zapis postepow.
+9. Panel postepow.
+10. Eksport/import.
+11. Zamkniecie bazy, rotacji materialu i dopolerowanie MVP.
 
 Nie nalezy laczyc wielu etapow w jedna duza zmiane, chyba ze uzytkownik wyraznie o to poprosi.

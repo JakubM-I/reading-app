@@ -11,6 +11,10 @@ Zasady:
 - trudniejsze dwuznaki wprowadzac pozniej;
 - kazdy poziom musi miec opis dla rodzica;
 - slowa powinny miec recznie sprawdzony podzial na sylaby.
+- do modulu sylabizowania wybierac przede wszystkim slowa dwu- i trzysylabowe;
+- slowa jednosylabowe nie powinny byc glownym materialem sylabizowania;
+- nie tworzyc zadan polegajacych na wyborze poprawnego podzialu z kilku
+  wariantow, bo zwieksza to ryzyko zgadywania.
 
 ## Wielkosc Bazy Docelowej
 
@@ -32,11 +36,16 @@ Liczby sa kierunkiem, nie sztywnym limitem. Lepiej dodawac material stopniowo i
 sprawdzac go recznie, niz szybko wypelnic baze zbyt trudnymi albo malo
 przydatnymi slowami.
 
-Stan bazy MVP po etapie 10:
+Stan bazy MVP po etapie zamykajacym MVP:
 
 - 118 sylab, znakow i elementow do rozgrzewki;
 - 107 slow z recznym podzialem na sylaby;
 - 65 krotkich zdan z pytaniami o sens.
+
+Ta sama baza slow moze zasilac modul czytania i modul sylabizowania, ale zadania
+powinny zapisywac, z ktorego modulu pochodza. Dzieki temu postepy moga byc
+liczone wspolnie, a historia nadal pozwala rozroznic trudnosc w podziale slowa
+od trudnosci w przeczytaniu calego slowa.
 
 Taka pula jest traktowana jako baza gotowa do pierwszego regularnego uzycia.
 Dalsze rozszerzanie powinno byc spokojnym dopisywaniem sprawdzonych elementow,
@@ -57,6 +66,70 @@ Regula dla MVP:
 
 Oznacza to, ze dziecko nie powinno stale widziec slow, ktore czyta juz pewnie.
 Aplikacja ma wracac przede wszystkim do elementow wymagajacych utrwalenia.
+
+Historia powtorek powinna rozrozniac modul zadania. Slowo przeczytane
+samodzielnie w module czytania nie musi automatycznie oznaczac, ze dziecko umie
+samodzielnie wskazac jego podzial na sylaby. Analogicznie slowo dobrze
+podzielone na sylaby nie musi oznaczac plynnego przeczytania calego slowa.
+
+## Material Do Sylabizowania
+
+Modul sylabizowania korzysta przede wszystkim z `words.json`, czyli slow z
+recznie sprawdzonym podzialem na sylaby.
+
+Na start najlepiej wybierac:
+
+- slowa dwusylabowe o prostym podziale, np. `ma-ma`, `la-to`, `ko-ło`;
+- slowa trzysylabowe o czytelnym rytmie, np. `o-po-na`, `ra-kie-ta`;
+- slowa z dwuznakami dopiero po utrwaleniu prostych slow;
+- slowa znane dziecku i zgodne z motywem albo codziennym kontekstem.
+
+Unikac na poczatku:
+
+- slow jednosylabowych, np. `tor`, `dom`, `most`;
+- trudnych grup spolglosek;
+- slow z niejednoznacznym podzialem;
+- slow, w ktorych `i` moze byc mylace dla dziecka.
+
+Dane slowa moga zawierac dodatkowe pola pomocne dla sylabizowania:
+
+- `syllableCount`: liczba sylab;
+- `syllabificationLevel`: orientacyjna trudnosc podzialu;
+- `syllabificationTags`: tagi, np. `proste`, `dwuznak`, `i-zmiekczajace`;
+- `allowedSyllableSplits`: dopuszczalne reczne warianty podzialu, jesli sa potrzebne;
+- `suitableForSyllabification`: czy slowo nadaje sie do zadan sylabizowania.
+
+W MVP podzial na sylaby pozostaje reczny. Automatyczne dzielenie slow nie jest
+czescia MVP.
+
+## Tryby Pomocy W Sylabizowaniu
+
+### Z Pomoca
+
+Material pokazuje pelny podzial slowa, np. `ra-kie-ta`. Celem jest spokojne
+powiedzenie slowa sylabami i potem calosciowo.
+
+Podpowiedz moze byc widoczna od razu, np.:
+
+- `Każda część ma samogłoskę.`
+- `Powiedz słowo powoli.`
+
+### Z Podpowiedzia
+
+Material pokazuje czesciowa pomoc, np.:
+
+- liczbe sylab;
+- puste miejsca na sylaby;
+- pierwsze miejsce podzialu;
+- krotka sciage pod zadaniem.
+
+Przyklad: `rakieta`, podpowiedz `3 sylaby`.
+
+### Samodzielnie
+
+Dziecko widzi caly wyraz i samo wskazuje miejsca podzialu. Podpowiedz powinna
+byc dostepna, ale schowana, aby rodzic mogl jej uzyc dopiero wtedy, gdy jest
+potrzebna.
 
 ## Poziomy
 

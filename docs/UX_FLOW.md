@@ -10,6 +10,8 @@ Podstawowe zasady:
 - widoczny postep sesji;
 - jasny przycisk resetu biezacej sesji;
 - panel rodzica oddzielony od obszaru dziecka;
+- wybor modulu po starcie sesji: `Sylabizowanie` albo `Czytanie`;
+- brak sesji mieszanych w MVP;
 - brak rozpraszajacych animacji;
 - teksty krotkie i konkretne.
 
@@ -25,6 +27,17 @@ Zawiera:
 - eksport/import postepow;
 - wejscie do resetu danych.
 
+### Wybor Modulu
+
+Po kliknieciu rozpoczecia sesji rodzic wybiera, co dziecko cwiczy:
+
+- `Sylabizowanie`;
+- `Czytanie`.
+
+Nie ma trybu mieszanego w MVP. Tego samego dnia mozna wykonac dwie osobne
+sesje, np. najpierw sylabizowanie, a potem czytanie. Podsumowania i punkty sa
+liczone wspolnie.
+
 ### Wybor Poziomu
 
 Rodzic wybiera poziom recznie. Przy kazdym poziomie aplikacja pokazuje krotki opis.
@@ -36,9 +49,25 @@ Przyklad:
 - `Poziom 3 - dwuznaki`: utrwalanie `ch`, `sz`, `cz`, `rz`.
 - `Poziom 4 - trudniejsze dwuznaki`: `dz`, `dź`, `dż`.
 
+W module sylabizowania rodzic wybiera takze tryb pomocy:
+
+- `Z pomocą`;
+- `Z podpowiedzią`;
+- `Samodzielnie`.
+
 ### Sesja
 
-Kazda sesja ma staly schemat:
+Kazda sesja ma staly schemat w ramach wybranego modulu.
+
+Sesja sylabizowania:
+
+1. Liczenie sylab.
+2. Mowienie slowa sylabami.
+3. Ukladanie albo wskazywanie sylab.
+4. Wstawianie podzialu.
+5. Podsumowanie.
+
+Sesja czytania:
 
 1. Rozgrzewka.
 2. Czytanie prowadzone.
@@ -49,10 +78,58 @@ Kazda sesja ma staly schemat:
 Na ekranie sesji widoczne sa:
 
 - numer zadania, np. `4 / 10`;
+- wybrany modul;
 - aktualny typ zadania;
 - obszar cwiczenia;
 - sekcja oceny rodzica;
 - reset biezacej sesji.
+
+### Sylabizowanie
+
+Modul sylabizowania uczy dziecko wskazywania, ile czesci ma slowo i gdzie sa
+granice sylab. Nie zastepuje modulu czytania i nie miesza sie z nim w jednej
+sesji.
+
+Tryby:
+
+- `Z pomocą`: pelny podzial jest widoczny, np. `ra-kie-ta`;
+- `Z podpowiedzią`: widoczna jest czesciowa pomoc, np. liczba sylab albo jedno
+  miejsce podzialu;
+- `Samodzielnie`: dziecko widzi caly wyraz i samo wskazuje podzial.
+
+Typy zadan:
+
+- policz sylaby;
+- powiedz slowo sylabami;
+- uloz slowo z kafelkow sylab;
+- wstaw kreski podzialu w slowie.
+
+Przyklad zadania z podpowiedzia:
+
+- slowo: `rakieta`;
+- podpowiedz: `3 sylaby`;
+- dziecko wskazuje podzial: `ra-kie-ta`;
+- rodzic ocenia wykonanie.
+
+Nie dodajemy zadania z wyborem poprawnego wariantu z kilku odpowiedzi, bo moze
+prowadzic do zgadywania.
+
+#### Podpowiedz Do Sylabizowania
+
+Podpowiedz ma byc krotka i spokojna. Moze miec forme malej sciagi dla rodzica i
+dziecka.
+
+Przyklady:
+
+- `Znajdź samogłoski.`
+- `Zwykle jedna sylaba ma jedną samogłoskę.`
+- `Powiedz słowo powoli.`
+- `Dwuznak trzyma się razem.`
+- `Nie każde i robi osobną sylabę.`
+
+W trybie `Z pomocą` podpowiedz moze byc widoczna. W trybie `Z podpowiedzią`
+moze byc pokazana pod zadaniem. W trybie `Samodzielnie` powinna byc schowana
+pod przyciskiem `Podpowiedź`.
 
 ### Rozgrzewka
 

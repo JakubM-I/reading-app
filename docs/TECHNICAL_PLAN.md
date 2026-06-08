@@ -22,6 +22,7 @@ Planowany stos:
 Przyszla aplikacja powinna logicznie rozdzielac:
 
 - dane cwiczen;
+- wybor modulu cwiczen;
 - stan biezacej sesji;
 - zapis postepow;
 - komponenty zadan;
@@ -32,7 +33,7 @@ Przyszla aplikacja powinna logicznie rozdzielac:
 Przykladowe obszary:
 
 - `content`: sylaby, slowa, zdania, poziomy;
-- `session`: generowanie i prowadzenie sesji;
+- `session`: generowanie i prowadzenie sesji dla wybranego modulu;
 - `progress`: punkty, historia, podsumowania;
 - `components`: ekrany i elementy UI;
 - `storage`: zapis i odczyt danych lokalnych.
@@ -48,8 +49,11 @@ Minimalne typy danych:
 - poziom trudnosci;
 - sylaba;
 - wyraz z recznym podzialem na sylaby;
+- liczba sylab w wyrazie;
+- przydatnosc wyrazu do modulu sylabizowania;
 - zdanie;
 - pytanie o sens;
+- modul zadania: `syllabification` albo `reading`;
 - typ zadania;
 - tagi trudnosci, np. `dwuznak`, `dz`, `pojazdy`.
 
@@ -59,16 +63,29 @@ Rekomendowany podzial plikow JSON:
 
 - `levels.json`: poziomy, opisy dla rodzica i kolejnosc trudnosci;
 - `syllables.json`: sylaby i dwuznaki do rozgrzewki;
-- `words.json`: slowa, podzial na sylaby, poziomy i tagi;
+- `words.json`: slowa, podzial na sylaby, liczba sylab, poziomy i tagi;
 - `sentences.json`: zdania, pytania o sens i powiazane slowa.
 
 Bazy cwiczen nie nalezy zapisywac w localStorage. Reset postepow nie moze jej usuwac.
+
+Modul sylabizowania powinien korzystac z recznego podzialu slow w `words.json`.
+Automatyczne dzielenie slow na sylaby nie jest czescia MVP.
+
+Przydatne pola dla slow:
+
+- `syllableCount`;
+- `syllabificationLevel`;
+- `syllabificationTags`;
+- `allowedSyllableSplits`;
+- `suitableForSyllabification`.
 
 ## Stan Sesji
 
 Biezaca sesja powinna przechowywac:
 
+- wybrany modul: `syllabification` albo `reading`;
 - wybrany poziom;
+- wybrany tryb pomocy, jesli jest to sesja sylabizowania;
 - liste zadan;
 - indeks aktualnego zadania;
 - czastkowe oceny;
@@ -76,6 +93,9 @@ Biezaca sesja powinna przechowywac:
 - informacje, czy sesja zostala zakonczona.
 
 Reset biezacej sesji usuwa tylko stan tej sesji i nie zapisuje jej w historii.
+
+Nie tworzymy sesji mieszanych w MVP. Po starcie rodzic wybiera modul, a
+generator przygotowuje zadania tylko dla tego modulu.
 
 ## Dobor Zadan I Powtorki
 
@@ -94,6 +114,9 @@ Jesli w wybranym poziomie brakuje nowego materialu, generator moze dobrac
 material z wczesniejszych poziomow albo powtorzyc elementy wymagajace utrwalenia.
 Nie powinien jednak stale powtarzac elementow, ktore dziecko czyta samodzielnie.
 
+Historia powtorek powinna rozrozniac modul. Ten sam wyraz moze miec osobny
+status w module sylabizowania i osobny status w module czytania.
+
 ## Zapis Postepow
 
 Na MVP wystarczy lokalny zapis w przegladarce, ale musi istniec eksport/import jako kopia zapasowa.
@@ -102,6 +125,7 @@ Zapis obejmuje:
 
 - historie zakonczonych sesji;
 - historie ocen dla materialu, aby generator mogl decydowac o powtorkach;
+- modul sesji i modul zadania;
 - punkty laczne;
 - odznaki;
 - trudne slowa;
@@ -118,6 +142,7 @@ Eksport tworzy plik JSON z lokalnymi postepami. Plik powinien zawierac:
 - wersje formatu eksportu;
 - date eksportu;
 - historie sesji;
+- modul sesji i modul zadan w historii;
 - punkty laczne;
 - odznaki;
 - trudne slowa;
@@ -160,10 +185,14 @@ Wymagania pod przyszly deploy:
 Minimalny zestaw testow/scenariuszy:
 
 - start sesji z wybranym poziomem;
+- wybor modulu `Sylabizowanie`;
+- wybor modulu `Czytanie`;
+- przejscie sesji sylabizowania bez mieszania jej z czytaniem;
 - przejscie calej sesji;
 - naliczanie punktow dla wszystkich ocen;
 - `Pomiń` daje 0 punktow;
 - trudne zadania trafiaja do historii;
+- historia zadan zapisuje modul;
 - zapis sesji pojawia sie w podsumowaniach;
 - eksport postepow tworzy plik JSON;
 - import postepow odtwarza lokalny zapis;
