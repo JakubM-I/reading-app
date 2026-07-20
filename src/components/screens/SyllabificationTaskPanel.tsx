@@ -49,10 +49,10 @@ export function SyllabificationTaskPanel({
     task.kind === 'syllable-build' ||
     task.kind === 'syllable-split'
   const countOptions = getSyllableCountOptions(content.syllableCount)
-  const availableTileIndexes = content.syllables
+  const availableTileIndexes = content.tiles
     .map((_, index) => index)
     .filter((index) => !selectedTileIndexes.includes(index))
-  const selectedSyllables = selectedTileIndexes.map((index) => content.syllables[index])
+  const selectedSyllables = selectedTileIndexes.map((index) => content.tiles[index].text)
   const expectedSplitIndexes = getExpectedSplitIndexes(content.syllables)
   const isSplitCorrect =
     splitIndexes.length === expectedSplitIndexes.length &&
@@ -178,13 +178,13 @@ export function SyllabificationTaskPanel({
               <button
                 type="button"
                 className="word-tile"
-                key={`${content.syllables[index]}-${index}`}
+                key={content.tiles[index].id}
                 disabled={isReadyForRating}
                 onClick={() =>
                   setSelectedTileIndexes((currentIndexes) => [...currentIndexes, index])
                 }
               >
-                {content.syllables[index]}
+                {content.tiles[index].text}
               </button>
             ))}
           </div>

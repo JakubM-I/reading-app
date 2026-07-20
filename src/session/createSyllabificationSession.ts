@@ -50,8 +50,12 @@ export const createSyllabificationSession = (
   )
 
   const selectedWords = takeLooped(words, SESSION_TASK_SEQUENCE.length)
+  const buildWords = prioritizeDistinctSyllableWords(words)
   const tasks = SESSION_TASK_SEQUENCE.map((kind, index): SessionTask => {
-    const word = selectedWords[index]
+    const word =
+      kind === 'syllable-build'
+        ? takeLooped(buildWords, 1)[0]
+        : selectedWords[index]
 
     if (!word) {
       return createFallbackTask(kind, index, supportMode)
@@ -89,6 +93,7 @@ const createSyllabificationTask = (
   syllabification: {
     word: word.text,
     syllables: word.syllables,
+    tiles: buildSyllableTiles(word.syllables),
     syllableCount: word.syllableCount,
     supportMode,
     revealedSplit: getRevealedSplit(word, supportMode),
@@ -112,6 +117,7 @@ const createFallbackTask = (
   syllabification: {
     word: '',
     syllables: [],
+    tiles: [],
     syllableCount: 0,
     supportMode,
   },
@@ -278,4 +284,25 @@ const takeLooped = <Item,>(items: readonly Item[], count: number): Item[] => {
   }
 
   return Array.from({ length: count }, (_, index) => items[index % items.length])
+}
+
+const prioritizeDistinctSyllableWords = (words: readonly ContentWord[]) => [
+  ...words.filter(hasDistinctSyllables),
+  ...words.filter((word) => !hasDistinctSyllables(word)),
+]
+
+const hasDistinctSyllables = (word: ContentWord) =>
+  new Set(word.syllables).size > 1
+
+const buildSyllableTiles = (syllables: string[]) => {
+  const tiles = syllables.map((text, index) => ({
+    id: `tile-${index + 1}`,
+    text,
+  }))
+
+  if (tiles.length < 2) {
+    return tiles
+  }
+
+  return [...tiles.slice(1), tiles[0]]
 }
