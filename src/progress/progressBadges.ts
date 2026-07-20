@@ -7,11 +7,11 @@ interface BadgeThreshold {
 }
 
 export const badgeThresholds: BadgeThreshold[] = [
-  { id: 'first-ride', label: 'Pierwszy przejazd', pointsRequired: 10 },
-  { id: 'training-driver', label: 'Kierowca treningowy', pointsRequired: 25 },
-  { id: 'track-master', label: 'Mistrz toru', pointsRequired: 50 },
-  { id: 'super-mechanic', label: 'Super mechanik', pointsRequired: 100 },
-  { id: 'garage-legend', label: 'Legenda garażu', pointsRequired: 200 },
+  { id: 'first-ride', label: 'Pierwszy przejazd', pointsRequired: 110 },
+  { id: 'training-driver', label: 'Kierowca treningowy', pointsRequired: 320 },
+  { id: 'track-master', label: 'Mistrz toru', pointsRequired: 640 },
+  { id: 'super-mechanic', label: 'Super mechanik', pointsRequired: 1020 },
+  { id: 'garage-legend', label: 'Legenda garażu', pointsRequired: 1450 },
 ]
 
 export const getEarnedBadges = (

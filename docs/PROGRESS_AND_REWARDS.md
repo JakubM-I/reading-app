@@ -30,12 +30,41 @@ Dostepne oceny:
 
 Zasady:
 
-- `Samodzielnie`: 2 punkty, czyli 1 punkt za probe + 1 punkt bonusowy.
-- `Z pomocą`: 1 punkt za probe.
-- `Trudne`: 1 punkt za probe, a zadanie trafia do czestszych powtorek.
+- kazde zadanie ma wartosc bazowa zalezna od modulu, poziomu i typu zadania;
+- `Samodzielnie`: pelna wartosc bazowa zadania;
+- `Z pomocą`: wartosc bazowa minus 1 punkt, ale zawsze minimum 1 punkt;
+- `Trudne`: 1 punkt za probe, a zadanie trafia do czestszych powtorek;
 - `Pomiń`: 0 punktow.
 
-Punktacja ma byc jasno pokazana w podsumowaniu sesji.
+Punktacja ma byc jasno pokazana w panelu rodzica i w podsumowaniu sesji.
+Dziecko powinno widziec przede wszystkim spokojny postep, bez tonu testu i bez
+presji na perfekcyjny wynik.
+
+### Wartosc Zadan W Module Czytania
+
+Wartosc ponizej oznacza liczbe punktow za ocene `Samodzielnie`.
+
+| Typ zadania | Poziom 1 | Poziom 2 | Poziom 3 | Poziom 4 |
+| --- | ---: | ---: | ---: | ---: |
+| Rozgrzewka | 1 | 1 | 1 | 2 |
+| Czytanie prowadzone | 1 | 2 | 3 | 4 |
+| Budowanie slowa | 2 | 2 | 4 | 5 |
+| Zdanie i pytanie | 2 | 3 | 5 | 7 |
+
+### Wartosc Zadan W Module Sylabizowania
+
+Wartosc ponizej oznacza liczbe punktow za ocene `Samodzielnie`.
+
+| Tryb pomocy | Poziom 1 | Poziom 2 | Poziom 3 | Poziom 4 |
+| --- | ---: | ---: | ---: | ---: |
+| Z pomocą | 1 | 1 | 2 | 2 |
+| Z podpowiedzią | 2 | 2 | 3 | 4 |
+| Samodzielnie | 2 | 3 | 4 | 5 |
+
+Takie ustawienie pozwala zbierac punkty rowniez wtedy, gdy jednego dnia dziecko
+zrobi tylko sylabizowanie albo tylko czytanie. Docelowy rytm pracy nadal zaklada
+regularne wykonywanie obu modulow, ale aplikacja nie blokuje nagrod czasowo i
+nie wymaga idealnej symetrii kazdego dnia.
 
 ## Wplyw Oceny Na Powtorki
 
@@ -58,13 +87,16 @@ kiedy wrocic nizej i kiedy sprobowac trudniej.
 
 Odznaki sa progowe i spokojne. Nie powinny wymagac perfekcji.
 
-Przykladowe progi:
+Progi sa skalibrowane pod okolo 5 tygodni regularnej pracy, zwykle minimum jedna
+krotka sesja sylabizowania i jedna krotka sesja czytania w dniu cwiczen. Odznaki
+nie sa jednak blokowane kalendarzem: mozna zdobyc je szybciej albo wolniej,
+zaleznie od rytmu domowej pracy, poziomu trudnosci i ocen rodzica.
 
-- 10 punktow: `Pierwszy przejazd`;
-- 25 punktow: `Kierowca treningowy`;
-- 50 punktow: `Mistrz toru`;
-- 100 punktow: `Super mechanik`;
-- 200 punktow: `Legenda garażu`.
+- 110 punktow: `Pierwszy przejazd`;
+- 320 punktow: `Kierowca treningowy`;
+- 640 punktow: `Mistrz toru`;
+- 1020 punktow: `Super mechanik`;
+- 1450 punktow: `Legenda garażu`.
 
 Nazwy moga zostac dopracowane pozniej, ale musza pozostac generyczne i bez marek.
 

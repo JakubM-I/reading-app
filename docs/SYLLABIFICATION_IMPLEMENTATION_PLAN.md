@@ -28,7 +28,7 @@ Najwazniejsze zalozenia:
 ## Ograniczenia Wdrozenia
 
 - Nie wprowadzac backendu, kont, synchronizacji, AI ani rozpoznawania mowy.
-- Nie zmieniac zasad punktacji ani nazw ocen rodzica.
+- Nie zmieniac nazw ocen rodzica.
 - Nie zmieniac designu istniejacych ekranow.
 - Nie przebudowywac obecnego modulu czytania.
 - Nowy ekran lub panel musi korzystac z ogolnej budowy istniejacych ekranow.
@@ -232,24 +232,20 @@ Rezultat:
 
 ### Etap 6 - Podsumowania
 
-Cel: pokazywac wspolny obraz pracy bez wprowadzania nowego systemu punktow.
+Cel: pokazywac wspolny obraz pracy z jednym systemem punktow dla obu modulow.
 
 Zakres:
 
 - punkty liczyc wspolnie dla obu modulow;
-- odznaki liczyc wedlug obecnych progow;
+- punkty naliczac wedlug modulu, poziomu, typu zadania i trybu pomocy;
+- odznaki liczyc wedlug wspolnych progow opisanych w
+  `docs/PROGRESS_AND_REWARDS.md`;
 - podsumowania dnia, tygodnia i miesiaca obejmuja oba moduly;
 - ewentualny podzial na moduly pokazac tylko pomocniczo.
 
 Zasady:
 
-- nie zmieniac punktacji:
-  - `Samodzielnie`: 2 punkty;
-  - `Z pomocą`: 1 punkt;
-  - `Trudne`: 1 punkt;
-  - `Pomiń`: 0 punktow;
 - nie zmieniac nazw ocen;
-- nie zmieniac progow odznak;
 - nie przebudowywac panelu postepow bez osobnej decyzji.
 
 Rezultat:
@@ -341,4 +337,3 @@ Kryteria akceptacji calego modulu:
   podstawowym wdrozeniem.
 - Dokument wskazuje, ze kolejne etapy beda inicjowane recznie.
 - `git diff --check` przechodzi czysto.
-

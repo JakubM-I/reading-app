@@ -193,7 +193,7 @@ Rezultat:
 
 - dziecko moze zbudowac wyraz z kafelkow;
 - aplikacja nie wymaga przeciagania;
-- zadanie liczy punkty tak samo jak pozostale.
+- zadanie liczy punkty zgodnie ze wspolnym systemem punktacji.
 
 ## Etap 8 - Lokalny Zapis Postepow
 
