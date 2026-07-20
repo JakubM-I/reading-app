@@ -75,6 +75,7 @@ export const createReadingSession = (
   const warmupTasks = takeLooped(syllables, SESSION_TASK_COUNT.warmup).map(
     (syllable, index): SessionTask => ({
       id: `warmup-${index + 1}-${syllable.id}`,
+      module: 'reading',
       kind: 'warmup',
       title: 'Rozgrzewka',
       prompt: 'Przeczytaj na głos.',
@@ -90,6 +91,7 @@ export const createReadingSession = (
 
     return {
       id: `guided-${index + 1}-${word.id}`,
+      module: 'reading',
       kind: 'guided-reading',
       title: 'Czytanie prowadzone',
       prompt: 'Czytaj po kolei.',
@@ -114,6 +116,7 @@ export const createReadingSession = (
   ).map(
     (word, index): SessionTask => ({
       id: `build-${index + 1}-${word.id}`,
+      module: 'reading',
       kind: 'word-building',
       title: 'Budowanie słowa',
       prompt: 'Ułóż słowo z części.',
@@ -132,6 +135,7 @@ export const createReadingSession = (
   const sentenceTasks = takeLooped(sentences, SESSION_TASK_COUNT.sentence).map(
     (sentence, index): SessionTask => ({
       id: `sentence-${index + 1}-${sentence.id}`,
+      module: 'reading',
       kind: 'sentence-comprehension',
       title: 'Zdanie i pytanie',
       prompt: 'Przeczytaj zdanie i odpowiedz ustnie.',
@@ -144,6 +148,7 @@ export const createReadingSession = (
 
   return {
     id: `session-${levelId}-${Date.now()}`,
+    module: 'reading',
     levelId,
     tasks: [
       ...warmupTasks,

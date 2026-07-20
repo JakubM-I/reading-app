@@ -41,7 +41,7 @@ export function StartScreen({
         </div>
         <nav className="start-nav" aria-label="Nawigacja startowa">
           <button type="button" className="secondary-button" onClick={onStart}>
-            Poziomy
+            Sesja
           </button>
           <button type="button" className="secondary-button" onClick={onProgress}>
             Postępy

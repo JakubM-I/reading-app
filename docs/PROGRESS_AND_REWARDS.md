@@ -4,6 +4,15 @@
 
 Punkty maja wspierac motywacje poza aplikacja. Nie sa testem i nie powinny budowac presji. Najwazniejsze jest nagradzanie udzialu w sesji oraz samodzielnosci.
 
+Punkty i odznaki sa wspolne dla obu modulow MVP:
+
+- `Sylabizowanie`;
+- `Czytanie`.
+
+Dziecko moze wykonac jednego dnia osobna sesje sylabizowania i osobna sesje
+czytania. Obie sesje zwiekszaja te same punkty laczne i sa widoczne w tych
+samych podsumowaniach.
+
 ## Oceny Zadania
 
 Rodzic ocenia kazde zadanie w sekcji:
@@ -66,7 +75,9 @@ Postepy sa zapisywane lokalnie w przegladarce. Baza cwiczen nie jest zapisywana 
 Kazda zapisana sesja powinna zawierac:
 
 - date i godzine zakonczenia;
+- modul sesji: `syllabification` albo `reading`;
 - wybrany poziom;
+- wybrany tryb pomocy, jesli byla to sesja sylabizowania;
 - liczbe zadan;
 - zdobyte punkty;
 - liczbe ocen `Samodzielnie`;
@@ -78,15 +89,22 @@ Kazda zapisana sesja powinna zawierac:
 
 Kazde zadanie w historii moze zawierac:
 
+- modul zadania;
 - typ zadania;
 - identyfikator materialu;
 - slowo lub zdanie;
+- tryb pomocy, jesli dotyczy;
 - ocene rodzica;
 - zdobyte punkty.
 
 Dodatkowo zapis powinien pozwalac ustalic status materialu dla generatora
 powtorek, np. czy dany wyraz byl ostatnio przeczytany samodzielnie, z pomoca,
 oznaczony jako trudny albo pominiety.
+
+Status materialu powinien rozrozniac modul zadania. Ten sam wyraz moze miec
+osobna historie dla sylabizowania i osobna historie dla czytania. Dzieki temu
+aplikacja nie uzna automatycznie, ze dziecko umie czytac slowo tylko dlatego,
+ze umie je podzielic na sylaby, ani odwrotnie.
 
 ## Podsumowanie Dnia
 
@@ -98,6 +116,10 @@ Pokazuje:
 - ile bylo samodzielnych odpowiedzi;
 - trudne slowa z dzisiaj.
 
+Podsumowanie dnia laczy wyniki z obu modulow. Jezeli potrzebny jest podzial
+szczegolowy, powinien byc pomocny dla rodzica, np. liczba sesji sylabizowania i
+liczba sesji czytania.
+
 ## Podsumowanie Tygodnia
 
 Pokazuje:
@@ -107,6 +129,10 @@ Pokazuje:
 - dni z wykonana sesja;
 - najczesciej trudne slowa;
 - zdobyte odznaki.
+
+Najczesciej trudne slowa moga byc pokazywane lacznie albo z oznaczeniem modulu,
+jesli to pomaga rodzicowi odroznic trudnosc w sylabizowaniu od trudnosci w
+czytaniu.
 
 MVP liczy tydzien jako biezacy tydzien kalendarzowy i opisuje ten zakres w UI.
 
@@ -139,7 +165,7 @@ MVP powinno pozwalac rodzicowi wykonac kopie zapasowa postepow.
 Eksport:
 
 - pobiera plik JSON z lokalnymi postepami;
-- zawiera historie sesji, punkty, odznaki i trudne slowa;
+- zawiera historie sesji, modul zadan, punkty, odznaki i trudne slowa;
 - nie zawiera bazy cwiczen.
 
 Import:

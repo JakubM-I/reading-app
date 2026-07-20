@@ -11,6 +11,9 @@ export interface ContentLevel {
   name: string
   parentDescription: string
   focus: string[]
+  syllabificationName?: string
+  syllabificationDescription?: string
+  syllabificationFocus?: string[]
 }
 
 export interface ContentSyllable {
@@ -26,6 +29,9 @@ export interface ContentWord {
   levelId: LevelId
   text: string
   syllables: string[]
+  syllableCount: number
+  suitableForSyllabification: boolean
+  syllabificationTags?: string[]
   tags: string[]
 }
 

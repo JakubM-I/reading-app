@@ -10,8 +10,17 @@ export type SessionTaskKind =
   | 'guided-reading'
   | 'word-building'
   | 'sentence-comprehension'
+  | 'syllable-count'
+  | 'syllable-say'
+  | 'syllable-build'
+  | 'syllable-split'
 
 export type SessionRating = 'independent' | 'with-help' | 'hard' | 'skip'
+export type SessionModule = 'reading' | 'syllabification'
+export type SyllabificationSupportMode =
+  | 'full-help'
+  | 'partial-help'
+  | 'independent'
 
 export interface RatingOption {
   value: SessionRating
@@ -37,8 +46,17 @@ export interface WordBuildingTaskContent {
   tiles: WordBuildingTile[]
 }
 
+export interface SyllabificationTaskContent {
+  word: string
+  syllables: string[]
+  syllableCount: number
+  supportMode: SyllabificationSupportMode
+  revealedSplit?: string[]
+}
+
 export interface SessionTask {
   id: string
+  module: SessionModule
   kind: SessionTaskKind
   title: string
   prompt: string
@@ -48,6 +66,7 @@ export interface SessionTask {
   reviewText?: string
   guidedReading?: GuidedReadingTaskContent
   wordBuilding?: WordBuildingTaskContent
+  syllabification?: SyllabificationTaskContent
 }
 
 export interface SessionAnswer {
@@ -58,6 +77,7 @@ export interface SessionAnswer {
 
 export interface ReadingSession {
   id: string
+  module: SessionModule
   levelId: ContentLevel['id']
   tasks: SessionTask[]
   currentTaskIndex: number
