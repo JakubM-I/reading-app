@@ -25,7 +25,6 @@ export type SyllabificationSupportMode =
 export interface RatingOption {
   value: SessionRating
   label: string
-  points: number
 }
 
 export interface GuidedReadingTaskContent {
@@ -90,6 +89,7 @@ export interface SessionSummary {
   totalTasks: number
   totalPoints: number
   counts: Record<SessionRating, number>
+  pointsByRating: Record<SessionRating, number>
   difficultTasks: string[]
   skippedTasks: string[]
 }

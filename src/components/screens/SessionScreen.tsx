@@ -11,6 +11,7 @@ import type { ContentLevel } from '../../content/contentTypes'
 import type { ProgressBadge } from '../../progress'
 import {
   getCurrentTask,
+  getTaskRatingPoints,
   ratingOptions,
   type ReadingSession,
   type SessionRating,
@@ -175,7 +176,12 @@ export function SessionScreen({
                         />
                         {option.label}
                       </span>
-                      <span>{option.points} pkt</span>
+                      <span>
+                        {currentTask
+                          ? getTaskRatingPoints(currentTask, session.levelId, option.value)
+                          : 0}{' '}
+                        pkt
+                      </span>
                     </button>
                   ))}
                 </div>

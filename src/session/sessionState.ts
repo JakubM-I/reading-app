@@ -1,4 +1,4 @@
-import { getRatingPoints } from './sessionScoring'
+import { getTaskRatingPoints } from './sessionScoring'
 import type {
   ReadingSession,
   SessionRating,
@@ -24,7 +24,7 @@ export const rateCurrentTask = (
     {
       taskId: currentTask.id,
       rating,
-      points: getRatingPoints(rating),
+      points: getTaskRatingPoints(currentTask, session.levelId, rating),
     },
   ]
   const isCompleted = answers.length >= session.tasks.length
@@ -49,9 +49,16 @@ export const getSessionSummary = (session: ReadingSession): SessionSummary => {
   }
   const difficultTasks: string[] = []
   const skippedTasks: string[] = []
+  const pointsByRating: SessionSummary['pointsByRating'] = {
+    independent: 0,
+    'with-help': 0,
+    hard: 0,
+    skip: 0,
+  }
 
   for (const answer of session.answers) {
     counts[answer.rating] += 1
+    pointsByRating[answer.rating] += answer.points
 
     const task = taskById.get(answer.taskId)
     const reviewText = task?.reviewText ?? task?.displayText
@@ -69,6 +76,7 @@ export const getSessionSummary = (session: ReadingSession): SessionSummary => {
     totalTasks: session.tasks.length,
     totalPoints: session.answers.reduce((sum, answer) => sum + answer.points, 0),
     counts,
+    pointsByRating,
     difficultTasks,
     skippedTasks,
   }

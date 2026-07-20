@@ -189,7 +189,8 @@ Minimalny zestaw testow/scenariuszy:
 - wybor modulu `Czytanie`;
 - przejscie sesji sylabizowania bez mieszania jej z czytaniem;
 - przejscie calej sesji;
-- naliczanie punktow dla wszystkich ocen;
+- naliczanie punktow dla wszystkich ocen z uwzglednieniem modulu, poziomu,
+  typu zadania i trybu pomocy;
 - `Pomiń` daje 0 punktow;
 - trudne zadania trafiaja do historii;
 - historia zadan zapisuje modul;

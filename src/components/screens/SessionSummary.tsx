@@ -52,9 +52,7 @@ export function SessionSummary({
             <div key={option.value}>
               <span>{ratingLabels[option.value]}</span>
               <strong>{summary.counts[option.value]}</strong>
-              <small>
-                {summary.counts[option.value] * option.points} pkt
-              </small>
+              <small>{summary.pointsByRating[option.value]} pkt</small>
             </div>
           ))}
         </div>
