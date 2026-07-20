@@ -49,6 +49,7 @@ export interface WordBuildingTaskContent {
 export interface SyllabificationTaskContent {
   word: string
   syllables: string[]
+  tiles: WordBuildingTile[]
   syllableCount: number
   supportMode: SyllabificationSupportMode
   revealedSplit?: string[]
