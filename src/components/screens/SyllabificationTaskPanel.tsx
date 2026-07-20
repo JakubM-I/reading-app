@@ -34,12 +34,18 @@ export function SyllabificationTaskPanel({
   }
 
   const isIndependentMode = content.supportMode === 'independent'
+  const isPartialHelpMode = content.supportMode === 'partial-help'
   const usesIndependentCountCheck =
     task.kind === 'syllable-count' && isIndependentMode
+  const usesPartialHelpCountCheck =
+    task.kind === 'syllable-count' && isPartialHelpMode
   const usesIndependentSayCheck = task.kind === 'syllable-say' && isIndependentMode
+  const usesPartialHelpSayCheck = task.kind === 'syllable-say' && isPartialHelpMode
   const isInteractive =
     usesIndependentCountCheck ||
+    usesPartialHelpCountCheck ||
     usesIndependentSayCheck ||
+    usesPartialHelpSayCheck ||
     task.kind === 'syllable-build' ||
     task.kind === 'syllable-split'
   const countOptions = getSyllableCountOptions(content.syllableCount)
@@ -212,12 +218,16 @@ export function SyllabificationTaskPanel({
         </p>
       )}
 
-      {(content.revealedSplit || (isReadyForRating && isIndependentMode)) && (
+      {(content.revealedSplit ||
+        (isReadyForRating &&
+          (isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck))) && (
         <div className="guided-syllables" aria-label="Podpowiedź sylab">
-          {(content.revealedSplit ?? content.syllables).map((syllable, index) => (
-            <span key={`${syllable || 'blank'}-${index}`}>
-              {syllable || '...'}
-            </span>
+          {getVisibleSplit(content.syllables, content.revealedSplit, {
+            isReadyForRating,
+            shouldRevealFullSplit:
+              isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck,
+          }).map((syllable, index) => (
+            <span key={`${syllable || 'blank'}-${index}`}>{syllable || '...'}</span>
           ))}
         </div>
       )}
@@ -249,7 +259,9 @@ export function SyllabificationTaskPanel({
 
       {isInteractive && (
         <div className="word-building-actions">
-          {!usesIndependentSayCheck && (
+          {!usesIndependentSayCheck &&
+            !usesPartialHelpSayCheck &&
+            !usesPartialHelpCountCheck && (
             <button
               type="button"
               className="secondary-button"
@@ -284,20 +296,24 @@ export function SyllabificationTaskPanel({
               isReadyForRating ||
               (usesIndependentCountCheck
                 ? selectedSyllableCount === null
-                : usesIndependentSayCheck
+                : usesPartialHelpCountCheck
                   ? false
-                  : task.kind === 'syllable-build'
-                  ? selectedTileIndexes.length !== content.syllables.length
-                  : splitIndexes.length === 0)
+                  : usesIndependentSayCheck || usesPartialHelpSayCheck
+                    ? false
+                    : task.kind === 'syllable-build'
+                      ? selectedTileIndexes.length !== content.syllables.length
+                      : splitIndexes.length === 0)
             }
             onClick={
               usesIndependentCountCheck
                 ? checkCount
-                : usesIndependentSayCheck
+                : usesPartialHelpCountCheck
                   ? markReadyForRating
-                  : task.kind === 'syllable-build'
-                  ? checkBuild
-                  : checkSplit
+                  : usesIndependentSayCheck || usesPartialHelpSayCheck
+                    ? markReadyForRating
+                    : task.kind === 'syllable-build'
+                      ? checkBuild
+                      : checkSplit
             }
           >
             {isReadyForRating ? 'Gotowe do oceny' : 'Sprawdź'}
@@ -310,6 +326,18 @@ export function SyllabificationTaskPanel({
 
 const getSyllableCountOptions = (syllableCount: number) =>
   Array.from({ length: Math.max(4, syllableCount) }, (_, index) => index + 1)
+
+const getVisibleSplit = (
+  syllables: string[],
+  revealedSplit: string[] | undefined,
+  options: { isReadyForRating: boolean; shouldRevealFullSplit: boolean },
+) => {
+  if (options.isReadyForRating && options.shouldRevealFullSplit) {
+    return syllables
+  }
+
+  return revealedSplit ?? syllables
+}
 
 const getExpectedSplitIndexes = (syllables: string[]) => {
   let nextIndex = 0

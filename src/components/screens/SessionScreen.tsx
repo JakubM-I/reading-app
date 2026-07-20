@@ -214,6 +214,13 @@ const needsSyllabificationCompletion = (
     return true
   }
 
+  if (
+    task.syllabification.supportMode === 'partial-help' &&
+    (task.kind === 'syllable-count' || task.kind === 'syllable-say')
+  ) {
+    return true
+  }
+
   return (
     task.syllabification.supportMode === 'independent' &&
     (task.kind === 'syllable-count' || task.kind === 'syllable-say')
