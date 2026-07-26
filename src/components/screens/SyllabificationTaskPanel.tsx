@@ -57,6 +57,18 @@ export function SyllabificationTaskPanel({
   const isSplitCorrect =
     splitIndexes.length === expectedSplitIndexes.length &&
     expectedSplitIndexes.every((index) => splitIndexes.includes(index))
+  const shouldRevealCheckedSplit =
+    isReadyForRating &&
+    (isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck)
+  const visibleSplit = content.revealedSplit || shouldRevealCheckedSplit
+    ? getVisibleSplit(content.syllables, content.revealedSplit, {
+        isReadyForRating,
+        shouldRevealFullSplit:
+          isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck,
+      })
+    : null
+  const shouldShowSupportTextInHelp =
+    Boolean(task.supportText) && content.supportMode !== 'independent'
 
   const markReadyForRating = () => {
     setCheckMessage('')
@@ -218,21 +230,25 @@ export function SyllabificationTaskPanel({
         </p>
       )}
 
-      {(content.revealedSplit ||
-        (isReadyForRating &&
-          (isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck))) && (
-        <div className="guided-syllables" aria-label="Podpowiedź sylab">
-          {getVisibleSplit(content.syllables, content.revealedSplit, {
-            isReadyForRating,
-            shouldRevealFullSplit:
-              isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck,
-          }).map((syllable, index) => (
-            <span key={`${syllable || 'blank'}-${index}`}>{syllable || '...'}</span>
-          ))}
-        </div>
+      {(visibleSplit || shouldShowSupportTextInHelp) && (
+        <section className="syllable-help-card" aria-label="Podpowiedź do zadania">
+          <span className="syllable-help-label">Podpowiedź</span>
+          {visibleSplit && (
+            <div className="guided-syllables" aria-label="Podział na sylaby">
+              {visibleSplit.map((syllable, index) => (
+                <span key={`${syllable || 'blank'}-${index}`}>{syllable || '...'}</span>
+              ))}
+            </div>
+          )}
+          {shouldShowSupportTextInHelp && (
+            <p className="task-support">{task.supportText}</p>
+          )}
+        </section>
       )}
 
-      {task.supportText && <p className="task-support">{task.supportText}</p>}
+      {task.supportText && !shouldShowSupportTextInHelp && (
+        <p className="task-support">{task.supportText}</p>
+      )}
 
       {content.supportMode === 'independent' && (
         <button
@@ -246,7 +262,7 @@ export function SyllabificationTaskPanel({
 
       {(isHintVisible || content.supportMode !== 'independent') && (
         <div className="guided-question syllabification-hint">
-          <span>Ściąga</span>
+          <span>Jak czytać</span>
           <strong>{getHintText(content.supportMode)}</strong>
         </div>
       )}

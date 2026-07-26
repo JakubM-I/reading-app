@@ -847,6 +847,25 @@ button:disabled {
   gap: 12px;
 }
 
+.syllable-help-card {
+  width: min(100%, 540px);
+  display: grid;
+  justify-self: center;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(242, 248, 246, 0.92));
+}
+
+.syllable-help-label {
+  color: var(--color-muted);
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
 .guided-syllables span,
 .word-answer-tile,
 .word-tile,
@@ -970,10 +989,6 @@ button:disabled {
 
 .syllabification-task {
   gap: 16px;
-}
-
-.syllabification-task .guided-syllables {
-  margin-top: -2px;
 }
 
 .syllabification-task .secondary-button.compact {
