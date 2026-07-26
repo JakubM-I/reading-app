@@ -19,6 +19,7 @@ export function SyllabificationTaskPanel({
   )
   const [isHintVisible, setIsHintVisible] = useState(false)
   const [isReadyForRating, setIsReadyForRating] = useState(false)
+  const [hasCheckedAnswer, setHasCheckedAnswer] = useState(false)
   const [checkMessage, setCheckMessage] = useState('')
   const content = task.syllabification
 
@@ -41,6 +42,10 @@ export function SyllabificationTaskPanel({
     task.kind === 'syllable-count' && isPartialHelpMode
   const usesIndependentSayCheck = task.kind === 'syllable-say' && isIndependentMode
   const usesPartialHelpSayCheck = task.kind === 'syllable-say' && isPartialHelpMode
+  const usesPartialHelpBuildCheck =
+    task.kind === 'syllable-build' && isPartialHelpMode
+  const usesPartialHelpSplitCheck =
+    task.kind === 'syllable-split' && isPartialHelpMode
   const isInteractive =
     usesIndependentCountCheck ||
     usesPartialHelpCountCheck ||
@@ -57,6 +62,22 @@ export function SyllabificationTaskPanel({
   const isSplitCorrect =
     splitIndexes.length === expectedSplitIndexes.length &&
     expectedSplitIndexes.every((index) => splitIndexes.includes(index))
+  const shouldRevealCheckedSplit =
+    (isReadyForRating &&
+      (isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck)) ||
+    (hasCheckedAnswer && (usesPartialHelpBuildCheck || usesPartialHelpSplitCheck))
+  const visibleSplit = content.revealedSplit || shouldRevealCheckedSplit
+    ? getVisibleSplit(content.syllables, content.revealedSplit, {
+        shouldRevealFullSplit: shouldRevealCheckedSplit,
+      })
+    : null
+  const shouldShowSupportTextInHelp =
+    Boolean(task.supportText) && content.supportMode !== 'independent'
+  const helpPanelLabel = shouldRevealCheckedSplit ? 'Odpowiedź' : 'Podpowiedź'
+  const helpPanelAriaLabel =
+    helpPanelLabel === 'Odpowiedź'
+      ? 'Odpowiedź do zadania'
+      : 'Podpowiedź do zadania'
 
   const markReadyForRating = () => {
     setCheckMessage('')
@@ -65,6 +86,8 @@ export function SyllabificationTaskPanel({
   }
 
   const checkBuild = () => {
+    setHasCheckedAnswer(true)
+
     const isCorrect =
       selectedSyllables.length === content.syllables.length &&
       selectedSyllables.every((syllable, index) => syllable === content.syllables[index])
@@ -87,6 +110,8 @@ export function SyllabificationTaskPanel({
   }
 
   const checkSplit = () => {
+    setHasCheckedAnswer(true)
+
     if (!isSplitCorrect) {
       setCheckMessage('Sprawdź miejsca podziału i spróbuj jeszcze raz.')
       return
@@ -218,21 +243,25 @@ export function SyllabificationTaskPanel({
         </p>
       )}
 
-      {(content.revealedSplit ||
-        (isReadyForRating &&
-          (isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck))) && (
-        <div className="guided-syllables" aria-label="Podpowiedź sylab">
-          {getVisibleSplit(content.syllables, content.revealedSplit, {
-            isReadyForRating,
-            shouldRevealFullSplit:
-              isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck,
-          }).map((syllable, index) => (
-            <span key={`${syllable || 'blank'}-${index}`}>{syllable || '...'}</span>
-          ))}
-        </div>
+      {(visibleSplit || shouldShowSupportTextInHelp) && (
+        <section className="syllable-help-card" aria-label={helpPanelAriaLabel}>
+          <span className="syllable-help-label">{helpPanelLabel}</span>
+          {visibleSplit && (
+            <div className="guided-syllables" aria-label="Podział na sylaby">
+              {visibleSplit.map((syllable, index) => (
+                <span key={`${syllable || 'blank'}-${index}`}>{syllable || '...'}</span>
+              ))}
+            </div>
+          )}
+          {shouldShowSupportTextInHelp && (
+            <p className="task-support">{task.supportText}</p>
+          )}
+        </section>
       )}
 
-      {task.supportText && <p className="task-support">{task.supportText}</p>}
+      {task.supportText && !shouldShowSupportTextInHelp && (
+        <p className="task-support">{task.supportText}</p>
+      )}
 
       {content.supportMode === 'independent' && (
         <button
@@ -246,7 +275,7 @@ export function SyllabificationTaskPanel({
 
       {(isHintVisible || content.supportMode !== 'independent') && (
         <div className="guided-question syllabification-hint">
-          <span>Ściąga</span>
+          <span>Jak czytać</span>
           <strong>{getHintText(content.supportMode)}</strong>
         </div>
       )}
@@ -330,9 +359,9 @@ const getSyllableCountOptions = (syllableCount: number) =>
 const getVisibleSplit = (
   syllables: string[],
   revealedSplit: string[] | undefined,
-  options: { isReadyForRating: boolean; shouldRevealFullSplit: boolean },
+  options: { shouldRevealFullSplit: boolean },
 ) => {
-  if (options.isReadyForRating && options.shouldRevealFullSplit) {
+  if (options.shouldRevealFullSplit) {
     return syllables
   }
 
