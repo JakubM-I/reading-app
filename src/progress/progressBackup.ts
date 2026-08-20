@@ -1,4 +1,5 @@
 import type { StoredProgress } from './progressTypes'
+import { normalizeProgress } from './localProgress'
 
 interface ProgressBackupFile {
   app: 'reading-app'
@@ -38,13 +39,13 @@ export const parseProgressBackup = (rawValue: string): ParsedProgressBackup => {
 
   if (isProgressBackupFile(parsedValue)) {
     return {
-      progress: parsedValue.progress,
+      progress: normalizeProgress(parsedValue.progress),
       exportedAt: parsedValue.exportedAt,
     }
   }
 
   if (isStoredProgress(parsedValue)) {
-    return { progress: parsedValue }
+    return { progress: normalizeProgress(parsedValue) }
   }
 
   throw new Error('Nieprawidłowy plik postępów.')

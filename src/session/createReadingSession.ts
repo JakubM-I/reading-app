@@ -189,7 +189,7 @@ const getMaterialPriority = <Item extends { id: string; levelId: string }>(
   progress: Record<string, MaterialProgressRecord>,
   sessionIndex: number,
 ) => {
-  const record = progress[item.id]
+  const record = progress[`reading:${item.id}`]
   const levelPriority = item.levelId === levelId ? 0 : 1
 
   if (!record) {
