@@ -1,4 +1,8 @@
-import type { ContentWord, ExerciseContent } from '../content/contentTypes'
+import type {
+  ContentSyllable,
+  ContentWord,
+  ExerciseContent,
+} from '../content/contentTypes'
 import type { MaterialProgressRecord } from '../progress/progressTypes'
 import type {
   ReadingSession,
@@ -8,6 +12,10 @@ import type {
 } from './sessionTypes'
 
 const SESSION_TASK_SEQUENCE: SessionTaskKind[] = [
+  'syllable-read',
+  'syllable-read',
+  'syllable-read',
+  'syllable-read',
   'syllable-count',
   'syllable-say',
   'syllable-say',
@@ -48,14 +56,47 @@ export const createSyllabificationSession = (
     materialProgress,
     sessionIndex,
   )
+  const syllables = sortByMaterialPriority(
+    prioritizeLevel(
+      content.syllables.filter(
+        (syllable) =>
+          isAvailable(syllable.levelId) && syllable.kind === 'syllable',
+      ),
+      levelId,
+    ),
+    levelId,
+    materialProgress,
+    sessionIndex + 23,
+  )
 
-  const selectedWords = takeLooped(words, SESSION_TASK_SEQUENCE.length)
+  const selectedSyllables = takeLooped(
+    syllables,
+    SESSION_TASK_SEQUENCE.filter((kind) => kind === 'syllable-read').length,
+  )
+  const wordTaskSequence = SESSION_TASK_SEQUENCE.filter(
+    (kind) => kind !== 'syllable-read',
+  )
+  const selectedWords = takeLooped(words, wordTaskSequence.length)
   const buildWords = prioritizeDistinctSyllableWords(words)
+  let syllableIndex = 0
+  let wordIndex = 0
   const tasks = SESSION_TASK_SEQUENCE.map((kind, index): SessionTask => {
+    if (kind === 'syllable-read') {
+      const syllable = selectedSyllables[syllableIndex]
+      syllableIndex += 1
+
+      if (!syllable) {
+        return createSyllableFallbackTask(index)
+      }
+
+      return createSyllableReadTask(syllable, index)
+    }
+
     const word =
       kind === 'syllable-build'
         ? takeLooped(buildWords, 1)[0]
-        : selectedWords[index]
+        : selectedWords[wordIndex]
+    wordIndex += 1
 
     if (!word) {
       return createFallbackTask(kind, index, supportMode)
@@ -74,6 +115,20 @@ export const createSyllabificationSession = (
     status: 'active',
   }
 }
+
+const createSyllableReadTask = (
+  syllable: ContentSyllable,
+  index: number,
+): SessionTask => ({
+  id: `syllable-read-${index + 1}-${syllable.id}`,
+  module: 'syllabification',
+  kind: 'syllable-read',
+  title: 'Sylaba',
+  prompt: 'Przeczytaj sylabę.',
+  displayText: syllable.text,
+  materialId: syllable.id,
+  reviewText: syllable.text,
+})
 
 const createSyllabificationTask = (
   kind: SessionTaskKind,
@@ -100,6 +155,18 @@ const createSyllabificationTask = (
   },
 })
 
+const createSyllableFallbackTask = (index: number): SessionTask => ({
+  id: `syllable-read-${index + 1}-empty`,
+  module: 'syllabification',
+  kind: 'syllable-read',
+  title: 'Sylaba',
+  prompt: 'Brakuje sylab do tego poziomu.',
+  displayText: 'Brak zadania',
+  supportText: 'Wróć do wyboru poziomu.',
+  materialId: `missing-syllabification-syllable-${index + 1}`,
+  reviewText: 'Brak zadania',
+})
+
 const createFallbackTask = (
   kind: SessionTaskKind,
   index: number,
@@ -124,6 +191,10 @@ const createFallbackTask = (
 })
 
 const getTaskTitle = (kind: SessionTaskKind) => {
+  if (kind === 'syllable-read') {
+    return 'Sylaba'
+  }
+
   if (kind === 'syllable-count') {
     return 'Policz sylaby'
   }
@@ -143,6 +214,10 @@ const getTaskPrompt = (
   kind: SessionTaskKind,
   supportMode: SyllabificationSupportMode,
 ) => {
+  if (kind === 'syllable-read') {
+    return 'Przeczytaj sylabę.'
+  }
+
   if (kind === 'syllable-count') {
     return 'Policz części słowa.'
   }

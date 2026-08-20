@@ -10,6 +10,7 @@ export type SessionTaskKind =
   | 'guided-reading'
   | 'word-building'
   | 'sentence-comprehension'
+  | 'syllable-read'
   | 'syllable-count'
   | 'syllable-say'
   | 'syllable-build'

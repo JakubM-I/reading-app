@@ -133,14 +133,17 @@ Zakres:
 
 Domyslny uklad sesji:
 
-1. 1 zadanie liczenia sylab.
-2. 2 zadania mowienia slowa sylabami.
-3. 1 zadanie ukladania albo wskazywania sylab.
-4. 2 zadania wstawiania podzialu sylabowego.
+1. 4 zadania czytania pojedynczych sylab.
+2. 1 zadanie liczenia sylab.
+3. 2 zadania mowienia slowa sylabami.
+4. 1 zadanie ukladania albo wskazywania sylab.
+5. 2 zadania wstawiania podzialu sylabowego.
 
 Zasady doboru materialu:
 
 - wybierac slowa oznaczone jako `suitableForSyllabification`;
+- do pierwszych zadan wybierac pojedyncze sylaby z `syllables.json`, ale
+  pomijac izolowane dwuznaki i trojznaki;
 - priorytetowo wybierac slowa z aktualnego poziomu;
 - jesli brakuje materialu, mozna dobrac slowa z wczesniejszych poziomow;
 - nie dobierac slow jednosylabowych;

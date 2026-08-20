@@ -25,6 +25,7 @@ const readingTaskPoints: Record<SessionTaskKind, number[]> = {
   'guided-reading': [1, 2, 3, 4],
   'word-building': [2, 2, 4, 5],
   'sentence-comprehension': [2, 3, 5, 7],
+  'syllable-read': [1, 1, 1, 1],
   'syllable-count': [1, 1, 1, 1],
   'syllable-say': [1, 1, 1, 1],
   'syllable-build': [1, 1, 1, 1],
@@ -63,6 +64,10 @@ const getTaskBasePoints = (task: SessionTask, levelId: string) => {
   const levelIndex = getLevelIndex(levelId)
 
   if (task.module === 'syllabification') {
+    if (task.kind === 'syllable-read') {
+      return 1
+    }
+
     const supportMode = task.syllabification?.supportMode ?? 'full-help'
 
     return syllabificationTaskPoints[supportMode][levelIndex]
