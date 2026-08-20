@@ -22,13 +22,12 @@ Aktualny stan bazy:
 
 - 118 sylab, znakow i elementow do rozgrzewki;
 - 111 realnych sylab do czytania w nowych zadaniach `syllable-read`;
-- 107 slow;
-- 90 slow oznaczonych jako przydatne do sylabizowania;
-- 65 zdan.
+- 142 slow;
+- 125 slow oznaczonych jako przydatne do sylabizowania;
+- 106 zdan.
 
-Najcienszym miejscem jest poziom 4, ktory ma tylko 12 slow do sylabizowania.
-Poziomy 3 i 4 sa uzywalne, ale maja mniej oddechu do dluzszej pracy bez
-zauwazalnych powtorek.
+Po etapie 2 poziom 4 nie jest juz najcienszym miejscem bazy: ma 30 slow do
+sylabizowania i 25 zdan. Poziom 3 ma 40 slow do sylabizowania i 31 zdan.
 
 Drugi problem jest techniczny: dokumentacja zaklada, ze historia materialu
 rozroznia modul zadania, ale obecny zapis postepow uzywa przede wszystkim samego
@@ -79,6 +78,8 @@ Testy i scenariusze:
   nadal dziala.
 
 ## Etap 2 - Rozbudowa Bazy Tresci
+
+Status: zrealizowany.
 
 Cel: zwiekszyc baze materialu tak, aby sesje mialy wiecej roznorodnosci,
 szczegolnie na poziomach 3 i 4.

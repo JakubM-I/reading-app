@@ -36,11 +36,12 @@ Liczby sa kierunkiem, nie sztywnym limitem. Lepiej dodawac material stopniowo i
 sprawdzac go recznie, niz szybko wypelnic baze zbyt trudnymi albo malo
 przydatnymi slowami.
 
-Stan bazy MVP po etapie zamykajacym MVP:
+Stan bazy po rozbudowie historii i tresci:
 
 - 118 sylab, znakow i elementow do rozgrzewki;
-- 107 slow z recznym podzialem na sylaby;
-- 65 krotkich zdan z pytaniami o sens.
+- 142 slowa z recznym podzialem na sylaby;
+- 125 slow oznaczonych jako przydatne do sylabizowania;
+- 106 krotkich zdan z pytaniami o sens.
 
 Ta sama baza slow moze zasilac modul czytania i modul sylabizowania, ale zadania
 powinny zapisywac, z ktorego modulu pochodza. Dzieki temu postepy moga byc
