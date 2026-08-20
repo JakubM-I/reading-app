@@ -1,4 +1,8 @@
-import { getSessionSummary, type ReadingSession } from '../session'
+import {
+  getSessionSummary,
+  type ReadingSession,
+  type SessionModule,
+} from '../session'
 import { getEarnedBadges } from './progressBadges'
 import type {
   MaterialProgressRecord,
@@ -8,6 +12,8 @@ import type {
 } from './progressTypes'
 
 const STORAGE_KEY = 'reading-app-progress-v1'
+const materialProgressKey = (module: SessionModule, materialId: string) =>
+  `${module}:${materialId}`
 
 export const createEmptyProgress = (): StoredProgress => ({
   version: 1,
@@ -56,6 +62,7 @@ export const recordCompletedSession = (
 
     return {
       taskId: answer.taskId,
+      module: task?.module ?? session.module,
       kind: task?.kind ?? 'warmup',
       materialId: task?.materialId ?? answer.taskId,
       reviewText: task?.reviewText ?? task?.displayText ?? answer.taskId,
@@ -66,6 +73,7 @@ export const recordCompletedSession = (
   const sessionRecord: ProgressSessionRecord = {
     id: session.id,
     completedAt,
+    module: session.module,
     levelId: session.levelId,
     totalTasks: summary.totalTasks,
     totalPoints: summary.totalPoints,
@@ -94,19 +102,22 @@ export const recordCompletedSession = (
   }
 }
 
-const normalizeProgress = (value: unknown): StoredProgress => {
+export const normalizeProgress = (value: unknown): StoredProgress => {
   if (!isStoredProgress(value)) {
     return createEmptyProgress()
   }
+
+  const sessions = value.sessions.map(normalizeSessionRecord)
+  const materialProgress = normalizeMaterialProgress(value.materialProgress)
 
   return {
     ...createEmptyProgress(),
     ...value,
     version: 1,
-    sessions: value.sessions,
+    sessions,
     badges: value.badges,
     difficultItems: value.difficultItems,
-    materialProgress: value.materialProgress,
+    materialProgress,
   }
 }
 
@@ -148,9 +159,11 @@ const updateMaterialProgress = (
   const nextProgress = { ...currentProgress }
 
   for (const task of taskRecords) {
-    const previousRecord = nextProgress[task.materialId]
+    const key = materialProgressKey(task.module, task.materialId)
+    const previousRecord = nextProgress[key]
     const nextRecord: MaterialProgressRecord = {
       materialId: task.materialId,
+      module: task.module,
       kind: task.kind,
       reviewText: task.reviewText,
       lastRating: task.rating,
@@ -161,8 +174,56 @@ const updateMaterialProgress = (
         (previousRecord?.skippedCount ?? 0) + (task.rating === 'skip' ? 1 : 0),
     }
 
-    nextProgress[task.materialId] = nextRecord
+    nextProgress[key] = nextRecord
   }
 
   return nextProgress
+}
+
+const normalizeSessionRecord = (
+  session: ProgressSessionRecord,
+): ProgressSessionRecord => {
+  const module = normalizeModule(session.module)
+
+  return {
+    ...session,
+    module,
+    tasks: session.tasks.map((task) => ({
+      ...task,
+      module: normalizeModule(task.module, module),
+    })),
+  }
+}
+
+const normalizeMaterialProgress = (
+  progress: StoredProgress['materialProgress'],
+) => {
+  const normalizedProgress: StoredProgress['materialProgress'] = {}
+
+  for (const [key, record] of Object.entries(progress)) {
+    const module = normalizeModule(record.module, getModuleFromMaterialKey(key))
+    const normalizedRecord: MaterialProgressRecord = {
+      ...record,
+      module,
+    }
+
+    normalizedProgress[materialProgressKey(module, record.materialId)] =
+      normalizedRecord
+  }
+
+  return normalizedProgress
+}
+
+const normalizeModule = (
+  module: SessionModule | undefined,
+  fallback: SessionModule = 'reading',
+): SessionModule =>
+  module === 'syllabification' || module === 'reading' ? module : fallback
+
+const getModuleFromMaterialKey = (key: string): SessionModule => {
+  if (key.startsWith('syllabification:')) {
+    return 'syllabification'
+  }
+
+  return 'reading'
 }

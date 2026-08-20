@@ -1,4 +1,4 @@
-import type { SessionRating, SessionTaskKind } from '../session'
+import type { SessionModule, SessionRating, SessionTaskKind } from '../session'
 
 export interface ProgressBadge {
   id: string
@@ -9,6 +9,7 @@ export interface ProgressBadge {
 
 export interface ProgressTaskRecord {
   taskId: string
+  module: SessionModule
   kind: SessionTaskKind
   materialId: string
   reviewText: string
@@ -19,6 +20,7 @@ export interface ProgressTaskRecord {
 export interface ProgressSessionRecord {
   id: string
   completedAt: string
+  module: SessionModule
   levelId: string
   totalTasks: number
   totalPoints: number
@@ -30,6 +32,7 @@ export interface ProgressSessionRecord {
 
 export interface MaterialProgressRecord {
   materialId: string
+  module: SessionModule
   kind: SessionTaskKind
   reviewText: string
   lastRating: SessionRating
