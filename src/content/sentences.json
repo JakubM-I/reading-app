@@ -264,6 +264,142 @@
     "relatedWordIds": ["word-l2-zegar"],
     "tags": ["proste-zdanie"]
   },
+  {
+    "id": "sentence-l2-droga-prosta",
+    "levelId": "level-2",
+    "text": "Droga jest prosta.",
+    "question": "Jaka jest droga?",
+    "relatedWordIds": ["word-l2-droga"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-rama-tu",
+    "levelId": "level-2",
+    "text": "Rama jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l2-rama"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-opona-lezy",
+    "levelId": "level-2",
+    "text": "Opona leży.",
+    "question": "Co leży?",
+    "relatedWordIds": ["word-l2-opona"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-motor-stoi",
+    "levelId": "level-2",
+    "text": "Motor stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l2-motor"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-garaz-duzy",
+    "levelId": "level-2",
+    "text": "Garaż jest duży.",
+    "question": "Jaki jest garaż?",
+    "relatedWordIds": ["word-l2-garaz"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-pilot-tu",
+    "levelId": "level-2",
+    "text": "Pilot jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l2-pilot"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-pociag-jedzie",
+    "levelId": "level-2",
+    "text": "Pociąg jedzie.",
+    "question": "Co jedzie?",
+    "relatedWordIds": ["word-l2-pociag"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-kola-sa-tu",
+    "levelId": "level-2",
+    "text": "Koła są tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l2-kola"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-worek-lezy",
+    "levelId": "level-2",
+    "text": "Worek leży.",
+    "question": "Co leży?",
+    "relatedWordIds": ["word-l2-worek"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-kubek-stoi",
+    "levelId": "level-2",
+    "text": "Kubek stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l2-kubek"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-okno-otwarte",
+    "levelId": "level-2",
+    "text": "Okno jest otwarte.",
+    "question": "Jakie jest okno?",
+    "relatedWordIds": ["word-l2-okno"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-maska-tu",
+    "levelId": "level-2",
+    "text": "Maska jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l2-maska"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-brama-stoi",
+    "levelId": "level-2",
+    "text": "Brama stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l2-brama"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-lawka-stoi",
+    "levelId": "level-2",
+    "text": "Ławka stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l2-lawka"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-ulica-tu",
+    "levelId": "level-2",
+    "text": "Ulica jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l2-ulica"],
+    "tags": ["proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-paliwo-jest",
+    "levelId": "level-2",
+    "text": "Paliwo jest w aucie.",
+    "question": "Co jest w aucie?",
+    "relatedWordIds": ["word-l2-paliwo", "word-l2-auto"],
+    "tags": ["pojazdy", "proste-zdanie"]
+  },
+  {
+    "id": "sentence-l2-bilet-mam",
+    "levelId": "level-2",
+    "text": "Mam bilet.",
+    "question": "Co mam?",
+    "relatedWordIds": ["word-l2-bilet"],
+    "tags": ["proste-zdanie"]
+  },
 
   {
     "id": "sentence-l3-auto-szosa",
@@ -401,6 +537,118 @@
     "relatedWordIds": ["word-l3-chleb"],
     "tags": ["dwuznak-ch"]
   },
+  {
+    "id": "sentence-l3-chusta-tu",
+    "levelId": "level-3",
+    "text": "Chusta jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l3-chusta"],
+    "tags": ["dwuznak-ch"]
+  },
+  {
+    "id": "sentence-l3-chodnik-prosty",
+    "levelId": "level-3",
+    "text": "Chodnik jest prosty.",
+    "question": "Jaki jest chodnik?",
+    "relatedWordIds": ["word-l3-chodnik"],
+    "tags": ["dwuznak-ch"]
+  },
+  {
+    "id": "sentence-l3-echo-ciche",
+    "levelId": "level-3",
+    "text": "Echo jest ciche.",
+    "question": "Jakie jest echo?",
+    "relatedWordIds": ["word-l3-echo"],
+    "tags": ["dwuznak-ch"]
+  },
+  {
+    "id": "sentence-l3-cichy-dom",
+    "levelId": "level-3",
+    "text": "Dom jest cichy.",
+    "question": "Jaki jest dom?",
+    "relatedWordIds": ["word-l2-dom", "word-l3-cichy"],
+    "tags": ["dwuznak-ch"]
+  },
+  {
+    "id": "sentence-l3-kasza-tu",
+    "levelId": "level-3",
+    "text": "Kasza jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l3-kasza"],
+    "tags": ["dwuznak-sz"]
+  },
+  {
+    "id": "sentence-l3-puszka-stoi",
+    "levelId": "level-3",
+    "text": "Puszka stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l3-puszka"],
+    "tags": ["dwuznak-sz"]
+  },
+  {
+    "id": "sentence-l3-myszka-mala",
+    "levelId": "level-3",
+    "text": "Myszka jest mała.",
+    "question": "Jaka jest myszka?",
+    "relatedWordIds": ["word-l3-myszka"],
+    "tags": ["dwuznak-sz"]
+  },
+  {
+    "id": "sentence-l3-proszek-tu",
+    "levelId": "level-3",
+    "text": "Proszek jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l3-proszek"],
+    "tags": ["dwuznak-sz"]
+  },
+  {
+    "id": "sentence-l3-oczy-patrza",
+    "levelId": "level-3",
+    "text": "Oczy patrzą.",
+    "question": "Co patrzy?",
+    "relatedWordIds": ["word-l3-oczy"],
+    "tags": ["dwuznak-cz"]
+  },
+  {
+    "id": "sentence-l3-kaczka-plywa",
+    "levelId": "level-3",
+    "text": "Kaczka pływa.",
+    "question": "Co pływa?",
+    "relatedWordIds": ["word-l3-kaczka"],
+    "tags": ["dwuznak-cz"]
+  },
+  {
+    "id": "sentence-l3-beczka-stoi",
+    "levelId": "level-3",
+    "text": "Beczka stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l3-beczka"],
+    "tags": ["dwuznak-cz"]
+  },
+  {
+    "id": "sentence-l3-czapla-stoi",
+    "levelId": "level-3",
+    "text": "Czapla stoi.",
+    "question": "Co stoi?",
+    "relatedWordIds": ["word-l3-czapla"],
+    "tags": ["dwuznak-cz"]
+  },
+  {
+    "id": "sentence-l3-burza-idzie",
+    "levelId": "level-3",
+    "text": "Burza idzie.",
+    "question": "Co idzie?",
+    "relatedWordIds": ["word-l3-burza"],
+    "tags": ["dwuznak-rz"]
+  },
+  {
+    "id": "sentence-l3-warzywo-tu",
+    "levelId": "level-3",
+    "text": "Warzywo jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l3-warzywo"],
+    "tags": ["dwuznak-rz"]
+  },
 
   {
     "id": "sentence-l4-dzwig",
@@ -520,6 +768,86 @@
     "text": "Dżdżownica jest w ziemi.",
     "question": "Co jest w ziemi?",
     "relatedWordIds": ["word-l4-dzdzownica"],
+    "tags": ["dwuznak-dż"]
+  },
+  {
+    "id": "sentence-l4-budzik-dzwoni",
+    "levelId": "level-4",
+    "text": "Budzik dzwoni.",
+    "question": "Co dzwoni?",
+    "relatedWordIds": ["word-l4-budzik"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-pedzel-lezy",
+    "levelId": "level-4",
+    "text": "Pędzel leży.",
+    "question": "Co leży?",
+    "relatedWordIds": ["word-l4-pedzel"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-rodzice-sa-tu",
+    "levelId": "level-4",
+    "text": "Rodzice są tu.",
+    "question": "Kto jest tu?",
+    "relatedWordIds": ["word-l4-rodzice"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-sadzonka-rosnie",
+    "levelId": "level-4",
+    "text": "Sadzonka rośnie.",
+    "question": "Co rośnie?",
+    "relatedWordIds": ["word-l4-sadzonka"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-kukurydza-zolta",
+    "levelId": "level-4",
+    "text": "Kukurydza jest żółta.",
+    "question": "Jaka jest kukurydza?",
+    "relatedWordIds": ["word-l4-kukurydza"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-na-drodze-auto",
+    "levelId": "level-4",
+    "text": "Na drodze stoi auto.",
+    "question": "Co stoi na drodze?",
+    "relatedWordIds": ["word-l4-drodze", "word-l2-auto"],
+    "tags": ["dwuznak-dz", "pojazdy"]
+  },
+  {
+    "id": "sentence-l4-ludzie-czekaja",
+    "levelId": "level-4",
+    "text": "Ludzie czekają.",
+    "question": "Kto czeka?",
+    "relatedWordIds": ["word-l4-ludzie", "word-l3-czeka"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-niedziela-cicha",
+    "levelId": "level-4",
+    "text": "Niedziela jest cicha.",
+    "question": "Jaka jest niedziela?",
+    "relatedWordIds": ["word-l4-niedziela", "word-l3-cichy"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-dziadek-czeka",
+    "levelId": "level-4",
+    "text": "Dziadek czeka.",
+    "question": "Kto czeka?",
+    "relatedWordIds": ["word-l4-dziadek", "word-l3-czeka"],
+    "tags": ["dwuznak-dz"]
+  },
+  {
+    "id": "sentence-l4-dzemik-tu",
+    "levelId": "level-4",
+    "text": "Dżemik jest tu.",
+    "question": "Co jest tu?",
+    "relatedWordIds": ["word-l4-dzemik"],
     "tags": ["dwuznak-dż"]
   }
 ]
