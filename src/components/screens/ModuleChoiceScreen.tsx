@@ -15,8 +15,8 @@ const moduleOptions: Array<{
   {
     module: 'syllabification',
     title: 'Sylabizowanie',
-    description: 'Ćwiczenie dzielenia słów na sylaby przed czytaniem.',
-    meta: ['Osobna sesja', 'Bez zgadywania'],
+    description: 'Łączenie sylab i czytanie słów o wybranej budowie.',
+    meta: ['6 struktur', 'Spokojna sesja'],
   },
   {
     module: 'reading',

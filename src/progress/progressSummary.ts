@@ -3,6 +3,8 @@ import type {
   ProgressSessionRecord,
   StoredProgress,
 } from './progressTypes'
+import type { SessionRating } from '../session'
+import type { StructureId } from '../content/contentTypes'
 
 export interface PeriodProgressSummary {
   label: string
@@ -24,6 +26,13 @@ export interface ProgressOverview {
   totalSessions: number
   recentDifficultItems: string[]
   badges: ProgressBadge[]
+}
+
+export interface StructureProgressSummary {
+  structureId: StructureId
+  tasks: number
+  counts: Record<SessionRating, number>
+  lastPracticedAt?: string
 }
 
 export const getProgressOverview = (
@@ -65,6 +74,40 @@ export const getProgressOverview = (
     badges: progress.badges,
   }
 }
+
+export const getStructureProgress = (
+  progress: StoredProgress,
+  structureIds: readonly StructureId[],
+): StructureProgressSummary[] =>
+  structureIds.map((structureId) => {
+    const sessions = progress.sessions.filter(
+      (session) =>
+        session.module === 'syllabification' &&
+        session.structureId === structureId,
+    )
+    const tasks = sessions.flatMap((session) => session.tasks)
+    const counts: Record<SessionRating, number> = {
+      independent: 0,
+      'with-help': 0,
+      hard: 0,
+      skip: 0,
+    }
+
+    for (const task of tasks) {
+      counts[task.rating] += 1
+    }
+
+    const lastPracticedAt = sessions
+      .map((session) => session.completedAt)
+      .sort((first, second) => Date.parse(second) - Date.parse(first))[0]
+
+    return {
+      structureId,
+      tasks: tasks.length,
+      counts,
+      lastPracticedAt,
+    }
+  })
 
 const buildPeriodSummary = (
   label: string,

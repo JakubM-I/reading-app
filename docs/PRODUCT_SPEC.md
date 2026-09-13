@@ -37,11 +37,16 @@ MVP zawiera:
 - start sesji;
 - wybor modulu po starcie sesji: `Sylabizowanie` albo `Czytanie`;
 - brak sesji mieszanych w MVP;
-- reczny wybor poziomu trudnosci przez rodzica;
-- opis poziomu widoczny dla rodzica;
+- reczny wybor poziomu w module `Czytanie`;
+- reczny wybor jednej z pierwszych szesciu struktur wyrazowych w module
+  `Sylabizowanie`;
+- opis poziomu albo struktury widoczny dla rodzica;
 - modul sylabizowania jako osobna sciezka cwiczen;
 - tryby pomocy w module sylabizowania: `Z pomocą`, `Z podpowiedzią`, `Samodzielnie`;
-- cwiczenia liczenia sylab, mowienia slowa sylabami i wstawiania podzialu;
+- cwiczenia laczenia spolgłoski z samogloska, czytania slow o okreslonej
+  budowie, ukladania slow i odczytywania ich budowy;
+- dwa jawnie oznaczone pseudowyrazy w domyslnej sesji sylabizowania, z opcja
+  wylaczenia przez rodzica;
 - rozgrzewke liter i dwuznakow;
 - czytanie prowadzone;
 - budowanie slow z sylab;
@@ -101,18 +106,21 @@ Domyslna struktura sesji czytania:
 
 Domyslna struktura sesji sylabizowania:
 
-1. Wybor trybu pomocy przez rodzica.
-2. 1-2 zadania liczenia sylab.
-3. 2 zadania mowienia slowa sylabami.
-4. 2 zadania wstawiania podzialu sylabowego.
-5. Podsumowanie punktow i postepu.
+1. Wybor jednej z szesciu struktur i trybu pomocy przez rodzica.
+2. 3 zadania syntezy sylaby lub sylaby zamknietej.
+3. 3 zadania czytania prawdziwych slow.
+4. 2 zadania czytania jawnie oznaczonych pseudowyrazow; po ich wylaczeniu
+   aplikacja podaje prawdziwe slowa.
+5. 1 zadanie budowania slowa.
+6. 1 zadanie ponownego czytania z pokazana budowa.
+7. Podsumowanie punktow i postepu.
 
 Tryby pomocy w sylabizowaniu:
 
-- `Z pomocą`: aplikacja pokazuje pelny podzial, np. `ra-kie-ta`;
-- `Z podpowiedzią`: aplikacja pokazuje czesciowa pomoc, np. liczbe sylab albo
-  jedno miejsce podzialu;
-- `Samodzielnie`: dziecko widzi caly wyraz i samo wskazuje miejsca podzialu.
+- `Z pomocą`: budowa, kolory i granice sylab sa widoczne od poczatku;
+- `Z podpowiedzią`: budowa pojawia sie po uzyciu `Pokaż budowę`;
+- `Samodzielnie`: dziecko najpierw probuje przeczytac samodzielnie, a rodzic
+  moze pozniej uzyc `Pokaż odpowiedź`.
 
 ## Ocena Zadania
 
@@ -134,6 +142,7 @@ MVP jest gotowe, gdy:
 - mozna przeprowadzic pelna lokalna sesje;
 - rodzic moze wybrac modul: `Sylabizowanie` albo `Czytanie`;
 - rodzic moze wybrac poziom i zobaczyc jego opis;
+- rodzic moze wybrac jedna z szesciu struktur sylabowych i zobaczyc jej opis;
 - dziecko moze przejsc osobna sesje sylabizowania;
 - dziecko moze przejsc osobna sesje czytania z rozgrzewka, czytaniem i budowaniem slow;
 - rodzic ocenia kazde zadanie;

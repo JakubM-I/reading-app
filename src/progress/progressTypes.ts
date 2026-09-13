@@ -1,4 +1,10 @@
-import type { SessionModule, SessionRating, SessionTaskKind } from '../session'
+import type { MaterialKind, StructureId } from '../content/contentTypes'
+import type {
+  SessionModule,
+  SessionRating,
+  SessionTaskKind,
+  SyllabificationSupportMode,
+} from '../session'
 
 export interface ProgressBadge {
   id: string
@@ -15,13 +21,18 @@ export interface ProgressTaskRecord {
   reviewText: string
   rating: SessionRating
   points: number
+  structureId?: StructureId
+  materialKind?: MaterialKind
 }
 
 export interface ProgressSessionRecord {
   id: string
   completedAt: string
   module: SessionModule
-  levelId: string
+  levelId?: string
+  structureId?: StructureId
+  supportMode?: SyllabificationSupportMode
+  includePseudowords?: boolean
   totalTasks: number
   totalPoints: number
   counts: Record<SessionRating, number>
@@ -43,7 +54,7 @@ export interface MaterialProgressRecord {
 }
 
 export interface StoredProgress {
-  version: 1
+  version: 2
   totalPoints: number
   sessions: ProgressSessionRecord[]
   badges: ProgressBadge[]

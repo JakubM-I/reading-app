@@ -13,6 +13,9 @@ export type {
   SessionTaskKind,
   SyllabificationSupportMode,
   SyllabificationTaskContent,
+  StructureSession,
+  StructureTaskContent,
+  LevelReadingSession,
   WordBuildingTaskContent,
   WordBuildingTile,
 } from './sessionTypes'

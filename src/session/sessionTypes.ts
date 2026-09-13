@@ -1,6 +1,10 @@
 import type {
   ContentLevel,
+  DifficultyStage,
+  GraphemeTuple,
+  MaterialKind,
   SentenceId,
+  StructureId,
   SyllableId,
   WordId,
 } from '../content/contentTypes'
@@ -15,6 +19,10 @@ export type SessionTaskKind =
   | 'syllable-say'
   | 'syllable-build'
   | 'syllable-split'
+  | 'blend-read'
+  | 'structure-read'
+  | 'structure-build'
+  | 'structure-review'
 
 export type SessionRating = 'independent' | 'with-help' | 'hard' | 'skip'
 export type SessionModule = 'reading' | 'syllabification'
@@ -55,6 +63,22 @@ export interface SyllabificationTaskContent {
   revealedSplit?: string[]
 }
 
+export interface StructureTaskContent {
+  structureId: StructureId
+  difficultyStage: DifficultyStage
+  materialKind: MaterialKind
+  text: string
+  syllables: string[]
+  graphemes: GraphemeTuple[]
+  supportMode: SyllabificationSupportMode
+  blend?: {
+    left: string
+    right: string
+    result: string
+  }
+  tiles?: WordBuildingTile[]
+}
+
 export interface SessionTask {
   id: string
   module: SessionModule
@@ -65,9 +89,14 @@ export interface SessionTask {
   supportText?: string
   materialId: SyllableId | WordId | SentenceId
   reviewText?: string
+  difficultyOrder: number
+  structureId?: StructureId
+  difficultyStage?: DifficultyStage
+  materialKind?: MaterialKind
   guidedReading?: GuidedReadingTaskContent
   wordBuilding?: WordBuildingTaskContent
   syllabification?: SyllabificationTaskContent
+  structureExercise?: StructureTaskContent
 }
 
 export interface SessionAnswer {
@@ -76,15 +105,29 @@ export interface SessionAnswer {
   points: number
 }
 
-export interface ReadingSession {
+interface BaseSession {
   id: string
   module: SessionModule
-  levelId: ContentLevel['id']
   tasks: SessionTask[]
   currentTaskIndex: number
   answers: SessionAnswer[]
   status: 'active' | 'completed'
 }
+
+export interface LevelReadingSession extends BaseSession {
+  module: 'reading'
+  levelId: ContentLevel['id']
+}
+
+export interface StructureSession extends BaseSession {
+  module: 'syllabification'
+  structureId: StructureId
+  supportMode: SyllabificationSupportMode
+  includePseudowords: boolean
+  difficultyStage: DifficultyStage
+}
+
+export type ReadingSession = LevelReadingSession | StructureSession
 
 export interface SessionSummary {
   totalTasks: number

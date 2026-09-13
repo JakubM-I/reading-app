@@ -12,11 +12,14 @@ import type {
 } from './progressTypes'
 
 const STORAGE_KEY = 'reading-app-progress-v1'
-const materialProgressKey = (module: SessionModule, materialId: string) =>
-  `${module}:${materialId}`
+const materialProgressKey = (
+  module: SessionModule,
+  kind: ProgressTaskRecord['kind'],
+  materialId: string,
+) => `${module}:${kind}:${materialId}`
 
 export const createEmptyProgress = (): StoredProgress => ({
-  version: 1,
+  version: 2,
   totalPoints: 0,
   sessions: [],
   badges: [],
@@ -68,13 +71,23 @@ export const recordCompletedSession = (
       reviewText: task?.reviewText ?? task?.displayText ?? answer.taskId,
       rating: answer.rating,
       points: answer.points,
+      structureId: task?.structureId,
+      materialKind: task?.materialKind,
     }
   })
   const sessionRecord: ProgressSessionRecord = {
     id: session.id,
     completedAt,
     module: session.module,
-    levelId: session.levelId,
+    levelId: session.module === 'reading' ? session.levelId : undefined,
+    structureId:
+      session.module === 'syllabification' ? session.structureId : undefined,
+    supportMode:
+      session.module === 'syllabification' ? session.supportMode : undefined,
+    includePseudowords:
+      session.module === 'syllabification'
+        ? session.includePseudowords
+        : undefined,
     totalTasks: summary.totalTasks,
     totalPoints: summary.totalPoints,
     counts: summary.counts,
@@ -113,7 +126,7 @@ export const normalizeProgress = (value: unknown): StoredProgress => {
   return {
     ...createEmptyProgress(),
     ...value,
-    version: 1,
+    version: 2,
     sessions,
     badges: value.badges,
     difficultItems: value.difficultItems,
@@ -126,10 +139,17 @@ const isStoredProgress = (value: unknown): value is StoredProgress => {
     return false
   }
 
-  const progress = value as Partial<StoredProgress>
+  const progress = value as {
+    version?: number
+    totalPoints?: unknown
+    sessions?: unknown
+    badges?: unknown
+    difficultItems?: unknown
+    materialProgress?: unknown
+  }
 
   return (
-    progress.version === 1 &&
+    (progress.version === 1 || progress.version === 2) &&
     typeof progress.totalPoints === 'number' &&
     Array.isArray(progress.sessions) &&
     Array.isArray(progress.badges) &&
@@ -159,7 +179,7 @@ const updateMaterialProgress = (
   const nextProgress = { ...currentProgress }
 
   for (const task of taskRecords) {
-    const key = materialProgressKey(task.module, task.materialId)
+    const key = materialProgressKey(task.module, task.kind, task.materialId)
     const previousRecord = nextProgress[key]
     const nextRecord: MaterialProgressRecord = {
       materialId: task.materialId,
@@ -207,7 +227,7 @@ const normalizeMaterialProgress = (
       module,
     }
 
-    normalizedProgress[materialProgressKey(module, record.materialId)] =
+    normalizedProgress[materialProgressKey(module, record.kind, record.materialId)] =
       normalizedRecord
   }
 

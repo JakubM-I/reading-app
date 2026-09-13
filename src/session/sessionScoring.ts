@@ -30,6 +30,10 @@ const readingTaskPoints: Record<SessionTaskKind, number[]> = {
   'syllable-say': [1, 1, 1, 1],
   'syllable-build': [1, 1, 1, 1],
   'syllable-split': [1, 1, 1, 1],
+  'blend-read': [1, 1, 1, 1],
+  'structure-read': [1, 1, 1, 1],
+  'structure-build': [1, 1, 1, 1],
+  'structure-review': [1, 1, 1, 1],
 }
 
 const syllabificationTaskPoints: Record<SyllabificationSupportMode, number[]> = {
@@ -40,7 +44,6 @@ const syllabificationTaskPoints: Record<SyllabificationSupportMode, number[]> = 
 
 export const getTaskRatingPoints = (
   task: SessionTask,
-  levelId: string,
   rating: SessionRating,
 ) => {
   if (rating === 'skip') {
@@ -51,7 +54,7 @@ export const getTaskRatingPoints = (
     return 1
   }
 
-  const basePoints = getTaskBasePoints(task, levelId)
+  const basePoints = getTaskBasePoints(task)
 
   if (rating === 'with-help') {
     return Math.max(1, basePoints - 1)
@@ -60,25 +63,21 @@ export const getTaskRatingPoints = (
   return basePoints
 }
 
-const getTaskBasePoints = (task: SessionTask, levelId: string) => {
-  const levelIndex = getLevelIndex(levelId)
+const getTaskBasePoints = (task: SessionTask) => {
+  const levelIndex = Math.min(Math.max(task.difficultyOrder, 1), 4) - 1
 
   if (task.module === 'syllabification') {
     if (task.kind === 'syllable-read') {
       return 1
     }
 
-    const supportMode = task.syllabification?.supportMode ?? 'full-help'
+    const supportMode =
+      task.structureExercise?.supportMode ??
+      task.syllabification?.supportMode ??
+      'full-help'
 
     return syllabificationTaskPoints[supportMode][levelIndex]
   }
 
   return readingTaskPoints[task.kind][levelIndex]
-}
-
-const getLevelIndex = (levelId: string) => {
-  const match = /^level-(\d+)$/.exec(levelId)
-  const levelOrder = match ? Number(match[1]) : 1
-
-  return Math.min(Math.max(levelOrder, 1), 4) - 1
 }

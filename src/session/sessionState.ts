@@ -24,7 +24,7 @@ export const rateCurrentTask = (
     {
       taskId: currentTask.id,
       rating,
-      points: getTaskRatingPoints(currentTask, session.levelId, rating),
+      points: getTaskRatingPoints(currentTask, rating),
     },
   ]
   const isCompleted = answers.length >= session.tasks.length

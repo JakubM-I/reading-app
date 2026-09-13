@@ -11,10 +11,11 @@ export {
   recordCompletedSession,
   saveProgress,
 } from './localProgress'
-export { getProgressOverview } from './progressSummary'
+export { getProgressOverview, getStructureProgress } from './progressSummary'
 export type {
   PeriodProgressSummary,
   ProgressOverview,
+  StructureProgressSummary,
 } from './progressSummary'
 export type { ParsedProgressBackup } from './progressBackup'
 export type {

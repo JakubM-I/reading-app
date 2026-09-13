@@ -32,7 +32,8 @@ Przyszla aplikacja powinna logicznie rozdzielac:
 
 Przykladowe obszary:
 
-- `content`: sylaby, slowa, zdania, poziomy;
+- `content`: poziomy czytania, struktury, laczenia, slowa, pseudowyrazy i
+  zdania;
 - `session`: generowanie i prowadzenie sesji dla wybranego modulu;
 - `progress`: punkty, historia, podsumowania;
 - `components`: ekrany i elementy UI;
@@ -65,11 +66,16 @@ Rekomendowany podzial plikow JSON:
 - `syllables.json`: sylaby i dwuznaki do rozgrzewki;
 - `words.json`: slowa, podzial na sylaby, liczba sylab, poziomy i tagi;
 - `sentences.json`: zdania, pytania o sens i powiazane slowa.
+- `structures.json`: definicje pierwszych szesciu struktur;
+- `blends.json`: recznie przygotowane laczenia `C + V` i `CV + C`;
+- `decodingWords.json`: prawdziwe slowa sklasyfikowane wedlug struktury;
+- `pseudowords.json`: jawnie oznaczony material bez znaczenia.
 
 Bazy cwiczen nie nalezy zapisywac w localStorage. Reset postepow nie moze jej usuwac.
 
-Modul sylabizowania powinien korzystac z recznego podzialu slow w `words.json`.
-Automatyczne dzielenie slow na sylaby nie jest czescia MVP.
+Modul sylabizowania korzysta z recznego podzialu sylab i grafemow. Kazdy
+grafem ma role `vowel` albo `consonant` oraz indeks sylaby. Automatyczne
+dzielenie slow ani generowanie pseudowyrazow nie jest czescia MVP.
 
 Przydatne pola dla slow:
 
@@ -84,8 +90,9 @@ Przydatne pola dla slow:
 Biezaca sesja powinna przechowywac:
 
 - wybrany modul: `syllabification` albo `reading`;
-- wybrany poziom;
+- wybrany poziom czytania albo strukture sylabowa;
 - wybrany tryb pomocy, jesli jest to sesja sylabizowania;
+- informacje, czy pseudowyrazy byly wlaczone;
 - liste zadan;
 - indeks aktualnego zadania;
 - czastkowe oceny;
@@ -114,8 +121,9 @@ Jesli w wybranym poziomie brakuje nowego materialu, generator moze dobrac
 material z wczesniejszych poziomow albo powtorzyc elementy wymagajace utrwalenia.
 Nie powinien jednak stale powtarzac elementow, ktore dziecko czyta samodzielnie.
 
-Historia powtorek powinna rozrozniac modul. Ten sam wyraz moze miec osobny
-status w module sylabizowania i osobny status w module czytania.
+Historia powtorek rozroznia modul i rodzaj zadania. Klucz ma format
+`modul:rodzaj-zadania:materialId`, dzieki czemu czytanie i budowanie tego samego
+slowa nie nadpisuja sie.
 
 ## Zapis Postepow
 
@@ -131,6 +139,10 @@ Zapis obejmuje:
 - trudne slowa;
 - pominiete zadania;
 - date ostatniej sesji.
+
+Format postepow ma wersje 2. Normalizacja przy odczycie i imporcie przyjmuje
+wersje 1, zachowuje punkty, odznaki i sesje oraz przepisuje historie materialu
+na klucze zawierajace rodzaj zadania.
 
 Pelny reset usuwa caly lokalny zapis postepow po potwierdzeniu.
 Pelny reset nie usuwa plikow JSON z baza cwiczen.
@@ -188,12 +200,18 @@ Minimalny zestaw testow/scenariuszy:
 - wybor modulu `Sylabizowanie`;
 - wybor modulu `Czytanie`;
 - przejscie sesji sylabizowania bez mieszania jej z czytaniem;
+- 36 kombinacji generatora: 6 struktur, 3 tryby pomocy i pseudowyrazy
+  wlaczone lub wylaczone;
+- dokladnie 10 zadan i jedna struktura w kazdej sesji sylabizowania;
+- obsluga `CVC` bez sztucznego podzialu na kilka sylab;
 - przejscie calej sesji;
 - naliczanie punktow dla wszystkich ocen z uwzglednieniem modulu, poziomu,
   typu zadania i trybu pomocy;
 - `Pomiń` daje 0 punktow;
 - trudne zadania trafiaja do historii;
 - historia zadan zapisuje modul;
+- historia zadan zapisuje rodzaj zadania i kontekst struktury;
+- import postepow w wersji 1 migruje dane do wersji 2;
 - zapis sesji pojawia sie w podsumowaniach;
 - eksport postepow tworzy plik JSON;
 - import postepow odtwarza lokalny zapis;
