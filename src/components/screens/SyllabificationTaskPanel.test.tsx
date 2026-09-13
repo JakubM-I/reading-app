@@ -50,3 +50,70 @@ describe('podpowiedź w zadaniu układania', () => {
     expect(markup).not.toContain('Pierwsza część')
   })
 })
+
+describe('podpowiedź w zadaniu czytania słowa', () => {
+  it('pokazuje pierwszą sylabę w trybie podpowiedzi', () => {
+    const task = createSyllabificationSession(
+      'structure-4',
+      'partial-help',
+      true,
+      exerciseContent,
+    ).tasks.find(
+      (item) => item.kind === 'structure-read' && item.materialKind === 'word',
+    )!
+    const content = task.structureExercise!
+    const markup = renderToStaticMarkup(
+      <SyllabificationTaskPanel task={task} taskCounterLabel="Zadanie 4 z 10" />,
+    )
+
+    expect(markup).toContain('Zacznij od')
+    expect(markup).toContain(
+      `aria-label="${content.syllables[0]}, budowa słowa"`,
+    )
+    expect(markup).toContain(`>${content.text}</p>`)
+    expect(markup.indexOf(`>${content.text}</p>`)).toBeLessThan(
+      markup.indexOf('Zacznij od'),
+    )
+  })
+
+  it('dla CVC pokazuje początkowe połączenie C + V', () => {
+    const task = createSyllabificationSession(
+      'structure-3',
+      'partial-help',
+      true,
+      exerciseContent,
+    ).tasks.find(
+      (item) => item.kind === 'structure-read' && item.materialKind === 'word',
+    )!
+    const content = task.structureExercise!
+    const initialCv = content.graphemes
+      .slice(0, 2)
+      .map(([grapheme]) => grapheme)
+      .join('')
+    const markup = renderToStaticMarkup(
+      <SyllabificationTaskPanel task={task} taskCounterLabel="Zadanie 4 z 10" />,
+    )
+
+    expect(markup).toContain(`aria-label="${initialCv}, budowa słowa"`)
+  })
+
+  it.each(['full-help', 'independent'] as const)(
+    'nie pokazuje częściowej wskazówki w trybie %s',
+    (supportMode) => {
+      const task = createSyllabificationSession(
+        'structure-4',
+        supportMode,
+        true,
+        exerciseContent,
+      ).tasks.find(
+        (item) => item.kind === 'structure-read' && item.materialKind === 'word',
+      )!
+      const markup = renderToStaticMarkup(
+        <SyllabificationTaskPanel task={task} taskCounterLabel="Zadanie 4 z 10" />,
+      )
+
+      expect(markup).not.toContain('Zacznij od')
+      expect(markup).not.toContain('Podpowiedź do czytania')
+    },
+  )
+})

@@ -44,6 +44,14 @@ export function SyllabificationTaskPanel({
         ? content.graphemes.map(([grapheme]) => grapheme)
         : content.syllables
       : []
+  const partialReadingHint =
+    task.kind === 'structure-read' &&
+    content.supportMode === 'partial-help' &&
+    !isRevealed
+      ? getInitialReadingHint(content.graphemes, content.syllables)
+      : undefined
+  const isPartialReadingTask =
+    task.kind === 'structure-read' && content.supportMode === 'partial-help'
 
   const checkBuild = () => {
     const answer = selectedTiles.map((tile) => tile.text).join('')
@@ -148,13 +156,28 @@ export function SyllabificationTaskPanel({
             </button>
           </div>
         </div>
-      ) : showStructure ? (
+      ) : showStructure && !isPartialReadingTask ? (
         <MarkedWord graphemes={content.graphemes} text={content.text} />
       ) : (
         <p className="task-display" lang="pl">{content.text}</p>
       )}
 
-      {showStructure && task.kind !== 'structure-build' && (
+      {isPartialReadingTask && (
+        <section className="reading-start-hint" aria-label="Podpowiedź do czytania">
+          <span className="build-hint-label">
+            {isRevealed ? 'Budowa słowa' : 'Zacznij od'}
+          </span>
+          <MarkedWord
+            graphemes={
+              isRevealed ? content.graphemes : partialReadingHint!.graphemes
+            }
+            text={isRevealed ? content.text : partialReadingHint!.text}
+          />
+          {isRevealed && <StructureLegend />}
+        </section>
+      )}
+
+      {showStructure && task.kind !== 'structure-build' && !isPartialReadingTask && (
         <StructureLegend />
       )}
 
@@ -226,6 +249,21 @@ function BuildHint({ parts, supportMode }: BuildHintProps) {
       </div>
     </section>
   )
+}
+
+const getInitialReadingHint = (
+  graphemes: readonly GraphemeTuple[],
+  syllables: readonly string[],
+) => {
+  const hintGraphemes =
+    syllables.length > 1
+      ? graphemes.filter(([, , syllableIndex]) => syllableIndex === 0)
+      : graphemes.slice(0, 2)
+
+  return {
+    graphemes: hintGraphemes,
+    text: hintGraphemes.map(([grapheme]) => grapheme).join(''),
+  }
 }
 
 interface MarkedWordProps {
