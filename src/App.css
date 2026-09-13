@@ -971,6 +971,50 @@ button:disabled {
   gap: 18px;
 }
 
+.build-hint {
+  width: min(100%, 540px);
+  display: grid;
+  justify-self: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid #b9d8c5;
+  border-radius: 8px;
+  background: #f2f8f4;
+}
+
+.build-hint-label {
+  color: #397d59;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.build-hint-parts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.build-hint-part,
+.build-hint-slot {
+  min-width: 64px;
+  min-height: 48px;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid #79ad8c;
+  border-radius: 8px;
+  color: var(--color-heading);
+  background: #ffffff;
+  font-size: 1.45rem;
+  font-weight: 820;
+}
+
+.build-hint-slot {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.48);
+}
+
 .structure-progress-panel > .panel-note {
   margin: 6px 0 16px;
 }

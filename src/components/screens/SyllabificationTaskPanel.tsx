@@ -38,6 +38,12 @@ export function SyllabificationTaskPanel({
     .filter((tile): tile is WordBuildingTile => Boolean(tile))
   const availableTiles =
     content.tiles?.filter((tile) => !selectedTileIds.includes(tile.id)) ?? []
+  const correctBuildParts =
+    task.kind === 'structure-build'
+      ? content.structureId === 'structure-3'
+        ? content.graphemes.map(([grapheme]) => grapheme)
+        : content.syllables
+      : []
 
   const checkBuild = () => {
     const answer = selectedTiles.map((tile) => tile.text).join('')
@@ -77,6 +83,12 @@ export function SyllabificationTaskPanel({
         </div>
       ) : task.kind === 'structure-build' && content.tiles ? (
         <div className="structure-build-workspace">
+          {content.supportMode !== 'independent' && !isRevealed && (
+            <BuildHint
+              parts={correctBuildParts}
+              supportMode={content.supportMode}
+            />
+          )}
           <div className="word-answer" aria-label="Ułożone części">
             {content.tiles.map((_, index) => {
               const tile = selectedTiles[index]
@@ -185,6 +197,34 @@ export function SyllabificationTaskPanel({
 
       {message && <p className="word-building-message" role="status">{message}</p>}
     </article>
+  )
+}
+
+interface BuildHintProps {
+  parts: readonly string[]
+  supportMode: 'full-help' | 'partial-help'
+}
+
+function BuildHint({ parts, supportMode }: BuildHintProps) {
+  const visiblePartCount = supportMode === 'full-help' ? parts.length : 1
+
+  return (
+    <section className="build-hint" aria-label="Podpowiedź do układania">
+      <span className="build-hint-label">
+        {supportMode === 'full-help' ? 'Wzór kolejności' : 'Pierwsza część'}
+      </span>
+      <div className="build-hint-parts">
+        {parts.map((part, index) => (
+          <span
+            className={index < visiblePartCount ? 'build-hint-part' : 'build-hint-slot'}
+            key={`${part}-${index}`}
+            aria-label={index < visiblePartCount ? part : 'puste miejsce'}
+          >
+            {index < visiblePartCount ? part : ''}
+          </span>
+        ))}
+      </div>
+    </section>
   )
 }
 
