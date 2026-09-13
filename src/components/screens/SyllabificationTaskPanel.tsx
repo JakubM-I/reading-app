@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { SessionTask } from '../../session'
+import type { GraphemeTuple } from '../../content/contentTypes'
+import type { SessionTask, WordBuildingTile } from '../../session'
 
 interface SyllabificationTaskPanelProps {
   task: SessionTask
@@ -12,16 +13,10 @@ export function SyllabificationTaskPanel({
   taskCounterLabel,
   onReadyForRating,
 }: SyllabificationTaskPanelProps) {
-  const [selectedTileIndexes, setSelectedTileIndexes] = useState<number[]>([])
-  const [splitIndexes, setSplitIndexes] = useState<number[]>([])
-  const [selectedSyllableCount, setSelectedSyllableCount] = useState<number | null>(
-    null,
-  )
-  const [isHintVisible, setIsHintVisible] = useState(false)
-  const [isReadyForRating, setIsReadyForRating] = useState(false)
-  const [hasCheckedAnswer, setHasCheckedAnswer] = useState(false)
-  const [checkMessage, setCheckMessage] = useState('')
-  const content = task.syllabification
+  const content = task.structureExercise
+  const [isRevealed, setIsRevealed] = useState(false)
+  const [selectedTileIds, setSelectedTileIds] = useState<string[]>([])
+  const [message, setMessage] = useState('')
 
   if (!content) {
     return (
@@ -29,362 +24,282 @@ export function SyllabificationTaskPanel({
         <p className="task-counter">{taskCounterLabel}</p>
         <p className="task-title">{task.prompt}</p>
         <p className="task-display">{task.displayText}</p>
-        {task.supportText && <p className="task-support">{task.supportText}</p>}
       </article>
     )
   }
 
-  const isIndependentMode = content.supportMode === 'independent'
-  const isPartialHelpMode = content.supportMode === 'partial-help'
-  const usesIndependentCountCheck =
-    task.kind === 'syllable-count' && isIndependentMode
-  const usesPartialHelpCountCheck =
-    task.kind === 'syllable-count' && isPartialHelpMode
-  const usesIndependentSayCheck = task.kind === 'syllable-say' && isIndependentMode
-  const usesPartialHelpSayCheck = task.kind === 'syllable-say' && isPartialHelpMode
-  const usesPartialHelpBuildCheck =
-    task.kind === 'syllable-build' && isPartialHelpMode
-  const usesPartialHelpSplitCheck =
-    task.kind === 'syllable-split' && isPartialHelpMode
-  const isInteractive =
-    usesIndependentCountCheck ||
-    usesPartialHelpCountCheck ||
-    usesIndependentSayCheck ||
-    usesPartialHelpSayCheck ||
-    task.kind === 'syllable-build' ||
-    task.kind === 'syllable-split'
-  const countOptions = getSyllableCountOptions(content.syllableCount)
-  const availableTileIndexes = content.tiles
-    .map((_, index) => index)
-    .filter((index) => !selectedTileIndexes.includes(index))
-  const selectedSyllables = selectedTileIndexes.map((index) => content.tiles[index].text)
-  const expectedSplitIndexes = getExpectedSplitIndexes(content.syllables)
-  const isSplitCorrect =
-    splitIndexes.length === expectedSplitIndexes.length &&
-    expectedSplitIndexes.every((index) => splitIndexes.includes(index))
-  const shouldRevealCheckedSplit =
-    (isReadyForRating &&
-      (isIndependentMode || usesPartialHelpCountCheck || usesPartialHelpSayCheck)) ||
-    (hasCheckedAnswer && (usesPartialHelpBuildCheck || usesPartialHelpSplitCheck))
-  const visibleSplit = content.revealedSplit || shouldRevealCheckedSplit
-    ? getVisibleSplit(content.syllables, content.revealedSplit, {
-        shouldRevealFullSplit: shouldRevealCheckedSplit,
-      })
-    : null
-  const shouldShowSupportTextInHelp =
-    Boolean(task.supportText) && content.supportMode !== 'independent'
-  const helpPanelLabel = shouldRevealCheckedSplit ? 'Odpowiedź' : 'Podpowiedź'
-  const helpPanelAriaLabel =
-    helpPanelLabel === 'Odpowiedź'
-      ? 'Odpowiedź do zadania'
-      : 'Podpowiedź do zadania'
+  const showStructure = task.kind === 'structure-build'
+    ? isRevealed
+    : content.supportMode === 'full-help' ||
+      task.kind === 'structure-review' ||
+      isRevealed
+  const selectedTiles = selectedTileIds
+    .map((id) => content.tiles?.find((tile) => tile.id === id))
+    .filter((tile): tile is WordBuildingTile => Boolean(tile))
+  const availableTiles =
+    content.tiles?.filter((tile) => !selectedTileIds.includes(tile.id)) ?? []
+  const correctBuildParts =
+    task.kind === 'structure-build'
+      ? content.structureId === 'structure-3'
+        ? content.graphemes.map(([grapheme]) => grapheme)
+        : content.syllables
+      : []
+  const partialReadingHint =
+    task.kind === 'structure-read' &&
+    content.supportMode === 'partial-help' &&
+    !isRevealed
+      ? getInitialReadingHint(content.graphemes, content.syllables)
+      : undefined
+  const isPartialReadingTask =
+    task.kind === 'structure-read' && content.supportMode === 'partial-help'
 
-  const markReadyForRating = () => {
-    setCheckMessage('')
-    setIsReadyForRating(true)
+  const checkBuild = () => {
+    const answer = selectedTiles.map((tile) => tile.text).join('')
+
+    if (answer !== content.text) {
+      setMessage('Sprawdź kolejność części i spróbuj jeszcze raz.')
+      return
+    }
+
+    setMessage('Dobrze ułożone. Przeczytaj całe słowo.')
+    setIsRevealed(true)
     onReadyForRating?.()
   }
 
-  const checkBuild = () => {
-    setHasCheckedAnswer(true)
-
-    const isCorrect =
-      selectedSyllables.length === content.syllables.length &&
-      selectedSyllables.every((syllable, index) => syllable === content.syllables[index])
-
-    if (!isCorrect) {
-      setCheckMessage('Sprawdź kolejność sylab i spróbuj jeszcze raz.')
-      return
-    }
-
-    markReadyForRating()
-  }
-
-  const checkCount = () => {
-    if (selectedSyllableCount !== content.syllableCount) {
-      setCheckMessage('Spróbuj jeszcze raz. Powiedz słowo powoli i policz części.')
-      return
-    }
-
-    markReadyForRating()
-  }
-
-  const checkSplit = () => {
-    setHasCheckedAnswer(true)
-
-    if (!isSplitCorrect) {
-      setCheckMessage('Sprawdź miejsca podziału i spróbuj jeszcze raz.')
-      return
-    }
-
-    markReadyForRating()
-  }
-
-  const toggleSplitIndex = (index: number) => {
-    setCheckMessage('')
-    setSplitIndexes((currentIndexes) =>
-      currentIndexes.includes(index)
-        ? currentIndexes.filter((currentIndex) => currentIndex !== index)
-        : [...currentIndexes, index].sort((first, second) => first - second),
-    )
-  }
-
   return (
-    <article
-      className="task-panel syllabification-task"
-      aria-label="Sylabizowanie"
-    >
+    <article className="task-panel structure-task" aria-label={task.title}>
       <p className="task-counter">{taskCounterLabel}</p>
       <p className="task-title">{task.prompt}</p>
 
-      {task.kind === 'syllable-count' ? (
-        usesIndependentCountCheck ? (
-          <>
-            <p className="task-display" lang="pl">
-              {content.word}
-            </p>
-            <div className="syllable-count-options" aria-label="Liczba sylab">
-              {countOptions.map((option) => (
-                <button
-                  type="button"
-                  className={
-                    selectedSyllableCount === option
-                      ? 'syllable-count-button selected'
-                      : 'syllable-count-button'
-                  }
-                  key={option}
-                  disabled={isReadyForRating}
-                  aria-pressed={selectedSyllableCount === option}
-                  onClick={() => {
-                    setCheckMessage('')
-                    setSelectedSyllableCount(option)
-                  }}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <p className="task-display" lang="pl">
-            {task.displayText}
-          </p>
-        )
-      ) : task.kind === 'syllable-build' ? (
-        <>
-          <div className="word-answer" aria-label="Ułożone sylaby">
-            {content.syllables.map((_, index) => {
-              const syllable = selectedSyllables[index]
+      {content.materialKind === 'pseudoword' && (
+        <p className="pseudoword-label">
+          Wymyślone słowo — nie musi nic znaczyć.
+        </p>
+      )}
 
-              if (!syllable) {
-                return <span className="word-answer-slot" key={`slot-${index}`} />
-              }
-
-              return (
+      {task.kind === 'blend-read' && content.blend ? (
+        <div className="blend-workspace" aria-label="Łączenie części">
+          <span className="blend-part">{content.blend.left}</span>
+          <span className="blend-symbol" aria-hidden="true">+</span>
+          <span className="blend-part">{content.blend.right}</span>
+          <span className="blend-symbol" aria-hidden="true">→</span>
+          {showStructure ? (
+            <MarkedWord graphemes={content.graphemes} text={content.text} />
+          ) : (
+            <span className="blend-result-placeholder" aria-label="Miejsce na wynik">?</span>
+          )}
+        </div>
+      ) : task.kind === 'structure-build' && content.tiles ? (
+        <div className="structure-build-workspace">
+          {content.supportMode !== 'independent' && !isRevealed && (
+            <BuildHint
+              parts={correctBuildParts}
+              supportMode={content.supportMode}
+            />
+          )}
+          <div className="word-answer" aria-label="Ułożone części">
+            {content.tiles.map((_, index) => {
+              const tile = selectedTiles[index]
+              return tile ? (
                 <button
                   type="button"
                   className="word-answer-tile"
-                  key={`${syllable}-${index}`}
-                  disabled={isReadyForRating}
-                  onClick={() =>
-                    setSelectedTileIndexes((currentIndexes) =>
-                      currentIndexes.filter((_, tileIndex) => tileIndex !== index),
+                  key={tile.id}
+                  onClick={() => {
+                    setMessage('')
+                    setSelectedTileIds((current) =>
+                      current.filter((id) => id !== tile.id),
                     )
-                  }
+                  }}
                 >
-                  {syllable}
+                  {tile.text}
                 </button>
+              ) : (
+                <span className="word-answer-slot" key={`slot-${index}`} />
               )
             })}
           </div>
-
-          <div className="word-tile-bank" aria-label="Kafelki sylab">
-            {availableTileIndexes.map((index) => (
+          <div className="word-tile-bank" aria-label="Części do ułożenia">
+            {availableTiles.map((tile) => (
               <button
                 type="button"
                 className="word-tile"
-                key={content.tiles[index].id}
-                disabled={isReadyForRating}
-                onClick={() =>
-                  setSelectedTileIndexes((currentIndexes) => [...currentIndexes, index])
-                }
+                key={tile.id}
+                onClick={() => {
+                  setMessage('')
+                  setSelectedTileIds((current) => [...current, tile.id])
+                }}
               >
-                {content.tiles[index].text}
+                {tile.text}
               </button>
             ))}
           </div>
-        </>
-      ) : task.kind === 'syllable-split' ? (
-        <div className="split-word" aria-label="Miejsca podziału słowa">
-          {content.word.split('').map((letter, index, letters) => (
-            <span className="split-letter-group" key={`${letter}-${index}`}>
-              <span className="split-letter">{letter}</span>
-              {index < letters.length - 1 && (
-                <button
-                  type="button"
-                  className={
-                    splitIndexes.includes(index + 1)
-                      ? 'split-marker selected'
-                      : 'split-marker'
-                  }
-                  disabled={isReadyForRating}
-                  aria-label={`Podział po literze ${letter}`}
-                  onClick={() => toggleSplitIndex(index + 1)}
-                >
-                  |
-                </button>
-              )}
-            </span>
-          ))}
-        </div>
-      ) : (
-        <p className="task-display" lang="pl">
-          {task.displayText}
-        </p>
-      )}
-
-      {(visibleSplit || shouldShowSupportTextInHelp) && (
-        <section className="syllable-help-card" aria-label={helpPanelAriaLabel}>
-          <span className="syllable-help-label">{helpPanelLabel}</span>
-          {visibleSplit && (
-            <div className="guided-syllables" aria-label="Podział na sylaby">
-              {visibleSplit.map((syllable, index) => (
-                <span key={`${syllable || 'blank'}-${index}`}>{syllable || '...'}</span>
-              ))}
-            </div>
-          )}
-          {shouldShowSupportTextInHelp && (
-            <p className="task-support">{task.supportText}</p>
-          )}
-        </section>
-      )}
-
-      {task.supportText && !shouldShowSupportTextInHelp && (
-        <p className="task-support">{task.supportText}</p>
-      )}
-
-      {content.supportMode === 'independent' && (
-        <button
-          type="button"
-          className="secondary-button compact"
-          onClick={() => setIsHintVisible((currentValue) => !currentValue)}
-        >
-          Podpowiedź
-        </button>
-      )}
-
-      {(isHintVisible || content.supportMode !== 'independent') && (
-        <div className="guided-question syllabification-hint">
-          <span>Jak czytać</span>
-          <strong>{getHintText(content.supportMode)}</strong>
-        </div>
-      )}
-
-      {checkMessage && (
-        <p className="word-building-message" role="status">
-          {checkMessage}
-        </p>
-      )}
-
-      {isInteractive && (
-        <div className="word-building-actions">
-          {!usesIndependentSayCheck &&
-            !usesPartialHelpSayCheck &&
-            !usesPartialHelpCountCheck && (
+          <div className="word-building-actions">
             <button
               type="button"
               className="secondary-button"
-              disabled={
-                isReadyForRating ||
-                (usesIndependentCountCheck
-                  ? selectedSyllableCount === null
-                  : task.kind === 'syllable-build'
-                    ? selectedTileIndexes.length === 0
-                    : splitIndexes.length === 0)
-              }
+              disabled={selectedTileIds.length === 0}
               onClick={() => {
-                setCheckMessage('')
-                if (usesIndependentCountCheck) {
-                  setSelectedSyllableCount(null)
-                  return
-                }
-                if (task.kind === 'syllable-build') {
-                  setSelectedTileIndexes((currentIndexes) => currentIndexes.slice(0, -1))
-                  return
-                }
-                setSplitIndexes([])
+                setMessage('')
+                setSelectedTileIds((current) => current.slice(0, -1))
               }}
             >
               Cofnij
             </button>
-          )}
-          <button
-            type="button"
-            className="primary-button compact"
-            disabled={
-              isReadyForRating ||
-              (usesIndependentCountCheck
-                ? selectedSyllableCount === null
-                : usesPartialHelpCountCheck
-                  ? false
-                  : usesIndependentSayCheck || usesPartialHelpSayCheck
-                    ? false
-                    : task.kind === 'syllable-build'
-                      ? selectedTileIndexes.length !== content.syllables.length
-                      : splitIndexes.length === 0)
-            }
-            onClick={
-              usesIndependentCountCheck
-                ? checkCount
-                : usesPartialHelpCountCheck
-                  ? markReadyForRating
-                  : usesIndependentSayCheck || usesPartialHelpSayCheck
-                    ? markReadyForRating
-                    : task.kind === 'syllable-build'
-                      ? checkBuild
-                      : checkSplit
-            }
-          >
-            {isReadyForRating ? 'Gotowe do oceny' : 'Sprawdź'}
-          </button>
+            <button
+              type="button"
+              className="primary-button compact"
+              disabled={selectedTileIds.length !== content.tiles.length}
+              onClick={checkBuild}
+            >
+              Sprawdź
+            </button>
+          </div>
         </div>
+      ) : showStructure && !isPartialReadingTask ? (
+        <MarkedWord graphemes={content.graphemes} text={content.text} />
+      ) : (
+        <p className="task-display" lang="pl">{content.text}</p>
       )}
+
+      {isPartialReadingTask && (
+        <section className="reading-start-hint" aria-label="Podpowiedź do czytania">
+          <span className="build-hint-label">
+            {isRevealed ? 'Budowa słowa' : 'Zacznij od'}
+          </span>
+          <MarkedWord
+            graphemes={
+              isRevealed ? content.graphemes : partialReadingHint!.graphemes
+            }
+            text={isRevealed ? content.text : partialReadingHint!.text}
+          />
+          {isRevealed && <StructureLegend />}
+        </section>
+      )}
+
+      {showStructure && task.kind !== 'structure-build' && !isPartialReadingTask && (
+        <StructureLegend />
+      )}
+
+      {!showStructure && task.kind !== 'structure-build' && (
+        <button
+          type="button"
+          className="secondary-button compact reveal-structure-button"
+          onClick={() => {
+            setIsRevealed(true)
+            onReadyForRating?.()
+          }}
+        >
+          {content.supportMode === 'partial-help'
+            ? 'Pokaż budowę'
+            : 'Pokaż odpowiedź'}
+        </button>
+      )}
+
+      {!showStructure && task.kind === 'structure-build' && (
+        <button
+          type="button"
+          className="secondary-button compact reveal-structure-button"
+          onClick={() => {
+            setIsRevealed(true)
+            setMessage('Przeczytaj odpowiedź i spróbuj ułożyć ją jeszcze raz.')
+            onReadyForRating?.()
+          }}
+        >
+          Pokaż odpowiedź
+        </button>
+      )}
+
+      {showStructure && task.kind === 'structure-build' && (
+        <section className="syllable-help-card" aria-label="Budowa słowa">
+          <span className="syllable-help-label">Budowa słowa</span>
+          <MarkedWord graphemes={content.graphemes} text={content.text} />
+          <StructureLegend />
+        </section>
+      )}
+
+      {message && <p className="word-building-message" role="status">{message}</p>}
     </article>
   )
 }
 
-const getSyllableCountOptions = (syllableCount: number) =>
-  Array.from({ length: Math.max(4, syllableCount) }, (_, index) => index + 1)
+interface BuildHintProps {
+  parts: readonly string[]
+  supportMode: 'full-help' | 'partial-help'
+}
 
-const getVisibleSplit = (
-  syllables: string[],
-  revealedSplit: string[] | undefined,
-  options: { shouldRevealFullSplit: boolean },
+function BuildHint({ parts, supportMode }: BuildHintProps) {
+  const visiblePartCount = supportMode === 'full-help' ? parts.length : 1
+
+  return (
+    <section className="build-hint" aria-label="Podpowiedź do układania">
+      <span className="build-hint-label">
+        {supportMode === 'full-help' ? 'Wzór kolejności' : 'Pierwsza część'}
+      </span>
+      <div className="build-hint-parts">
+        {parts.map((part, index) => (
+          <span
+            className={index < visiblePartCount ? 'build-hint-part' : 'build-hint-slot'}
+            key={`${part}-${index}`}
+            aria-label={index < visiblePartCount ? part : 'puste miejsce'}
+          >
+            {index < visiblePartCount ? part : ''}
+          </span>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+const getInitialReadingHint = (
+  graphemes: readonly GraphemeTuple[],
+  syllables: readonly string[],
 ) => {
-  if (options.shouldRevealFullSplit) {
-    return syllables
-  }
+  const hintGraphemes =
+    syllables.length > 1
+      ? graphemes.filter(([, , syllableIndex]) => syllableIndex === 0)
+      : graphemes.slice(0, 2)
 
-  return revealedSplit ?? syllables
+  return {
+    graphemes: hintGraphemes,
+    text: hintGraphemes.map(([grapheme]) => grapheme).join(''),
+  }
 }
 
-const getExpectedSplitIndexes = (syllables: string[]) => {
-  let nextIndex = 0
-
-  return syllables.slice(0, -1).map((syllable) => {
-    nextIndex += syllable.length
-    return nextIndex
-  })
+interface MarkedWordProps {
+  graphemes: readonly GraphemeTuple[]
+  text: string
 }
 
-const getHintText = (mode: string) => {
-  if (mode === 'full-help') {
-    return 'Czytaj części po kolei, potem całe słowo.'
-  }
+function MarkedWord({ graphemes, text }: MarkedWordProps) {
+  const syllableIndexes = [...new Set(graphemes.map(([, , index]) => index))]
 
-  if (mode === 'partial-help') {
-    return 'Znajdź samogłoski i powiedz słowo powoli.'
-  }
+  return (
+    <div className="marked-word" aria-label={`${text}, budowa słowa`} lang="pl">
+      {syllableIndexes.map((syllableIndex, groupIndex) => (
+        <span className="marked-syllable-group" key={syllableIndex}>
+          {groupIndex > 0 && <span className="syllable-divider" aria-hidden="true">–</span>}
+          <span className="marked-syllable">
+            {graphemes
+              .filter(([, , index]) => index === syllableIndex)
+              .map(([grapheme, role], index) => (
+                <span className={`grapheme ${role}`} key={`${grapheme}-${index}`}>
+                  {grapheme}
+                </span>
+              ))}
+          </span>
+        </span>
+      ))}
+    </div>
+  )
+}
 
-  return 'Powiedz słowo powoli. Dwuznak trzyma się razem.'
+function StructureLegend() {
+  return (
+    <div className="structure-legend" aria-label="Legenda oznaczeń">
+      <span><i className="legend-dot vowel" aria-hidden="true" />samogłoska</span>
+      <span><i className="legend-dot consonant" aria-hidden="true" />spółgłoska</span>
+      <span><i className="legend-divider" aria-hidden="true">–</i>granica sylaby</span>
+    </div>
+  )
 }

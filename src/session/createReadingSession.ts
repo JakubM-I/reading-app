@@ -37,17 +37,27 @@ export const createReadingSession = (
       levelId,
     ),
     levelId,
+    'warmup',
     materialProgress,
     sessionIndex,
   )
-  const words = sortByMaterialPriority(
-    prioritizeLevel(
-      content.words.filter((word) => isAvailable(word.levelId)),
-      levelId,
-    ),
+  const availableWords = prioritizeLevel(
+    content.words.filter((word) => isAvailable(word.levelId)),
     levelId,
+  )
+  const words = sortByMaterialPriority(
+    availableWords,
+    levelId,
+    'guided-reading',
     materialProgress,
     sessionIndex + 17,
+  )
+  const buildingWords = sortByMaterialPriority(
+    availableWords,
+    levelId,
+    'word-building',
+    materialProgress,
+    sessionIndex + 23,
   )
   const wordsWithSyllableSplit = words.filter((word) => word.syllables.length > 1)
   const sentences = sortByMaterialPriority(
@@ -56,6 +66,7 @@ export const createReadingSession = (
       levelId,
     ),
     levelId,
+    'sentence-comprehension',
     materialProgress,
     sessionIndex + 31,
   )
@@ -67,9 +78,16 @@ export const createReadingSession = (
     SESSION_TASK_COUNT.guidedReading,
   )
   const guidedReadingWordIds = new Set(guidedReadingSelection.map((word) => word.id))
+  const buildingWordsWithSyllableSplit = buildingWords.filter(
+    (word) => word.syllables.length > 1,
+  )
   const wordBuildingWords = prioritizeDistinctSyllableWords([
-    ...wordsWithSyllableSplit.filter((word) => !guidedReadingWordIds.has(word.id)),
-    ...wordsWithSyllableSplit.filter((word) => guidedReadingWordIds.has(word.id)),
+    ...buildingWordsWithSyllableSplit.filter(
+      (word) => !guidedReadingWordIds.has(word.id),
+    ),
+    ...buildingWordsWithSyllableSplit.filter((word) =>
+      guidedReadingWordIds.has(word.id),
+    ),
   ])
 
   const warmupTasks = takeLooped(syllables, SESSION_TASK_COUNT.warmup).map(
@@ -83,6 +101,7 @@ export const createReadingSession = (
       supportText: getWarmupMaterialLabel(syllable.kind),
       materialId: syllable.id,
       reviewText: syllable.text,
+      difficultyOrder: levelOrder,
     }),
   )
 
@@ -99,6 +118,7 @@ export const createReadingSession = (
       supportText: word.text,
       materialId: word.id,
       reviewText: word.text,
+      difficultyOrder: levelOrder,
       guidedReading: sentence
         ? {
             syllables: word.syllables,
@@ -124,6 +144,7 @@ export const createReadingSession = (
       supportText: word.text,
       materialId: word.id,
       reviewText: word.text,
+      difficultyOrder: levelOrder,
       wordBuilding: {
         targetWord: word.text,
         syllables: word.syllables,
@@ -143,6 +164,7 @@ export const createReadingSession = (
       supportText: sentence.question,
       materialId: sentence.id,
       reviewText: sentence.text,
+      difficultyOrder: levelOrder,
     }),
   )
 
@@ -173,23 +195,25 @@ const prioritizeLevel = <Item extends { levelId: string }>(
 const sortByMaterialPriority = <Item extends { id: string; levelId: string }>(
   items: readonly Item[],
   levelId: string,
+  kind: SessionTask['kind'],
   progress: Record<string, MaterialProgressRecord>,
   sessionIndex: number,
 ) =>
   [...items].sort((firstItem, secondItem) =>
     comparePriority(
-      getMaterialPriority(firstItem, levelId, progress, sessionIndex),
-      getMaterialPriority(secondItem, levelId, progress, sessionIndex),
+      getMaterialPriority(firstItem, levelId, kind, progress, sessionIndex),
+      getMaterialPriority(secondItem, levelId, kind, progress, sessionIndex),
     ),
   )
 
 const getMaterialPriority = <Item extends { id: string; levelId: string }>(
   item: Item,
   levelId: string,
+  kind: SessionTask['kind'],
   progress: Record<string, MaterialProgressRecord>,
   sessionIndex: number,
 ) => {
-  const record = progress[`reading:${item.id}`]
+  const record = progress[`reading:${kind}:${item.id}`]
   const levelPriority = item.levelId === levelId ? 0 : 1
 
   if (!record) {

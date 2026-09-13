@@ -100,25 +100,27 @@ Rezultat:
 
 ## Etap 4 - Modul Sylabizowania
 
-Cel: dodac osobny modul cwiczenia podzialu slow na sylaby.
+Status: zrealizowany, a nastepnie rozszerzony o pierwszych szesc struktur.
+
+Cel: dodac osobny modul syntezy sylab i czytania slow o okreslonej budowie.
 
 Zakres:
 
 - osobna sesja `Sylabizowanie`;
 - tryby pomocy: `Z pomocą`, `Z podpowiedzią`, `Samodzielnie`;
-- zadanie liczenia sylab;
-- zadanie mowienia slowa sylabami;
-- zadanie ukladania slowa z kafelkow sylab albo wskazywania kolejnych sylab;
-- zadanie wstawiania podzialu sylabowego;
-- krotka sciaga/podpowiedz do sylabizowania;
+- reczny wybor jednej z szesciu struktur;
+- trzy zadania laczenia elementow, piec zadan czytania, jedno budowania i jedno
+  ponownego czytania z pokazana budowa;
+- dwa jawnie oznaczone pseudowyrazy z mozliwoscia wylaczenia;
+- oznaczenie samoglosek, spolglosek i granic sylab zalezne od trybu pomocy;
 - ocena rodzica po kazdym zadaniu.
 
 Uwagi:
 
 - nie dodawac sesji mieszanych;
 - nie dodawac zadania wyboru poprawnego wariantu z kilku odpowiedzi;
-- na start wybierac slowa dwu- i trzysylabowe;
-- podzial slow na sylaby pozostaje reczny, zgodny z danymi JSON.
+- struktura `CVC` swiadomie korzysta ze slow jednosylabowych;
+- podzial na sylaby i grafemy pozostaje reczny, zgodny z danymi JSON.
 
 Rezultat:
 

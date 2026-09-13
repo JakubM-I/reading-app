@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import finishFlagAsset from '../../assets/flaga_mety_asset.png'
 import garageAsset from '../../assets/garaz_asset.png'
 import progressCarAsset from '../../assets/progrss-car.png'
@@ -7,7 +6,7 @@ import independentIcon from '../../assets/samodzielnie.png'
 import withHelpIcon from '../../assets/z-pomoca.png'
 import hardIcon from '../../assets/trudne.png'
 import skipIcon from '../../assets/pominiete.png'
-import type { ContentLevel } from '../../content/contentTypes'
+import type { ContentLevel, ContentStructure } from '../../content/contentTypes'
 import type { ProgressBadge } from '../../progress'
 import {
   getCurrentTask,
@@ -20,7 +19,8 @@ import { SessionSummary } from './SessionSummary'
 import { SessionTaskPanel } from './SessionTaskPanel'
 
 interface SessionScreenProps {
-  level: ContentLevel
+  level?: ContentLevel
+  structure?: ContentStructure
   session: ReadingSession
   earnedBadges: ProgressBadge[]
   onBack: () => void
@@ -31,6 +31,7 @@ interface SessionScreenProps {
 
 export function SessionScreen({
   level,
+  structure,
   session,
   earnedBadges,
   onBack,
@@ -38,14 +39,6 @@ export function SessionScreen({
   onReset,
   onReturnHome,
 }: SessionScreenProps) {
-  const [ratingReadiness, setRatingReadiness] = useState<{
-    sessionId: string
-    readyTaskIds: Record<string, boolean>
-  }>({
-    sessionId: session.id,
-    readyTaskIds: {},
-  })
-
   if (session.status === 'completed') {
     return (
       <SessionSummary
@@ -62,33 +55,9 @@ export function SessionScreen({
   const currentTaskNumber = session.answers.length + 1
   const roadSteps = Array.from({ length: session.tasks.length }, (_, index) => index + 1)
   const currentTaskKindLabel = currentTask?.title ?? 'Zadanie'
-  const readyTaskIds =
-    ratingReadiness.sessionId === session.id ? ratingReadiness.readyTaskIds : {}
-  const canRateCurrentTask =
-    !currentTask ||
-    !taskNeedsCompletion(currentTask) ||
-    readyTaskIds[currentTask.id] === true
-
-  const markCurrentTaskReadyForRating = () => {
-    if (!currentTask) {
-      return
-    }
-
-    setRatingReadiness((currentReadiness) => {
-      const currentReadyTaskIds =
-        currentReadiness.sessionId === session.id
-          ? currentReadiness.readyTaskIds
-          : {}
-
-      return {
-        sessionId: session.id,
-        readyTaskIds: {
-          ...currentReadyTaskIds,
-          [currentTask.id]: true,
-        },
-      }
-    })
-  }
+  const sessionContextLabel = session.module === 'reading'
+    ? `Poziom ${level?.order ?? 1}`
+    : `Struktura ${structure?.order ?? session.structureId.slice(-1)} · ${structure?.pattern ?? ''}`
 
   return (
     <section className="session-screen" aria-labelledby="session-title">
@@ -98,7 +67,7 @@ export function SessionScreen({
             ← Powrót
           </button>
           <h2 id="session-title">
-            Poziom {level.order} <span>·</span> {currentTaskKindLabel}
+            {sessionContextLabel} <span>·</span> {currentTaskKindLabel}
           </h2>
           <button
             type="button"
@@ -149,7 +118,6 @@ export function SessionScreen({
               <SessionTaskPanel
                 task={currentTask}
                 taskCounterLabel={`Zadanie ${currentTaskNumber} z ${session.tasks.length}`}
-                onReadyForRating={markCurrentTaskReadyForRating}
               />
             )}
           </div>
@@ -157,40 +125,32 @@ export function SessionScreen({
           <aside className="parent-panel session-panel" aria-label="Panel rodzica">
             <h2>Panel rodzica</h2>
             <p className="panel-note">Oceń wykonanie zadania</p>
-            {canRateCurrentTask ? (
-              <>
-                <div className="rating-list">
-                  {ratingOptions.map((option) => (
-                    <button
-                      type="button"
-                      className="rating-button"
-                      key={option.value}
-                      onClick={() => onRateTask(option.value)}
-                    >
-                      <span>
-                        <img
-                          src={ratingIcons[option.value]}
-                          alt=""
-                          className="rating-icon"
-                          aria-hidden="true"
-                        />
-                        {option.label}
-                      </span>
-                      <span>
-                        {currentTask
-                          ? getTaskRatingPoints(currentTask, session.levelId, option.value)
-                          : 0}{' '}
-                        pkt
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="panel-note parent-waiting-note">
-                {getWaitingNote(currentTask)}
-              </p>
-            )}
+            <div className="rating-list">
+              {ratingOptions.map((option) => (
+                <button
+                  type="button"
+                  className="rating-button"
+                  key={option.value}
+                  onClick={() => onRateTask(option.value)}
+                >
+                  <span>
+                    <img
+                      src={ratingIcons[option.value]}
+                      alt=""
+                      className="rating-icon"
+                      aria-hidden="true"
+                    />
+                    {option.label}
+                  </span>
+                  <span>
+                    {currentTask
+                      ? getTaskRatingPoints(currentTask, option.value)
+                      : 0}{' '}
+                    pkt
+                  </span>
+                </button>
+              ))}
+            </div>
 
             <div className="quiet-actions">
               <button type="button" className="text-button" onClick={onReset}>
@@ -204,55 +164,9 @@ export function SessionScreen({
   )
 }
 
-const taskNeedsCompletion = (task: NonNullable<ReturnType<typeof getCurrentTask>>) =>
-  (task.kind === 'guided-reading' && Boolean(task.guidedReading)) ||
-  (task.kind === 'word-building' && Boolean(task.wordBuilding)) ||
-  needsSyllabificationCompletion(task)
-
-const needsSyllabificationCompletion = (
-  task: NonNullable<ReturnType<typeof getCurrentTask>>,
-) => {
-  if (!task.syllabification) {
-    return false
-  }
-
-  if (task.kind === 'syllable-build' || task.kind === 'syllable-split') {
-    return true
-  }
-
-  if (
-    task.syllabification.supportMode === 'partial-help' &&
-    (task.kind === 'syllable-count' || task.kind === 'syllable-say')
-  ) {
-    return true
-  }
-
-  return (
-    task.syllabification.supportMode === 'independent' &&
-    (task.kind === 'syllable-count' || task.kind === 'syllable-say')
-  )
-}
-
 const ratingIcons: Record<SessionRating, string> = {
   independent: independentIcon,
   'with-help': withHelpIcon,
   hard: hardIcon,
   skip: skipIcon,
-}
-
-const getWaitingNote = (task: ReturnType<typeof getCurrentTask>) => {
-  if (task?.kind === 'word-building') {
-    return 'Najpierw ułóż słowo z sylab.'
-  }
-
-  if (
-    task?.kind === 'syllable-count' ||
-    task?.kind === 'syllable-say' ||
-    task?.kind === 'syllable-build' ||
-    task?.kind === 'syllable-split'
-  ) {
-    return 'Najpierw wykonaj zadanie i kliknij „Sprawdź”.'
-  }
-
-  return 'Najpierw przejdź przez kroki czytania.'
 }

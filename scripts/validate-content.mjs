@@ -2,6 +2,16 @@ import { readFile } from 'node:fs/promises'
 
 const contentDir = new URL('../src/content/', import.meta.url)
 const allowedSyllableKinds = new Set(['syllable', 'digraph', 'trigraph'])
+const allowedStructureIds = new Set([
+  'structure-1',
+  'structure-2',
+  'structure-3',
+  'structure-4',
+  'structure-5',
+  'structure-6',
+])
+const allowedDifficultyStages = new Set(['basic', 'extended', 'digraph'])
+const allowedGraphemeRoles = new Set(['vowel', 'consonant'])
 const protectedTerms = [
   'pokemon',
   'hot wheels',
@@ -56,21 +66,34 @@ const levels = await readJson('levels.json')
 const syllables = await readJson('syllables.json')
 const words = await readJson('words.json')
 const sentences = await readJson('sentences.json')
+const structures = await readJson('structures.json')
+const blends = await readJson('blends.json')
+const decodingWords = await readJson('decodingWords.json')
+const pseudowords = await readJson('pseudowords.json')
 
 assert(Array.isArray(levels), 'levels.json must contain an array')
 assert(Array.isArray(syllables), 'syllables.json must contain an array')
 assert(Array.isArray(words), 'words.json must contain an array')
 assert(Array.isArray(sentences), 'sentences.json must contain an array')
+assert(Array.isArray(structures), 'structures.json must contain an array')
+assert(Array.isArray(blends), 'blends.json must contain an array')
+assert(Array.isArray(decodingWords), 'decodingWords.json must contain an array')
+assert(Array.isArray(pseudowords), 'pseudowords.json must contain an array')
 
 const allIds = new Set()
 ensureUniqueIds(levels, 'levels.json', allIds)
 ensureUniqueIds(syllables, 'syllables.json', allIds)
 ensureUniqueIds(words, 'words.json', allIds)
 ensureUniqueIds(sentences, 'sentences.json', allIds)
+ensureUniqueIds(structures, 'structures.json', allIds)
+ensureUniqueIds(blends, 'blends.json', allIds)
+ensureUniqueIds(decodingWords, 'decodingWords.json', allIds)
+ensureUniqueIds(pseudowords, 'pseudowords.json', allIds)
 
 const levelById = new Map(levels.map((level) => [level.id, level]))
 const wordById = new Map(words.map((word) => [word.id, word]))
 const levelOrderById = new Map(levels.map((level) => [level.id, level.order]))
+const structureById = new Map(structures.map((structure) => [structure.id, structure]))
 
 for (const level of levels) {
   assert(Number.isInteger(level.order), `${level.id}: level order must be an integer`)
@@ -170,6 +193,200 @@ for (const sentence of sentences) {
   }
 }
 
+const expectedPatterns = {
+  'structure-1': [['consonant', 'vowel'], ['consonant', 'vowel']],
+  'structure-3': [['consonant', 'vowel', 'consonant']],
+  'structure-4': [
+    ['consonant', 'vowel'],
+    ['consonant', 'vowel', 'consonant'],
+  ],
+  'structure-5': [
+    ['consonant', 'vowel', 'consonant'],
+    ['consonant', 'vowel'],
+  ],
+  'structure-6': [
+    ['consonant', 'vowel', 'consonant'],
+    ['consonant', 'vowel', 'consonant'],
+  ],
+}
+
+const validateGraphemes = (item, label) => {
+  assert(Array.isArray(item.graphemes) && item.graphemes.length > 0, `${label}: graphemes are required`)
+
+  if (!Array.isArray(item.graphemes)) {
+    return
+  }
+
+  for (const grapheme of item.graphemes) {
+    assert(
+      Array.isArray(grapheme) && grapheme.length === 3,
+      `${label}: every grapheme must be [text, role, syllableIndex]`,
+    )
+
+    if (!Array.isArray(grapheme) || grapheme.length !== 3) {
+      continue
+    }
+
+    assert(isNonEmptyString(grapheme[0]), `${label}: grapheme text is required`)
+    assert(
+      allowedGraphemeRoles.has(grapheme[1]),
+      `${label}: invalid grapheme role "${grapheme[1]}"`,
+    )
+    assert(
+      Number.isInteger(grapheme[2]) && grapheme[2] >= 0,
+      `${label}: invalid syllable index "${grapheme[2]}"`,
+    )
+  }
+}
+
+const getRolePattern = (item) => {
+  const syllables = Array.from({ length: item.syllables.length }, () => [])
+
+  for (const [, role, syllableIndex] of item.graphemes) {
+    if (syllables[syllableIndex]) {
+      syllables[syllableIndex].push(role)
+    }
+  }
+
+  return syllables
+}
+
+const validateDecodingItem = (item, label, expectedKind) => {
+  assert(item.materialKind === expectedKind, `${label}: materialKind must be "${expectedKind}"`)
+  assert(isNonEmptyString(item.text), `${label}: text is required`)
+  assert(isStringArray(item.syllables), `${label}: syllables must be a non-empty string array`)
+  assert(allowedStructureIds.has(item.structureId), `${label}: invalid structureId "${item.structureId}"`)
+  assert(
+    allowedDifficultyStages.has(item.difficultyStage),
+    `${label}: invalid difficultyStage "${item.difficultyStage}"`,
+  )
+  validateGraphemes(item, label)
+
+  if (!Array.isArray(item.syllables) || !Array.isArray(item.graphemes)) {
+    return
+  }
+
+  assert(
+    normalize(item.graphemes.map(([text]) => text).join('')) === normalize(item.text),
+    `${label}: graphemes do not rebuild "${item.text}"`,
+  )
+
+  item.syllables.forEach((syllable, syllableIndex) => {
+    const rebuiltSyllable = item.graphemes
+      .filter((grapheme) => grapheme[2] === syllableIndex)
+      .map(([text]) => text)
+      .join('')
+    assert(
+      normalize(rebuiltSyllable) === normalize(syllable),
+      `${label}: graphemes do not rebuild syllable "${syllable}"`,
+    )
+  })
+
+  const actualPattern = getRolePattern(item)
+  const expectedPattern = item.structureId === 'structure-2'
+    ? Array.from({ length: item.syllables.length }, () => ['consonant', 'vowel'])
+    : expectedPatterns[item.structureId]
+
+  if (item.structureId === 'structure-2') {
+    assert(item.syllables.length >= 3, `${label}: structure-2 needs at least three syllables`)
+  }
+
+  assert(
+    JSON.stringify(actualPattern) === JSON.stringify(expectedPattern),
+    `${label}: grapheme roles do not match ${item.structureId}`,
+  )
+}
+
+assert(structures.length === 6, 'structures.json must contain exactly six structures')
+for (const structure of structures) {
+  assert(allowedStructureIds.has(structure.id), `${structure.id}: invalid structure id`)
+  assert(Number.isInteger(structure.order), `${structure.id}: order must be an integer`)
+  assert(isNonEmptyString(structure.pattern), `${structure.id}: pattern is required`)
+  assert(isNonEmptyString(structure.name), `${structure.id}: name is required`)
+  assert(isNonEmptyString(structure.description), `${structure.id}: description is required`)
+  assert(isNonEmptyString(structure.example), `${structure.id}: example is required`)
+}
+
+for (const blend of blends) {
+  assert(blend.materialKind === 'blend', `${blend.id}: materialKind must be "blend"`)
+  assert(blend.blendKind === 'cv' || blend.blendKind === 'cvc', `${blend.id}: invalid blendKind`)
+  assert(isNonEmptyString(blend.left), `${blend.id}: left is required`)
+  assert(isNonEmptyString(blend.right), `${blend.id}: right is required`)
+  assert(isNonEmptyString(blend.result), `${blend.id}: result is required`)
+  assert(
+    normalize(`${blend.left}${blend.right}`) === normalize(blend.result),
+    `${blend.id}: left and right do not rebuild result`,
+  )
+  assert(
+    allowedDifficultyStages.has(blend.difficultyStage),
+    `${blend.id}: invalid difficultyStage`,
+  )
+  assert(
+    Array.isArray(blend.structureIds) && blend.structureIds.length > 0,
+    `${blend.id}: structureIds are required`,
+  )
+  for (const structureId of blend.structureIds ?? []) {
+    assert(structureById.has(structureId), `${blend.id}: unknown structureId "${structureId}"`)
+  }
+  validateGraphemes(blend, blend.id)
+  assert(
+    normalize(blend.graphemes.map(([text]) => text).join('')) === normalize(blend.result),
+    `${blend.id}: graphemes do not rebuild result`,
+  )
+}
+
+for (const item of decodingWords) {
+  validateDecodingItem(item, item.id, 'word')
+  if (item.sourceWordId !== undefined) {
+    const sourceWord = wordById.get(item.sourceWordId)
+    assert(sourceWord, `${item.id}: unknown sourceWordId "${item.sourceWordId}"`)
+    assert(
+      !sourceWord || normalize(sourceWord.text) === normalize(item.text),
+      `${item.id}: source word text does not match`,
+    )
+  }
+}
+
+for (const item of pseudowords) {
+  validateDecodingItem(item, item.id, 'pseudoword')
+}
+
+const realWordTexts = new Set([
+  ...words.map((word) => normalize(word.text)),
+  ...decodingWords.map((word) => normalize(word.text)),
+])
+for (const item of pseudowords) {
+  assert(
+    !realWordTexts.has(normalize(item.text)),
+    `${item.id}: pseudoword collides with a real word`,
+  )
+}
+
+for (const structure of structures) {
+  const structureWords = decodingWords.filter((item) => item.structureId === structure.id)
+  const structurePseudowords = pseudowords.filter((item) => item.structureId === structure.id)
+  assert(structureWords.length >= 9, `${structure.id}: expected at least 9 decoding words`)
+  assert(structurePseudowords.length >= 6, `${structure.id}: expected at least 6 pseudowords`)
+
+  for (const stage of allowedDifficultyStages) {
+    assert(
+      structureWords.filter((item) => item.difficultyStage === stage).length >= 3,
+      `${structure.id}: expected at least 3 words at ${stage}`,
+    )
+    assert(
+      structurePseudowords.filter((item) => item.difficultyStage === stage).length >= 2,
+      `${structure.id}: expected at least 2 pseudowords at ${stage}`,
+    )
+  }
+}
+
+for (const stage of allowedDifficultyStages) {
+  assert(
+    blends.filter((blend) => blend.blendKind === 'cv' && blend.difficultyStage === stage).length >= 6,
+    `blends.json: expected at least 6 CV blends at ${stage}`,
+  )
+}
+
 for (const level of levels) {
   assert(
     syllables.some((syllable) => syllable.levelId === level.id),
@@ -191,7 +408,16 @@ for (const level of levels) {
   )
 }
 
-scanProtectedTerms({ levels, syllables, words, sentences })
+scanProtectedTerms({
+  levels,
+  syllables,
+  words,
+  sentences,
+  structures,
+  blends,
+  decodingWords,
+  pseudowords,
+})
 
 if (errors.length > 0) {
   console.error('Content validation failed:')
@@ -202,5 +428,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Content OK: ${levels.length} levels, ${syllables.length} syllables/signs, ${words.length} words, ${sentences.length} sentences.`,
+  `Content OK: ${levels.length} levels, ${structures.length} structures, ${syllables.length} syllables/signs, ${words.length} reading words, ${decodingWords.length} decoding words, ${pseudowords.length} pseudowords, ${sentences.length} sentences.`,
 )

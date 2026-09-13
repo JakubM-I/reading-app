@@ -1,5 +1,9 @@
 # Plan Poprawek Historii I Bazy Tresci
 
+> Status historyczny: etapy opisane ponizej zostaly zakonczone. Pozniejsza
+> decyzja produktowa dopuszcza ograniczona, jawnie oznaczona pule pseudowyrazow
+> w sesjach szesciu struktur i zastępuje punkt `nie dodawac pseudowyrazow`.
+
 ## Cel Dokumentu
 
 Ten dokument opisuje dwa osobne etapy prac po dodaniu wejscia sylabowego do

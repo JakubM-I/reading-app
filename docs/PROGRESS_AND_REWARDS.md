@@ -30,7 +30,8 @@ Dostepne oceny:
 
 Zasady:
 
-- kazde zadanie ma wartosc bazowa zalezna od modulu, poziomu i typu zadania;
+- kazde zadanie ma wartosc bazowa zalezna od modulu, poziomu albo stopnia
+  trudnosci oraz typu zadania;
 - `Samodzielnie`: pelna wartosc bazowa zadania;
 - `Z pomocą`: wartosc bazowa minus 1 punkt, ale zawsze minimum 1 punkt;
 - `Trudne`: 1 punkt za probe, a zadanie trafia do czestszych powtorek;
@@ -55,11 +56,14 @@ Wartosc ponizej oznacza liczbe punktow za ocene `Samodzielnie`.
 
 Wartosc ponizej oznacza liczbe punktow za ocene `Samodzielnie`.
 
-| Tryb pomocy | Poziom 1 | Poziom 2 | Poziom 3 | Poziom 4 |
-| --- | ---: | ---: | ---: | ---: |
-| Z pomocą | 1 | 1 | 2 | 2 |
-| Z podpowiedzią | 2 | 2 | 3 | 4 |
-| Samodzielnie | 2 | 3 | 4 | 5 |
+| Tryb pomocy | Podstawowy | Rozszerzony | Dwuznaki |
+| --- | ---: | ---: | ---: |
+| Z pomocą | 1 | 1 | 2 |
+| Z podpowiedzią | 2 | 2 | 3 |
+| Samodzielnie | 2 | 3 | 4 |
+
+Pseudowyrazy maja taka sama wartosc jak prawdziwe slowa o tym samym stopniu.
+Nie otrzymuja dodatkowych punktow.
 
 Takie ustawienie pozwala zbierac punkty rowniez wtedy, gdy jednego dnia dziecko
 zrobi tylko sylabizowanie albo tylko czytanie. Docelowy rytm pracy nadal zaklada
@@ -108,8 +112,8 @@ Kazda zapisana sesja powinna zawierac:
 
 - date i godzine zakonczenia;
 - modul sesji: `syllabification` albo `reading`;
-- wybrany poziom;
-- wybrany tryb pomocy, jesli byla to sesja sylabizowania;
+- wybrany poziom dla czytania albo strukture dla sylabizowania;
+- wybrany tryb pomocy i ustawienie pseudowyrazow dla sylabizowania;
 - liczbe zadan;
 - zdobyte punkty;
 - liczbe ocen `Samodzielnie`;
@@ -124,6 +128,8 @@ Kazde zadanie w historii moze zawierac:
 - modul zadania;
 - typ zadania;
 - identyfikator materialu;
+- rodzaj materialu: laczenie, prawdziwe slowo albo pseudowyraz;
+- strukture, jesli dotyczy;
 - slowo lub zdanie;
 - tryb pomocy, jesli dotyczy;
 - ocene rodzica;
@@ -133,10 +139,12 @@ Dodatkowo zapis powinien pozwalac ustalic status materialu dla generatora
 powtorek, np. czy dany wyraz byl ostatnio przeczytany samodzielnie, z pomoca,
 oznaczony jako trudny albo pominiety.
 
-Status materialu powinien rozrozniac modul zadania. Ten sam wyraz moze miec
-osobna historie dla sylabizowania i osobna historie dla czytania. Dzieki temu
-aplikacja nie uzna automatycznie, ze dziecko umie czytac slowo tylko dlatego,
-ze umie je podzielic na sylaby, ani odwrotnie.
+Status materialu rozroznia modul i rodzaj zadania. Klucz ma postac
+`modul:rodzaj-zadania:materialId`. Ten sam wyraz ma osobna historie czytania,
+budowania i analizy, dlatego jedna umiejetnosc nie nadpisuje drugiej.
+
+Aktualny format postepow ma wersje 2. Odczyt i import migruja wersje 1 bez
+utraty punktow, odznak i zapisanych sesji.
 
 ## Podsumowanie Dnia
 

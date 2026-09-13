@@ -38,9 +38,10 @@ Nie ma trybu mieszanego w MVP. Tego samego dnia mozna wykonac dwie osobne
 sesje, np. najpierw sylabizowanie, a potem czytanie. Podsumowania i punkty sa
 liczone wspolnie.
 
-### Wybor Poziomu
+### Wybor Poziomu Lub Struktury
 
-Rodzic wybiera poziom recznie. Przy kazdym poziomie aplikacja pokazuje krotki opis.
+W module `Czytanie` rodzic wybiera poziom recznie. Przy kazdym poziomie
+aplikacja pokazuje krotki opis.
 
 Przyklad:
 
@@ -49,11 +50,16 @@ Przyklad:
 - `Poziom 3 - dwuznaki`: utrwalanie `ch`, `sz`, `cz`, `rz`.
 - `Poziom 4 - trudniejsze dwuznaki`: `dz`, `dź`, `dż`.
 
-W module sylabizowania rodzic wybiera takze tryb pomocy:
+W module `Sylabizowanie` poziomy sa zastapione szescioma kartami struktur:
+`CV-CV`, co najmniej trzy sylaby `CV`, `CVC`, `CV-CVC`, `CVC-CV` i
+`CVC-CVC`. Po wyborze struktury rodzic ustawia tryb pomocy:
 
 - `Z pomocą`;
 - `Z podpowiedzią`;
 - `Samodzielnie`.
+
+Na tym samym ekranie moze wylaczyc dwa pseudowyrazy. Ustawienie jest domyslnie
+wlaczone, a sesja rozpoczyna sie dopiero po uzyciu przycisku `Rozpocznij sesję`.
 
 ### Sesja
 
@@ -61,11 +67,12 @@ Kazda sesja ma staly schemat w ramach wybranego modulu.
 
 Sesja sylabizowania:
 
-1. Liczenie sylab.
-2. Mowienie slowa sylabami.
-3. Ukladanie albo wskazywanie sylab.
-4. Wstawianie podzialu.
-5. Podsumowanie.
+1. Trzy zadania laczenia elementow.
+2. Trzy prawdziwe slowa wybranej struktury.
+3. Dwa jawnie oznaczone pseudowyrazy albo dwa prawdziwe slowa.
+4. Ulozenie slowa z sylab lub grafemow.
+5. Ponowne czytanie z pokazana budowa.
+6. Podsumowanie.
 
 Sesja czytania:
 
@@ -86,30 +93,18 @@ Na ekranie sesji widoczne sa:
 
 ### Sylabizowanie
 
-Modul sylabizowania uczy dziecko wskazywania, ile czesci ma slowo i gdzie sa
-granice sylab. Nie zastepuje modulu czytania i nie miesza sie z nim w jednej
-sesji.
+Modul sylabizowania uczy laczenia grafemow w sylaby i czytania slow o stalej
+budowie. Nie zastepuje modulu czytania i nie miesza sie z nim w jednej sesji.
 
 Tryby:
 
-- `Z pomocą`: pelny podzial jest widoczny, np. `ra-kie-ta`;
-- `Z podpowiedzią`: widoczna jest czesciowa pomoc, np. liczba sylab albo jedno
-  miejsce podzialu;
-- `Samodzielnie`: dziecko widzi caly wyraz i samo wskazuje podzial.
+- `Z pomocą`: oznaczenia budowy sa widoczne od razu;
+- `Z podpowiedzią`: oznaczenia pojawiaja sie po `Pokaż budowę`;
+- `Samodzielnie`: oznaczenia pojawiaja sie po `Pokaż odpowiedź`.
 
-Typy zadan:
-
-- policz sylaby;
-- powiedz slowo sylabami;
-- uloz slowo z kafelkow sylab;
-- wstaw kreski podzialu w slowie.
-
-Przyklad zadania z podpowiedzia:
-
-- slowo: `rakieta`;
-- podpowiedz: `3 sylaby`;
-- dziecko wskazuje podzial: `ra-kie-ta`;
-- rodzic ocenia wykonanie.
+Samogloski sa czerwone, spolgłoski ciemne, a granice sylab maja dodatkowo
+odstep, lacznik i zielony akcent. Kolor nie jest jedynym nosnikiem informacji.
+Pseudowyraz zawsze ma etykiete `Wymyślone słowo — nie musi nic znaczyć`.
 
 Nie dodajemy zadania z wyborem poprawnego wariantu z kilku odpowiedzi, bo moze
 prowadzic do zgadywania.
@@ -179,6 +174,8 @@ Przyciski:
 - `Pomiń`.
 
 Po wyborze aplikacja przechodzi do kolejnego zadania.
+Wszystkie cztery oceny sa dostepne przez caly czas. Interaktywny przycisk
+`Sprawdź` pomaga w zadaniu, ale nie blokuje oceny rodzica.
 
 ### Podsumowanie Sesji
 
@@ -203,6 +200,8 @@ Panel postepow pokazuje:
 - liczbe sesji;
 - ostatnie trudne slowa;
 - odznaki.
+- neutralne zestawienie szesciu struktur: liczba prob, rozklad ocen i ostatnie
+  cwiczenie;
 - przyciski `Eksportuj postępy` i `Importuj postępy`.
 
 Podsumowania maja byc proste. Na MVP nie trzeba zaawansowanych wykresow.

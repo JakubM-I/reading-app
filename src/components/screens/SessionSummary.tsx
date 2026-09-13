@@ -75,10 +75,10 @@ export function SessionSummary({
 
         <div className="primary-actions">
           <button type="button" className="primary-button" onClick={onReset}>
-            Powtórz poziom
+            {session.module === 'reading' ? 'Powtórz poziom' : 'Powtórz strukturę'}
           </button>
           <button type="button" className="secondary-button" onClick={onBack}>
-            Wybierz inny poziom
+            {session.module === 'reading' ? 'Wybierz inny poziom' : 'Zmień ustawienia'}
           </button>
         </div>
       </div>

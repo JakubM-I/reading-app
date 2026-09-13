@@ -1,7 +1,9 @@
 import type {
-  ContentSyllable,
-  ContentWord,
+  ContentBlend,
+  ContentDecodingItem,
+  DifficultyStage,
   ExerciseContent,
+  StructureId,
 } from '../content/contentTypes'
 import type { MaterialProgressRecord } from '../progress/progressTypes'
 import type {
@@ -9,20 +11,10 @@ import type {
   SessionTask,
   SessionTaskKind,
   SyllabificationSupportMode,
+  WordBuildingTile,
 } from './sessionTypes'
 
-const SESSION_TASK_SEQUENCE: SessionTaskKind[] = [
-  'syllable-read',
-  'syllable-read',
-  'syllable-read',
-  'syllable-read',
-  'syllable-count',
-  'syllable-say',
-  'syllable-say',
-  'syllable-build',
-  'syllable-split',
-  'syllable-split',
-]
+const STAGES: DifficultyStage[] = ['basic', 'extended', 'digraph']
 
 interface CreateSyllabificationSessionOptions {
   materialProgress?: Record<string, MaterialProgressRecord>
@@ -30,85 +22,77 @@ interface CreateSyllabificationSessionOptions {
 }
 
 export const createSyllabificationSession = (
-  levelId: string,
+  structureId: StructureId,
   supportMode: SyllabificationSupportMode,
+  includePseudowords: boolean,
   content: ExerciseContent,
   options: CreateSyllabificationSessionOptions = {},
 ): ReadingSession => {
-  const levelOrder = content.levels.find((level) => level.id === levelId)?.order ?? 1
-  const levelOrderById = new Map(content.levels.map((level) => [level.id, level.order]))
   const materialProgress = options.materialProgress ?? {}
   const sessionIndex = options.sessionIndex ?? 0
-  const isAvailable = (itemLevelId: string) =>
-    (levelOrderById.get(itemLevelId) ?? 0) <= levelOrder
-
-  const words = sortByMaterialPriority(
-    prioritizeLevel(
-      content.words.filter(
-        (word) =>
-          isAvailable(word.levelId) &&
-          word.suitableForSyllabification &&
-          word.syllableCount >= 2,
-      ),
-      levelId,
+  const difficultyStage = getActiveDifficultyStage(
+    structureId,
+    content.decodingWords,
+    materialProgress,
+  )
+  const eligibleStages = STAGES.slice(0, STAGES.indexOf(difficultyStage) + 1)
+  const wordCount = includePseudowords ? 3 : 5
+  const words = selectItems(
+    content.decodingWords.filter(
+      (item) =>
+        item.structureId === structureId &&
+        eligibleStages.includes(item.difficultyStage),
     ),
-    levelId,
+    'structure-read',
+    materialProgress,
+    difficultyStage,
+    sessionIndex,
+    wordCount,
+  )
+  const pseudowords = includePseudowords
+    ? selectItems(
+        content.pseudowords.filter(
+          (item) =>
+            item.structureId === structureId &&
+            item.difficultyStage === difficultyStage,
+        ),
+        'structure-read',
+        materialProgress,
+        difficultyStage,
+        sessionIndex + 17,
+        2,
+      )
+    : []
+  const blends = selectBlends(
+    structureId,
+    difficultyStage,
+    content.blends,
     materialProgress,
     sessionIndex,
   )
-  const syllables = sortByMaterialPriority(
-    prioritizeLevel(
-      content.syllables.filter(
-        (syllable) =>
-          isAvailable(syllable.levelId) && syllable.kind === 'syllable',
-      ),
-      levelId,
+  const readingItems = includePseudowords
+    ? [...words.slice(0, 3), ...pseudowords]
+    : words.slice(0, 5)
+  const buildItem = words[0]
+  const reviewItem = words[1] ?? words[0]
+  const tasks = [
+    ...blends.map((blend, index) =>
+      createBlendTask(blend, structureId, supportMode, index),
     ),
-    levelId,
-    materialProgress,
-    sessionIndex + 23,
-  )
-
-  const selectedSyllables = takeLooped(
-    syllables,
-    SESSION_TASK_SEQUENCE.filter((kind) => kind === 'syllable-read').length,
-  )
-  const wordTaskSequence = SESSION_TASK_SEQUENCE.filter(
-    (kind) => kind !== 'syllable-read',
-  )
-  const selectedWords = takeLooped(words, wordTaskSequence.length)
-  const buildWords = prioritizeDistinctSyllableWords(words)
-  let syllableIndex = 0
-  let wordIndex = 0
-  const tasks = SESSION_TASK_SEQUENCE.map((kind, index): SessionTask => {
-    if (kind === 'syllable-read') {
-      const syllable = selectedSyllables[syllableIndex]
-      syllableIndex += 1
-
-      if (!syllable) {
-        return createSyllableFallbackTask(index)
-      }
-
-      return createSyllableReadTask(syllable, index)
-    }
-
-    const word =
-      kind === 'syllable-build'
-        ? takeLooped(buildWords, 1)[0]
-        : selectedWords[wordIndex]
-    wordIndex += 1
-
-    if (!word) {
-      return createFallbackTask(kind, index, supportMode)
-    }
-
-    return createSyllabificationTask(kind, word, index, supportMode)
-  })
+    ...readingItems.map((item, index) =>
+      createReadTask(item, supportMode, index),
+    ),
+    createBuildTask(buildItem, structureId, supportMode),
+    createReviewTask(reviewItem, supportMode),
+  ]
 
   return {
-    id: `syllabification-session-${levelId}-${Date.now()}`,
+    id: `syllabification-session-${structureId}-${Date.now()}`,
     module: 'syllabification',
-    levelId,
+    structureId,
+    supportMode,
+    includePseudowords,
+    difficultyStage,
     tasks,
     currentTaskIndex: 0,
     answers: [],
@@ -116,225 +100,283 @@ export const createSyllabificationSession = (
   }
 }
 
-const createSyllableReadTask = (
-  syllable: ContentSyllable,
-  index: number,
-): SessionTask => ({
-  id: `syllable-read-${index + 1}-${syllable.id}`,
-  module: 'syllabification',
-  kind: 'syllable-read',
-  title: 'Sylaba',
-  prompt: 'Przeczytaj sylabę.',
-  displayText: syllable.text,
-  materialId: syllable.id,
-  reviewText: syllable.text,
-})
+export const getActiveDifficultyStage = (
+  structureId: StructureId,
+  words: readonly ContentDecodingItem[],
+  materialProgress: Record<string, MaterialProgressRecord>,
+): DifficultyStage => {
+  for (const stage of STAGES) {
+    const stageWords = words.filter(
+      (item) =>
+        item.structureId === structureId && item.difficultyStage === stage,
+    )
+    const everyWordWasRead =
+      stageWords.length > 0 &&
+      stageWords.every(
+        (item) =>
+          materialProgress[materialProgressKey('structure-read', item.id)]
+            ?.attempts,
+      )
 
-const createSyllabificationTask = (
-  kind: SessionTaskKind,
-  word: ContentWord,
-  index: number,
-  supportMode: SyllabificationSupportMode,
-): SessionTask => ({
-  id: `${kind}-${index + 1}-${word.id}`,
-  module: 'syllabification',
-  kind,
-  title: getTaskTitle(kind),
-  prompt: getTaskPrompt(kind, supportMode),
-  displayText: getDisplayText(word, supportMode),
-  supportText: getSupportText(word, supportMode),
-  materialId: word.id,
-  reviewText: word.text,
-  syllabification: {
-    word: word.text,
-    syllables: word.syllables,
-    tiles: buildSyllableTiles(word.syllables),
-    syllableCount: word.syllableCount,
-    supportMode,
-    revealedSplit: getRevealedSplit(word, supportMode),
-  },
-})
-
-const createSyllableFallbackTask = (index: number): SessionTask => ({
-  id: `syllable-read-${index + 1}-empty`,
-  module: 'syllabification',
-  kind: 'syllable-read',
-  title: 'Sylaba',
-  prompt: 'Brakuje sylab do tego poziomu.',
-  displayText: 'Brak zadania',
-  supportText: 'Wróć do wyboru poziomu.',
-  materialId: `missing-syllabification-syllable-${index + 1}`,
-  reviewText: 'Brak zadania',
-})
-
-const createFallbackTask = (
-  kind: SessionTaskKind,
-  index: number,
-  supportMode: SyllabificationSupportMode,
-): SessionTask => ({
-  id: `${kind}-${index + 1}-empty`,
-  module: 'syllabification',
-  kind,
-  title: getTaskTitle(kind),
-  prompt: 'Brakuje słów do tego poziomu.',
-  displayText: 'Brak zadania',
-  supportText: 'Wróć do wyboru poziomu.',
-  materialId: `missing-syllabification-word-${index + 1}`,
-  reviewText: 'Brak zadania',
-  syllabification: {
-    word: '',
-    syllables: [],
-    tiles: [],
-    syllableCount: 0,
-    supportMode,
-  },
-})
-
-const getTaskTitle = (kind: SessionTaskKind) => {
-  if (kind === 'syllable-read') {
-    return 'Sylaba'
+    if (!everyWordWasRead) {
+      return stage
+    }
   }
 
-  if (kind === 'syllable-count') {
-    return 'Policz sylaby'
-  }
-
-  if (kind === 'syllable-say') {
-    return 'Powiedz sylabami'
-  }
-
-  if (kind === 'syllable-build') {
-    return 'Ułóż sylaby'
-  }
-
-  return 'Wstaw podział'
+  return 'digraph'
 }
 
-const getTaskPrompt = (
-  kind: SessionTaskKind,
-  supportMode: SyllabificationSupportMode,
-) => {
-  if (kind === 'syllable-read') {
-    return 'Przeczytaj sylabę.'
-  }
-
-  if (kind === 'syllable-count') {
-    return 'Policz części słowa.'
-  }
-
-  if (kind === 'syllable-say') {
-    return supportMode === 'full-help'
-      ? 'Przeczytaj części po kolei.'
-      : 'Powiedz słowo sylabami.'
-  }
-
-  if (kind === 'syllable-build') {
-    return 'Ułóż części słowa w kolejności.'
-  }
-
-  return supportMode === 'independent'
-    ? 'Wskaż miejsca podziału.'
-    : 'Uzupełnij podział słowa.'
-}
-
-const getDisplayText = (
-  word: ContentWord,
-  supportMode: SyllabificationSupportMode,
-) => {
-  if (supportMode === 'full-help') {
-    return word.syllables.join(' - ')
-  }
-
-  return word.text
-}
-
-const getSupportText = (
-  word: ContentWord,
-  supportMode: SyllabificationSupportMode,
-) => {
-  if (supportMode === 'full-help') {
-    return `Całe słowo: ${word.text}`
-  }
-
-  if (supportMode === 'partial-help') {
-    return `${word.syllableCount} sylaby`
-  }
-
-  return undefined
-}
-
-const getRevealedSplit = (
-  word: ContentWord,
-  supportMode: SyllabificationSupportMode,
-) => {
-  if (supportMode === 'full-help') {
-    return word.syllables
-  }
-
-  if (supportMode === 'partial-help') {
-    return [word.syllables[0], ...word.syllables.slice(1).map(() => '')]
-  }
-
-  return undefined
-}
-
-const prioritizeLevel = <Item extends { levelId: string }>(
-  items: readonly Item[],
-  levelId: string,
-) => [
-  ...items.filter((item) => item.levelId === levelId),
-  ...items.filter((item) => item.levelId !== levelId),
-]
-
-const sortByMaterialPriority = <Item extends { id: string; levelId: string }>(
-  items: readonly Item[],
-  levelId: string,
+const selectBlends = (
+  structureId: StructureId,
+  stage: DifficultyStage,
+  blends: readonly ContentBlend[],
   progress: Record<string, MaterialProgressRecord>,
   sessionIndex: number,
-) =>
-  [...items].sort((firstItem, secondItem) =>
-    comparePriority(
-      getMaterialPriority(firstItem, levelId, progress, sessionIndex),
-      getMaterialPriority(secondItem, levelId, progress, sessionIndex),
-    ),
+) => {
+  const eligible = blends.filter(
+    (blend) =>
+      blend.structureIds.includes(structureId) &&
+      blend.difficultyStage === stage,
+  )
+  const cvCount = structureId === 'structure-1' || structureId === 'structure-2'
+    ? 3
+    : 2
+  const cvBlends = selectItems(
+    eligible.filter((blend) => blend.blendKind === 'cv'),
+    'blend-read',
+    progress,
+    stage,
+    sessionIndex + 31,
+    cvCount,
   )
 
-const getMaterialPriority = <Item extends { id: string; levelId: string }>(
-  item: Item,
-  levelId: string,
-  progress: Record<string, MaterialProgressRecord>,
-  sessionIndex: number,
-) => {
-  const record = progress[`syllabification:${item.id}`]
-  const levelPriority = item.levelId === levelId ? 0 : 1
-
-  if (!record) {
-    return [10, levelPriority, stableRotation(item.id, sessionIndex)]
+  if (cvCount === 3) {
+    return cvBlends
   }
 
-  const lastPracticedAt = Date.parse(record.lastPracticedAt) || 0
+  const cvcBlend = selectItems(
+    blends.filter(
+      (blend) =>
+        blend.structureIds.includes(structureId) &&
+        blend.blendKind === 'cvc' &&
+        blend.difficultyStage === stage,
+    ),
+    'blend-read',
+    progress,
+    stage,
+    sessionIndex + 47,
+    1,
+  )
+
+  return [...cvBlends, ...cvcBlend]
+}
+
+const selectItems = <Item extends { id: string; difficultyStage: DifficultyStage }>(
+  items: readonly Item[],
+  kind: SessionTaskKind,
+  progress: Record<string, MaterialProgressRecord>,
+  activeStage: DifficultyStage,
+  sessionIndex: number,
+  count: number,
+) =>
+  [...items]
+    .sort((first, second) =>
+      comparePriority(
+        getPriority(first, kind, progress, activeStage, sessionIndex),
+        getPriority(second, kind, progress, activeStage, sessionIndex),
+      ),
+    )
+    .slice(0, count)
+
+const getPriority = (
+  item: { id: string; difficultyStage: DifficultyStage },
+  kind: SessionTaskKind,
+  progress: Record<string, MaterialProgressRecord>,
+  activeStage: DifficultyStage,
+  sessionIndex: number,
+) => {
+  const record = progress[materialProgressKey(kind, item.id)]
+  const stagePriority = item.difficultyStage === activeStage ? 0 : 1
+
+  if (!record) {
+    return [3, stagePriority, stableRotation(item.id, sessionIndex)]
+  }
+
+  const practicedAt = Date.parse(record.lastPracticedAt) || 0
 
   if (record.lastRating === 'hard') {
-    return [0, levelPriority, -record.hardCount, lastPracticedAt]
+    return [0, stagePriority, -record.hardCount, practicedAt]
   }
 
   if (record.lastRating === 'with-help') {
-    return [1, levelPriority, record.attempts, lastPracticedAt]
+    return [1, stagePriority, record.attempts, practicedAt]
   }
 
   if (record.lastRating === 'skip') {
-    return [2, levelPriority, record.attempts, lastPracticedAt]
+    return [2, stagePriority, record.attempts, practicedAt]
   }
 
-  return [20, levelPriority, lastPracticedAt, record.attempts]
+  return [10, stagePriority, practicedAt, record.attempts]
 }
 
-const comparePriority = (firstPriority: number[], secondPriority: number[]) => {
-  const length = Math.max(firstPriority.length, secondPriority.length)
+const createBlendTask = (
+  blend: ContentBlend,
+  structureId: StructureId,
+  supportMode: SyllabificationSupportMode,
+  index: number,
+): SessionTask => ({
+  id: `blend-${index + 1}-${blend.id}`,
+  module: 'syllabification',
+  kind: 'blend-read',
+  title: 'Połącz i przeczytaj',
+  prompt: 'Połącz części i przeczytaj.',
+  displayText: `${blend.left} + ${blend.right}`,
+  supportText: supportMode === 'full-help' ? blend.result : undefined,
+  materialId: blend.id,
+  reviewText: blend.result,
+  difficultyOrder: getStageOrder(blend.difficultyStage),
+  structureId,
+  difficultyStage: blend.difficultyStage,
+  materialKind: 'blend',
+  structureExercise: {
+    structureId,
+    difficultyStage: blend.difficultyStage,
+    materialKind: 'blend',
+    text: blend.result,
+    syllables: [blend.result],
+    graphemes: blend.graphemes,
+    supportMode,
+    blend: {
+      left: blend.left,
+      right: blend.right,
+      result: blend.result,
+    },
+  },
+})
+
+const createReadTask = (
+  item: ContentDecodingItem,
+  supportMode: SyllabificationSupportMode,
+  index: number,
+): SessionTask => ({
+  id: `structure-read-${index + 1}-${item.id}`,
+  module: 'syllabification',
+  kind: 'structure-read',
+  title: item.materialKind === 'pseudoword' ? 'Wymyślone słowo' : 'Przeczytaj słowo',
+  prompt:
+    item.materialKind === 'pseudoword'
+      ? 'Przeczytaj wymyślone słowo.'
+      : 'Przeczytaj słowo.',
+  displayText: item.text,
+  supportText:
+    item.materialKind === 'pseudoword'
+      ? 'Wymyślone słowo — nie musi nic znaczyć.'
+      : undefined,
+  materialId: item.id,
+  reviewText:
+    item.materialKind === 'pseudoword'
+      ? `${item.text} (wymyślone słowo)`
+      : item.text,
+  difficultyOrder: getStageOrder(item.difficultyStage),
+  structureId: item.structureId,
+  difficultyStage: item.difficultyStage,
+  materialKind: item.materialKind,
+  structureExercise: {
+    structureId: item.structureId,
+    difficultyStage: item.difficultyStage,
+    materialKind: item.materialKind,
+    text: item.text,
+    syllables: item.syllables,
+    graphemes: item.graphemes,
+    supportMode,
+  },
+})
+
+const createBuildTask = (
+  item: ContentDecodingItem,
+  structureId: StructureId,
+  supportMode: SyllabificationSupportMode,
+): SessionTask => {
+  const parts = structureId === 'structure-3'
+    ? item.graphemes.map(([text]) => text)
+    : item.syllables
+
+  return {
+    id: `structure-build-${item.id}`,
+    module: 'syllabification',
+    kind: 'structure-build',
+    title: 'Ułóż słowo',
+    prompt: 'Ułóż części w dobrej kolejności.',
+    displayText: '',
+    materialId: item.id,
+    reviewText: item.text,
+    difficultyOrder: getStageOrder(item.difficultyStage),
+    structureId,
+    difficultyStage: item.difficultyStage,
+    materialKind: 'word',
+    structureExercise: {
+      structureId,
+      difficultyStage: item.difficultyStage,
+      materialKind: 'word',
+      text: item.text,
+      syllables: item.syllables,
+      graphemes: item.graphemes,
+      supportMode,
+      tiles: buildTiles(parts),
+    },
+  }
+}
+
+const createReviewTask = (
+  item: ContentDecodingItem,
+  supportMode: SyllabificationSupportMode,
+): SessionTask => ({
+  id: `structure-review-${item.id}`,
+  module: 'syllabification',
+  kind: 'structure-review',
+  title: 'Zobacz budowę',
+  prompt: 'Zobacz budowę i przeczytaj jeszcze raz.',
+  displayText: item.text,
+  materialId: item.id,
+  reviewText: item.text,
+  difficultyOrder: getStageOrder(item.difficultyStage),
+  structureId: item.structureId,
+  difficultyStage: item.difficultyStage,
+  materialKind: 'word',
+  structureExercise: {
+    structureId: item.structureId,
+    difficultyStage: item.difficultyStage,
+    materialKind: 'word',
+    text: item.text,
+    syllables: item.syllables,
+    graphemes: item.graphemes,
+    supportMode,
+  },
+})
+
+const buildTiles = (parts: string[]): WordBuildingTile[] => {
+  const tiles = parts.map((text, index) => ({
+    id: `tile-${index + 1}`,
+    text,
+  }))
+
+  if (tiles.length < 2) {
+    return tiles
+  }
+
+  return [...tiles.slice(1), tiles[0]]
+}
+
+const getStageOrder = (stage: DifficultyStage) => STAGES.indexOf(stage) + 1
+
+const materialProgressKey = (kind: SessionTaskKind, materialId: string) =>
+  `syllabification:${kind}:${materialId}`
+
+const comparePriority = (first: number[], second: number[]) => {
+  const length = Math.max(first.length, second.length)
 
   for (let index = 0; index < length; index += 1) {
-    const difference = (firstPriority[index] ?? 0) - (secondPriority[index] ?? 0)
-
+    const difference = (first[index] ?? 0) - (second[index] ?? 0)
     if (difference !== 0) {
       return difference
     }
@@ -351,33 +393,4 @@ const stableRotation = (value: string, sessionIndex: number) => {
   }
 
   return hash
-}
-
-const takeLooped = <Item,>(items: readonly Item[], count: number): Item[] => {
-  if (items.length === 0) {
-    return []
-  }
-
-  return Array.from({ length: count }, (_, index) => items[index % items.length])
-}
-
-const prioritizeDistinctSyllableWords = (words: readonly ContentWord[]) => [
-  ...words.filter(hasDistinctSyllables),
-  ...words.filter((word) => !hasDistinctSyllables(word)),
-]
-
-const hasDistinctSyllables = (word: ContentWord) =>
-  new Set(word.syllables).size > 1
-
-const buildSyllableTiles = (syllables: string[]) => {
-  const tiles = syllables.map((text, index) => ({
-    id: `tile-${index + 1}`,
-    text,
-  }))
-
-  if (tiles.length < 2) {
-    return tiles
-  }
-
-  return [...tiles.slice(1), tiles[0]]
 }

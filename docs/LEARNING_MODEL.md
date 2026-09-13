@@ -6,7 +6,8 @@ Glowna trudnosc to skladanie elementow w calosc: najpierw rozpoznanie podzialu s
 
 MVP rozdziela dwa glowne moduly:
 
-- `Sylabizowanie`: cwiczenie rozpoznawania, liczenia i zaznaczania sylab w slowie;
+- `Sylabizowanie`: cwiczenie syntezy sylab, czytania slow o wybranej budowie
+  i ograniczania zgadywania;
 - `Czytanie`: dotychczasowy modul czytania, czyli rozgrzewka, czytanie prowadzone, budowanie slow i proste zdania.
 
 Sesje nie sa mieszane. Rodzic moze danego dnia przeprowadzic osobno sesje sylabizowania i osobno sesje czytania.
@@ -44,51 +45,40 @@ Priorytetowe obszary:
 
 ## Sylabizowanie
 
-Cel: nauczenie dziecka widzenia i wypowiadania czesci wyrazu przed probą
-czytania calego slowa. Modul ma ograniczac zgadywanie po pierwszym fragmencie
-wyrazu i przygotowywac do czytania prowadzonego.
+Cel: nauczenie dziecka laczenia spolgłoski z samogloska, odczytywania sylab
+i rozpoznawania stalej budowy wyrazu. Modul ma ograniczac zgadywanie po
+pierwszym fragmencie i przygotowywac do plynnego czytania calego slowa.
 
 Sylabizowanie jest osobnym modulem, a nie czescia sesji czytania. Po starcie
 sesji rodzic wybiera, czy dziecko cwiczy `Sylabizowanie`, czy `Czytanie`.
 
+Rodzic wybiera jedna z szesciu struktur: `CV-CV`, co najmniej trzy sylaby
+`CV`, `CVC`, `CV-CVC`, `CVC-CV` albo `CVC-CVC`. Sesja nie miesza struktur.
+
 Tryby pomocy:
 
-- `Z pomocą`: aplikacja pokazuje pelny podzial, np. `ra-kie-ta`;
-- `Z podpowiedzią`: aplikacja pokazuje czesciowa pomoc, np. liczbe sylab,
-  puste miejsca albo jedno miejsce podzialu;
-- `Samodzielnie`: dziecko widzi caly wyraz, np. `rakieta`, i samo wskazuje
-  miejsca podzialu.
+- `Z pomocą`: aplikacja od razu pokazuje budowe grafemowa, kolory i granice
+  sylab;
+- `Z podpowiedzią`: dziecko widzi zapis bez oznaczen i moze uzyc przycisku
+  `Pokaż budowę`;
+- `Samodzielnie`: dziecko najpierw czyta bez podpowiedzi, a oznaczenia sa
+  dostepne pod `Pokaż odpowiedź`.
 
-Typy zadan:
+Staly rytm dziesieciu zadan:
 
-- policz sylaby w slowie;
-- powiedz slowo sylabami;
-- uloz slowo z kafelkow sylab;
-- wstaw kreski podzialu w slowie.
+- trzy zadania syntezy `C + V -> CV`, a w strukturach zamknietych takze
+  `CV + C -> CVC`;
+- trzy prawdziwe slowa wybranej struktury;
+- dwa jawnie oznaczone pseudowyrazy, ktore rodzic moze wylaczyc;
+- jedno ulozenie slowa z sylab albo grafemow;
+- jedno ponowne czytanie z pokazana budowa.
 
 Nie dodajemy w MVP zadania wyboru poprawnego wariantu podzialu z kilku
 odpowiedzi, bo moze wzmacniac zgadywanie.
 
-Przykladowy przebieg zadania `Z pomocą`:
-
-1. Aplikacja pokazuje `ra-kie-ta`.
-2. Dziecko czyta albo wypowiada kolejne sylaby.
-3. Dziecko wypowiada caly wyraz.
-4. Rodzic ocenia wykonanie.
-
-Przykladowy przebieg zadania `Z podpowiedzią`:
-
-1. Aplikacja pokazuje slowo `rakieta`.
-2. Aplikacja pokazuje podpowiedz: `3 sylaby`.
-3. Dziecko wskazuje miejsca podzialu.
-4. Rodzic ocenia wykonanie.
-
-Przykladowy przebieg zadania `Samodzielnie`:
-
-1. Aplikacja pokazuje slowo `rakieta`.
-2. Dziecko wskazuje miejsca podzialu: `ra-kie-ta`.
-3. Dziecko wypowiada slowo sylabami i calosciowo.
-4. Rodzic ocenia wykonanie.
+Pseudowyraz jest zawsze opisany tekstem `Wymyślone słowo — nie musi nic
+znaczyć`. Nie otrzymuje ilustracji, zdania ani pytania o sens. Jego celem jest
+sprawdzenie samego skladania zapisu, bez mozliwosci zgadniecia znaczenia.
 
 ### Sciaga Sylabizowania
 
@@ -108,9 +98,10 @@ W trybie `Z pomocą` sciaga moze byc widoczna od razu. W trybie
 trybie `Samodzielnie` powinna byc schowana pod przyciskiem `Podpowiedź`, aby
 nie przejmowala zadania za dziecko.
 
-Material do sylabizowania powinien zaczynac sie od slow dwu- i trzysylabowych.
-Slowa jednosylabowe nie powinny byc uzywane jako glowne zadania sylabizowania,
-bo nie cwicza podzialu na czesci.
+Slowa jednosylabowe sa uzywane w strukturze `CVC`, gdzie cwiczeniem nie jest
+podzial na sylaby, lecz synteza trzech grafemow i odczytanie sylaby zamknietej.
+Trudnosc w kazdej strukturze rosnie od prostych liter przez material rozszerzony
+do dwuznakow.
 
 Podzial slow na sylaby pozostaje reczny. Aplikacja nie powinna generowac
 podzialu automatycznie w MVP, poniewaz niektore slowa moga miec warianty

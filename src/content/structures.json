@@ -1,0 +1,8 @@
+[
+  { "id": "structure-1", "order": 1, "pattern": "CV-CV", "name": "Dwie sylaby otwarte", "description": "Dwie krótkie sylaby kończące się samogłoską.", "example": "ma-ma" },
+  { "id": "structure-2", "order": 2, "pattern": "CV-CV-CV…", "name": "Kilka sylab otwartych", "description": "Trzy lub więcej sylab kończących się samogłoską.", "example": "pa-li-wo" },
+  { "id": "structure-3", "order": 3, "pattern": "CVC", "name": "Jedna sylaba zamknięta", "description": "Krótka sylaba zakończona spółgłoską.", "example": "d-o-m" },
+  { "id": "structure-4", "order": 4, "pattern": "CV-CVC", "name": "Otwarta i zamknięta", "description": "Pierwsza sylaba jest otwarta, druga zamknięta.", "example": "mo-tor" },
+  { "id": "structure-5", "order": 5, "pattern": "CVC-CV", "name": "Zamknięta i otwarta", "description": "Pierwsza sylaba jest zamknięta, druga otwarta.", "example": "lam-pa" },
+  { "id": "structure-6", "order": 6, "pattern": "CVC-CVC", "name": "Dwie sylaby zamknięte", "description": "Obie sylaby kończą się spółgłoską.", "example": "gar-nek" }
+]

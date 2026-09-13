@@ -2,8 +2,10 @@ import { useState } from 'react'
 import {
   badgeThresholds,
   getProgressOverview,
+  getStructureProgress,
   type StoredProgress,
 } from '../../progress'
+import { exerciseContent } from '../../content'
 import { ProgressBackupControls } from './ProgressBackupControls'
 import badgesIcon from '../../assets/odznaki.png'
 import pointsIcon from '../../assets/punkty.png'
@@ -46,6 +48,10 @@ export function ProgressScreen({
   const [activePeriodKey, setActivePeriodKey] =
     useState<ProgressPeriodKey>('today')
   const overview = getProgressOverview(progress)
+  const structureProgress = getStructureProgress(
+    progress,
+    exerciseContent.structures.map((structure) => structure.id),
+  )
   const activePeriod = overview[activePeriodKey]
   const earnedBadgeIds = new Set(overview.badges.map((badge) => badge.id))
   const latestSessions = [...progress.sessions]
@@ -136,7 +142,10 @@ export function ProgressScreen({
               <ul>
                 {latestSessions.map((session) => (
                   <li key={session.id}>
-                    <span>{formatSessionDate(session.completedAt)}</span>
+                    <span>
+                      {formatSessionDate(session.completedAt)} ·{' '}
+                      {formatSessionScope(session)}
+                    </span>
                     <strong>{session.totalPoints} pkt</strong>
                   </li>
                 ))}
@@ -144,6 +153,38 @@ export function ProgressScreen({
             ) : (
               <p>Brak zapisanych sesji</p>
             )}
+          </section>
+
+          <section className="period-panel structure-progress-panel">
+            <h3>Postępy w strukturach</h3>
+            <p className="panel-note">Liczby opisują próby, nie ocenę opanowania.</p>
+            <div className="structure-progress-list">
+              {exerciseContent.structures.map((structure) => {
+                const summary = structureProgress.find(
+                  (item) => item.structureId === structure.id,
+                )
+
+                return (
+                  <div className="structure-progress-row" key={structure.id}>
+                    <div>
+                      <strong>Struktura {structure.order} · {structure.pattern}</strong>
+                      <span>
+                        {summary?.lastPracticedAt
+                          ? `Ostatnio: ${formatSessionDate(summary.lastPracticedAt)}`
+                          : 'Jeszcze bez ćwiczeń'}
+                      </span>
+                    </div>
+                    <dl>
+                      <div><dt>Próby</dt><dd>{summary?.tasks ?? 0}</dd></div>
+                      <div><dt>Sam.</dt><dd>{summary?.counts.independent ?? 0}</dd></div>
+                      <div><dt>Z pomocą</dt><dd>{summary?.counts['with-help'] ?? 0}</dd></div>
+                      <div><dt>Trudne</dt><dd>{summary?.counts.hard ?? 0}</dd></div>
+                      <div><dt>Pominięte</dt><dd>{summary?.counts.skip ?? 0}</dd></div>
+                    </dl>
+                  </div>
+                )
+              })}
+            </div>
           </section>
         </div>
 
@@ -196,4 +237,21 @@ const formatSessionDate = (value: string) => {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
+}
+
+const formatSessionScope = (
+  session: StoredProgress['sessions'][number],
+) => {
+  if (session.module === 'reading') {
+    const levelNumber = session.levelId?.replace('level-', '')
+    return levelNumber ? `Czytanie · poziom ${levelNumber}` : 'Czytanie'
+  }
+
+  const structure = exerciseContent.structures.find(
+    (item) => item.id === session.structureId,
+  )
+
+  return structure
+    ? `Sylabizowanie · struktura ${structure.order}`
+    : 'Sylabizowanie'
 }

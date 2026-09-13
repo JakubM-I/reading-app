@@ -1,5 +1,9 @@
 # Plan Implementacji Modulu Sylabizowania
 
+> Status historyczny: pierwotny wariant zostal zastapiony implementacja
+> pierwszych szesciu struktur opisana w aktualnych dokumentach produktu,
+> tresci i UX. Ponizszy opis pozostaje zapisem wczesniejszego etapu.
+
 ## Cel Dokumentu
 
 Ten dokument opisuje wdrozenie osobnego modulu `Sylabizowanie`. Jest zrodlem

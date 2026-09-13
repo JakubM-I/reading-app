@@ -2,7 +2,7 @@
 
 ## Zasady Doboru Materialu
 
-Material ma byc po polsku, prosty i zwiazany z codziennymi albo motoryzacyjnymi tematami. Pierwsza wersja skupia sie na prawdziwych slowach, a nie pseudowyrazach.
+Material ma byc po polsku, prosty i zwiazany z codziennymi albo motoryzacyjnymi tematami. Modul czytania korzysta z prawdziwych slow. Modul sylabizowania zawiera ograniczona pule jawnie oznaczonych pseudowyrazow do cwiczenia samego dekodowania.
 
 Zasady:
 
@@ -11,8 +11,9 @@ Zasady:
 - trudniejsze dwuznaki wprowadzac pozniej;
 - kazdy poziom musi miec opis dla rodzica;
 - slowa powinny miec recznie sprawdzony podzial na sylaby.
-- do modulu sylabizowania wybierac przede wszystkim slowa dwu- i trzysylabowe;
-- slowa jednosylabowe nie powinny byc glownym materialem sylabizowania;
+- do modulu sylabizowania wybierac slowa zgodne z jedna z szesciu opisanych
+  struktur;
+- slowa jednosylabowe stosowac tylko w strukturze `CVC`;
 - nie tworzyc zadan polegajacych na wyborze poprawnego podzialu z kilku
   wariantow, bo zwieksza to ryzyko zgadywania.
 
@@ -41,6 +42,9 @@ Stan bazy po rozbudowie historii i tresci:
 - 118 sylab, znakow i elementow do rozgrzewki;
 - 142 slowa z recznym podzialem na sylaby;
 - 125 slow oznaczonych jako przydatne do sylabizowania;
+- 66 osobno sklasyfikowanych prawdziwych slow do cwiczen struktur;
+- 36 recznie przygotowanych pseudowyrazow;
+- 27 cwiczen laczenia elementow;
 - 106 krotkich zdan z pytaniami o sens.
 
 Ta sama baza slow moze zasilac modul czytania i modul sylabizowania, ale zadania
@@ -75,30 +79,40 @@ podzielone na sylaby nie musi oznaczac plynnego przeczytania calego slowa.
 
 ## Material Do Sylabizowania
 
-Modul sylabizowania korzysta przede wszystkim z `words.json`, czyli slow z
-recznie sprawdzonym podzialem na sylaby.
+Modul sylabizowania korzysta z osobnych, recznie sprawdzonych danych:
+`structures.json`, `blends.json`, `decodingWords.json` i `pseudowords.json`.
+Kazdy element ma jawny podzial na sylaby i grafemy z rola samogloski albo
+spolgłoski.
 
-Na start najlepiej wybierac:
+Zakres obejmuje tylko:
 
-- slowa dwusylabowe o prostym podziale, np. `ma-ma`, `la-to`, `ko-ło`;
-- slowa trzysylabowe o czytelnym rytmie, np. `o-po-na`, `ra-kie-ta`;
-- slowa z dwuznakami dopiero po utrwaleniu prostych slow;
-- slowa znane dziecku i zgodne z motywem albo codziennym kontekstem.
+- `CV-CV`;
+- trzy lub wiecej sylab `CV`;
+- `CVC`;
+- `CV-CVC`;
+- `CVC-CV`;
+- `CVC-CVC`.
 
-Unikac na poczatku:
+W kazdej strukturze material ma trzy stopnie: `basic`, `extended` i `digraph`.
+Nastepny stopien pojawia sie po pokazaniu wszystkich prawdziwych slow
+poprzedniego stopnia przynajmniej raz. Ocena `Trudne` albo `Z pomocą` zwieksza
+priorytet powtorki, ale nie tworzy automatycznej diagnozy.
 
-- slow jednosylabowych, np. `tor`, `dom`, `most`;
-- trudnych grup spolglosek;
-- slow z niejednoznacznym podzialem;
-- slow, w ktorych `i` moze byc mylace dla dziecka.
+Pseudowyrazy:
 
-Dane slowa moga zawierac dodatkowe pola pomocne dla sylabizowania:
+- sa recznie przygotowane i zgodne z wybrana struktura;
+- nie sa generowane podczas dzialania aplikacji;
+- nie moga pokrywac sie z prawdziwymi slowami;
+- nie maja ilustracji, zdan ani pytan o znaczenie;
+- zajmuja dwa miejsca w domyslnej sesji i moga byc wylaczone przez rodzica.
 
-- `syllableCount`: liczba sylab;
-- `syllabificationLevel`: orientacyjna trudnosc podzialu;
-- `syllabificationTags`: tagi, np. `proste`, `dwuznak`, `i-zmiekczajace`;
-- `allowedSyllableSplits`: dopuszczalne reczne warianty podzialu, jesli sa potrzebne;
-- `suitableForSyllabification`: czy slowo nadaje sie do zadan sylabizowania.
+Dane materialu struktur zawieraja:
+
+- `structureId`;
+- `difficultyStage`;
+- `materialKind`;
+- `syllables`;
+- `graphemes` jako trojki: zapis, rola, indeks sylaby.
 
 W MVP podzial na sylaby pozostaje reczny. Automatyczne dzielenie slow nie jest
 czescia MVP.
@@ -269,7 +283,8 @@ Zdania:
 ## Uwagi Do Implementacji Tresci
 
 - Baza cwiczen powinna byc zapisana jako statyczne pliki JSON w repo.
-- JSON powinien byc traktowany jako zrodlo prawdy dla poziomow, sylab, slow, zdan i pytan.
+- JSON powinien byc traktowany jako zrodlo prawdy dla poziomow, struktur,
+  sylab, slow, pseudowyrazow, zdan i pytan.
 - Kazdy material powinien miec stabilny identyfikator.
 - Podzial na sylaby powinien byc reczny, nie generowany automatycznie w MVP.
 - Material oceniony jako `Samodzielnie` powinien wypasc z aktywnej puli powtorek.

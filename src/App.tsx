@@ -7,12 +7,18 @@ import {
   ResetScreen,
   SessionScreen,
   StartScreen,
+  StructureScreen,
   SyllabificationModeScreen,
   type LevelOption,
   type StartScreenSummary,
+  type StructureOption,
 } from './components/screens'
 import { contentSummary, exerciseContent } from './content'
-import type { ContentLevel } from './content/contentTypes'
+import type {
+  ContentLevel,
+  ContentStructure,
+  StructureId,
+} from './content/contentTypes'
 import {
   clearProgress,
   createEmptyProgress,
@@ -44,6 +50,7 @@ type AppView =
   | 'reset'
 
 const levels = [...exerciseContent.levels].sort((a, b) => a.order - b.order)
+const structures = [...exerciseContent.structures].sort((a, b) => a.order - b.order)
 
 const levelOptions: LevelOption[] = levels.map((level) => ({
   level,
@@ -53,6 +60,16 @@ const levelOptions: LevelOption[] = levels.map((level) => ({
   ).length,
   syllabificationWordCount: exerciseContent.words.filter(
     (word) => word.levelId === level.id && word.suitableForSyllabification,
+  ).length,
+}))
+
+const structureOptions: StructureOption[] = structures.map((structure) => ({
+  structure,
+  wordCount: exerciseContent.decodingWords.filter(
+    (item) => item.structureId === structure.id,
+  ).length,
+  pseudowordCount: exerciseContent.pseudowords.filter(
+    (item) => item.structureId === structure.id,
   ).length,
 }))
 
@@ -66,19 +83,35 @@ function App() {
   const [view, setView] = useState<AppView>('start')
   const [selectedModule, setSelectedModule] = useState<SessionModule>('reading')
   const [selectedLevelId, setSelectedLevelId] = useState(levels[0]?.id ?? '')
+  const [selectedStructureId, setSelectedStructureId] = useState<StructureId>(
+    structures[0]?.id ?? 'structure-1',
+  )
   const [selectedSyllabificationMode, setSelectedSyllabificationMode] =
     useState<SyllabificationSupportMode | undefined>(undefined)
+  const [includePseudowords, setIncludePseudowords] = useState(true)
   const [activeSession, setActiveSession] = useState<ReadingSession | null>(null)
   const [progress, setProgress] = useState<StoredProgress>(() => loadProgress())
   const [latestSessionBadges, setLatestSessionBadges] = useState<ProgressBadge[]>([])
   const selectedLevel = levels.find((level) => level.id === selectedLevelId) ?? levels[0]
+  const selectedStructure =
+    structures.find((structure) => structure.id === selectedStructureId) ?? structures[0]
 
   const chooseModule = (module: SessionModule) => {
     setSelectedModule(module)
     setLatestSessionBadges([])
     setActiveSession(null)
     setSelectedSyllabificationMode(undefined)
+    setIncludePseudowords(true)
     setView('levels')
+  }
+
+  const chooseStructure = (structure: ContentStructure) => {
+    setSelectedStructureId(structure.id)
+    setLatestSessionBadges([])
+    setActiveSession(null)
+    setSelectedSyllabificationMode(undefined)
+    setIncludePseudowords(true)
+    setView('syllabification-mode')
   }
 
   const chooseLevel = (level: ContentLevel) => {
@@ -97,7 +130,6 @@ function App() {
 
   const chooseSyllabificationMode = (mode: SyllabificationSupportMode) => {
     setSelectedSyllabificationMode(mode)
-    startSyllabificationSession(selectedLevel.id, mode)
   }
 
   const startReadingSession = (levelId: string) => {
@@ -111,30 +143,42 @@ function App() {
   }
 
   const startSyllabificationSession = (
-    levelId: string,
+    structureId: StructureId,
     mode: SyllabificationSupportMode,
   ) => {
     setActiveSession(
-      createSyllabificationSession(levelId, mode, exerciseContent, {
+      createSyllabificationSession(
+        structureId,
+        mode,
+        includePseudowords,
+        exerciseContent,
+        {
         materialProgress: progress.materialProgress,
         sessionIndex: progress.sessions.length,
-      }),
+        },
+      ),
     )
     setView('session')
   }
 
-  const resetCurrentSession = () => {
-    if (!selectedLevel) {
+  const startSelectedSyllabificationSession = () => {
+    if (!selectedSyllabificationMode || !selectedStructure) {
       return
     }
 
+    startSyllabificationSession(selectedStructure.id, selectedSyllabificationMode)
+  }
+
+  const resetCurrentSession = () => {
     setLatestSessionBadges([])
     if (selectedModule === 'syllabification' && selectedSyllabificationMode) {
-      startSyllabificationSession(selectedLevel.id, selectedSyllabificationMode)
+      startSyllabificationSession(selectedStructureId, selectedSyllabificationMode)
       return
     }
 
-    startReadingSession(selectedLevel.id)
+    if (selectedLevel) {
+      startReadingSession(selectedLevel.id)
+    }
   }
 
   const rateTask = (rating: SessionRating) => {
@@ -210,7 +254,7 @@ function App() {
           onProgress={() => setView('progress')}
         />
       )}
-      {view === 'levels' && (
+      {view === 'levels' && selectedModule === 'reading' && (
         <LevelScreen
           levels={levelOptions}
           module={selectedModule}
@@ -219,17 +263,31 @@ function App() {
           onProgress={() => setView('progress')}
         />
       )}
-      {view === 'syllabification-mode' && selectedLevel && (
-        <SyllabificationModeScreen
-          level={selectedLevel}
-          selectedMode={selectedSyllabificationMode}
-          onBack={() => setView('levels')}
-          onChooseMode={chooseSyllabificationMode}
+      {view === 'levels' && selectedModule === 'syllabification' && (
+        <StructureScreen
+          structures={structureOptions}
+          onBack={() => setView('modules')}
+          onChooseStructure={chooseStructure}
+          onProgress={() => setView('progress')}
         />
       )}
-      {view === 'session' && selectedLevel && activeSession && (
+      {view === 'syllabification-mode' && selectedStructure && (
+        <SyllabificationModeScreen
+          structure={selectedStructure}
+          selectedMode={selectedSyllabificationMode}
+          includePseudowords={includePseudowords}
+          onBack={() => setView('levels')}
+          onChooseMode={chooseSyllabificationMode}
+          onIncludePseudowordsChange={setIncludePseudowords}
+          onStart={startSelectedSyllabificationSession}
+        />
+      )}
+      {view === 'session' && activeSession && (
         <SessionScreen
-          level={selectedLevel}
+          level={activeSession.module === 'reading' ? selectedLevel : undefined}
+          structure={
+            activeSession.module === 'syllabification' ? selectedStructure : undefined
+          }
           session={activeSession}
           earnedBadges={latestSessionBadges}
           onBack={() =>

@@ -71,10 +71,17 @@ const isStoredProgress = (value: unknown): value is StoredProgress => {
     return false
   }
 
-  const progress = value as Partial<StoredProgress>
+  const progress = value as {
+    version?: number
+    totalPoints?: unknown
+    sessions?: unknown
+    badges?: unknown
+    difficultItems?: unknown
+    materialProgress?: unknown
+  }
 
   return (
-    progress.version === 1 &&
+    (progress.version === 1 || progress.version === 2) &&
     typeof progress.totalPoints === 'number' &&
     Array.isArray(progress.sessions) &&
     Array.isArray(progress.badges) &&
