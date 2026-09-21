@@ -3,6 +3,7 @@ import './App.css'
 import {
   LevelScreen,
   ModuleChoiceScreen,
+  ProgressDetailsScreen,
   ProgressScreen,
   ResetScreen,
   SessionScreen,
@@ -26,8 +27,11 @@ import {
   createProgressBackupFilename,
   loadProgress,
   recordCompletedSession,
+  recordRepeatedSession,
   saveProgress,
   type ProgressBadge,
+  type ProgressScope,
+  type ProgressSessionRecord,
   type StoredProgress,
 } from './progress'
 import {
@@ -47,6 +51,7 @@ type AppView =
   | 'syllabification-mode'
   | 'session'
   | 'progress'
+  | 'progress-details'
   | 'reset'
 
 const levels = [...exerciseContent.levels].sort((a, b) => a.order - b.order)
@@ -79,6 +84,47 @@ const startSummary: StartScreenSummary = {
   sentences: contentSummary.sentences,
 }
 
+const createReplaySession = (
+  record: ProgressSessionRecord,
+): ReadingSession | null => {
+  if (!record.sessionTasks?.length) {
+    return null
+  }
+
+  if (record.module === 'reading' && record.levelId) {
+    return {
+      id: record.id,
+      module: 'reading',
+      levelId: record.levelId,
+      tasks: record.sessionTasks,
+      currentTaskIndex: 0,
+      answers: [],
+      status: 'active',
+    }
+  }
+
+  if (
+    record.module === 'syllabification' &&
+    record.structureId &&
+    record.supportMode
+  ) {
+    return {
+      id: record.id,
+      module: 'syllabification',
+      structureId: record.structureId,
+      supportMode: record.supportMode,
+      includePseudowords: record.includePseudowords ?? true,
+      difficultyStage: record.sessionTasks[0].difficultyStage ?? 'basic',
+      tasks: record.sessionTasks,
+      currentTaskIndex: 0,
+      answers: [],
+      status: 'active',
+    }
+  }
+
+  return null
+}
+
 function App() {
   const [view, setView] = useState<AppView>('start')
   const [selectedModule, setSelectedModule] = useState<SessionModule>('reading')
@@ -92,6 +138,9 @@ function App() {
   const [activeSession, setActiveSession] = useState<ReadingSession | null>(null)
   const [progress, setProgress] = useState<StoredProgress>(() => loadProgress())
   const [latestSessionBadges, setLatestSessionBadges] = useState<ProgressBadge[]>([])
+  const [repeatedSessionId, setRepeatedSessionId] = useState<string | null>(null)
+  const [selectedProgressScope, setSelectedProgressScope] =
+    useState<ProgressScope | null>(null)
   const selectedLevel = levels.find((level) => level.id === selectedLevelId) ?? levels[0]
   const selectedStructure =
     structures.find((structure) => structure.id === selectedStructureId) ?? structures[0]
@@ -133,6 +182,7 @@ function App() {
   }
 
   const startReadingSession = (levelId: string) => {
+    setRepeatedSessionId(null)
     setActiveSession(
       createReadingSession(levelId, exerciseContent, {
         materialProgress: progress.materialProgress,
@@ -146,6 +196,7 @@ function App() {
     structureId: StructureId,
     mode: SyllabificationSupportMode,
   ) => {
+    setRepeatedSessionId(null)
     setActiveSession(
       createSyllabificationSession(
         structureId,
@@ -171,6 +222,16 @@ function App() {
 
   const resetCurrentSession = () => {
     setLatestSessionBadges([])
+    if (repeatedSessionId) {
+      const record = progress.sessions.find((item) => item.id === repeatedSessionId)
+      const replay = record ? createReplaySession(record) : null
+
+      if (replay) {
+        setActiveSession(replay)
+      }
+      return
+    }
+
     if (selectedModule === 'syllabification' && selectedSyllabificationMode) {
       startSyllabificationSession(selectedStructureId, selectedSyllabificationMode)
       return
@@ -190,7 +251,9 @@ function App() {
     setActiveSession(nextSession)
 
     if (activeSession.status === 'active' && nextSession.status === 'completed') {
-      const nextProgress = recordCompletedSession(progress, nextSession)
+      const nextProgress = repeatedSessionId
+        ? recordRepeatedSession(progress, repeatedSessionId, nextSession)
+        : recordCompletedSession(progress, nextSession)
       const previousBadgeIds = new Set(progress.badges.map((badge) => badge.id))
       const newBadges = nextProgress.badges.filter(
         (badge) => !previousBadgeIds.has(badge.id),
@@ -202,7 +265,30 @@ function App() {
   }
 
   const returnHome = () => {
+    setRepeatedSessionId(null)
     setView('start')
+  }
+
+  const repeatSavedSession = (record: ProgressSessionRecord) => {
+    const replay = createReplaySession(record)
+
+    if (!replay) {
+      return
+    }
+
+    setSelectedModule(record.module)
+    if (record.module === 'reading' && record.levelId) {
+      setSelectedLevelId(record.levelId)
+    }
+    if (record.module === 'syllabification') {
+      if (record.structureId) setSelectedStructureId(record.structureId)
+      setSelectedSyllabificationMode(record.supportMode)
+      setIncludePseudowords(record.includePseudowords ?? true)
+    }
+    setLatestSessionBadges([])
+    setRepeatedSessionId(record.id)
+    setActiveSession(replay)
+    setView('session')
   }
 
   const exportProgressBackup = () => {
@@ -290,10 +376,9 @@ function App() {
           }
           session={activeSession}
           earnedBadges={latestSessionBadges}
+          isSessionReplay={Boolean(repeatedSessionId)}
           onBack={() =>
-            setView(
-              selectedModule === 'reading' ? 'levels' : 'syllabification-mode',
-            )
+            setView(repeatedSessionId ? 'progress' : selectedModule === 'reading' ? 'levels' : 'syllabification-mode')
           }
           onRateTask={rateTask}
           onReset={resetCurrentSession}
@@ -306,6 +391,19 @@ function App() {
           onBack={() => setView('start')}
           onExportProgress={exportProgressBackup}
           onImportProgress={importProgressBackup}
+          onRepeatSession={repeatSavedSession}
+          onOpenScope={(scope) => {
+            setSelectedProgressScope(scope)
+            setView('progress-details')
+          }}
+        />
+      )}
+      {view === 'progress-details' && selectedProgressScope && (
+        <ProgressDetailsScreen
+          progress={progress}
+          scope={selectedProgressScope}
+          onBack={() => setView('progress')}
+          onRepeatSession={repeatSavedSession}
         />
       )}
       {view === 'reset' && (

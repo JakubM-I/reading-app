@@ -188,6 +188,10 @@ Pokazuje:
 - nowa odznake, jesli zostala zdobyta;
 - przycisk powrotu do startu.
 
+Sesje, ktore nie zostaly wykonane w calosci samodzielnie, rodzic moze pozniej
+powtorzyc z dziennika. Powtorka ma identyczne zadania i jest kolejnym podejsciem
+do tej samej sesji, a nie nowa sesja.
+
 ## Panel Postepow
 
 Panel postepow pokazuje:
@@ -199,12 +203,24 @@ Panel postepow pokazuje:
 - podsumowanie miesiaca;
 - liczbe sesji;
 - ostatnie trudne slowa;
-- odznaki.
-- neutralne zestawienie szesciu struktur: liczba prob, rozklad ocen i ostatnie
-  cwiczenie;
+- odznaki;
+- podsumowanie `Czytania` i `Sylabizowania`: sesje, zadania, rozklad ocen i
+  ostatnia praca;
+- neutralne zestawienie szesciu struktur jako czesc podsumowania
+  `Sylabizowania`;
+- dziennik wszystkich sesji z rozwijanym podgladem podejsc i ocen kazdego
+  cwiczenia;
+- przycisk powtorki tylko dla zapisanej, niepelnej sesji z zachowanym zestawem
+  zadan;
 - przyciski `Eksportuj postępy` i `Importuj postępy`.
 
 Podsumowania maja byc proste. Na MVP nie trzeba zaawansowanych wykresow.
+
+Lista struktur i lista poziomow pokazuja tylko nazwe zakresu oraz przycisk
+`Zobacz szczegóły`. Szczegoly sa osobnym widokiem z podsumowaniem i historia
+sesji tylko dla wybranego zakresu. Dziennik ogolny jest domyslnie zwinięty.
+Wpis sylabizowania pokazuje takze wybrany tryb pomocy oraz staly numer sesji
+w danej strukturze; wpis czytania pokazuje numer sesji w danym poziomie.
 
 ## Reset
 

@@ -53,6 +53,8 @@ MVP zawiera:
 - reczna ocene kazdego zadania przez rodzica;
 - punkty i odznaki progowe;
 - podsumowanie sesji;
+- dziennik zrealizowanych sesji z podgladem ocen cwiczen;
+- powtorzenie niepelnej sesji na identycznym zestawie zadan;
 - podsumowanie dnia, tygodnia i miesiaca;
 - panel postepow;
 - eksport postepow do pliku JSON;
@@ -95,6 +97,19 @@ Po starcie sesji rodzic wybiera, co dziecko cwiczy:
 Sesje nie sa mieszane w MVP. Tego samego dnia mozna wykonac osobno sesje
 sylabizowania i osobno sesje czytania. Punkty, odznaki i podsumowania sa
 liczone wspolnie dla obu modulow.
+
+### Powtorzenie sesji
+
+Sesja, w ktorej nie wszystkie zadania zostaly ocenione jako `Samodzielnie`,
+moze zostac powtorzona z dziennika sesji. Powtorka wykorzystuje ten sam zestaw
+zadan i nie jest nowa sesja. Zapis zachowuje wszystkie podejscia, a do punktow
+lacznych, odznak i podsumowan liczy sie najlepszy punktowo wynik tej sesji.
+Powtorka aktualizuje lokalna historie materialu, ale nie zwieksza liczby sesji
+ani aktywnosci dnia, tygodnia lub miesiaca.
+
+Kazda nowa sesja otrzymuje staly numer w obrebie wybranej struktury albo
+poziomu. Powtorka zachowuje ten numer jako kolejne podejscie do tej samej
+sesji.
 
 Domyslna struktura sesji czytania:
 
@@ -151,5 +166,7 @@ MVP jest gotowe, gdy:
 - aplikacja korzysta z bazy cwiczen zapisanej w plikach JSON;
 - rodzic moze wyeksportowac i zaimportowac postepy jako plik JSON;
 - panel postepow pokazuje dzien, tydzien i miesiac;
+- panel postepow obejmuje oba moduly i pozwala przejrzec dziennik sesji;
+- rodzic moze wejsc do osobnych szczegolow struktury lub poziomu czytania;
 - reset sesji i reset aplikacji dzialaja zgodnie z opisem;
 - aplikacja nie wymaga internetu ani konta.

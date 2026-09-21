@@ -23,6 +23,7 @@ interface SessionScreenProps {
   structure?: ContentStructure
   session: ReadingSession
   earnedBadges: ProgressBadge[]
+  isSessionReplay?: boolean
   onBack: () => void
   onRateTask: (rating: SessionRating) => void
   onReset: () => void
@@ -34,6 +35,7 @@ export function SessionScreen({
   structure,
   session,
   earnedBadges,
+  isSessionReplay = false,
   onBack,
   onRateTask,
   onReset,
@@ -44,6 +46,7 @@ export function SessionScreen({
       <SessionSummary
         session={session}
         earnedBadges={earnedBadges}
+        isSessionReplay={isSessionReplay}
         onBack={onBack}
         onReset={onReset}
         onReturnHome={onReturnHome}
