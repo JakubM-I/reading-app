@@ -216,6 +216,12 @@ Panel postepow pokazuje:
 
 Podsumowania maja byc proste. Na MVP nie trzeba zaawansowanych wykresow.
 
+Lista struktur i lista poziomow pokazuja tylko nazwe zakresu oraz przycisk
+`Zobacz szczegóły`. Szczegoly sa osobnym widokiem z podsumowaniem i historia
+sesji tylko dla wybranego zakresu. Dziennik ogolny jest domyslnie zwinięty.
+Wpis sylabizowania pokazuje takze wybrany tryb pomocy oraz staly numer sesji
+w danej strukturze; wpis czytania pokazuje numer sesji w danym poziomie.
+
 ## Reset
 
 Dwa poziomy resetu:

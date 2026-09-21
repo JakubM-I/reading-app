@@ -4,7 +4,12 @@ import type {
   StoredProgress,
 } from './progressTypes'
 import type { SessionRating } from '../session'
-import type { StructureId } from '../content/contentTypes'
+import type { ContentLevel, StructureId } from '../content/contentTypes'
+
+export interface ProgressScope {
+  module: 'reading' | 'syllabification'
+  id: string
+}
 
 export interface PeriodProgressSummary {
   label: string
@@ -38,6 +43,14 @@ export interface StructureProgressSummary {
 export interface ModuleProgressSummary {
   module: 'reading' | 'syllabification'
   sessions: number
+  tasks: number
+  counts: Record<SessionRating, number>
+  lastPracticedAt?: string
+}
+
+export interface ScopeProgressSummary {
+  scope: ProgressScope
+  sessions: ProgressSessionRecord[]
   tasks: number
   counts: Record<SessionRating, number>
   lastPracticedAt?: string
@@ -117,10 +130,51 @@ export const getStructureProgress = (
     }
   })
 
+export const getLevelProgress = (
+  progress: StoredProgress,
+  levelIds: readonly ContentLevel['id'][],
+) =>
+  levelIds.map((levelId) =>
+    getScopeProgress(progress, { module: 'reading', id: levelId }),
+  )
+
+export const getScopeProgress = (
+  progress: StoredProgress,
+  scope: ProgressScope,
+): ScopeProgressSummary => {
+  const sessions = progress.sessions
+    .filter((session) =>
+      scope.module === 'reading'
+        ? session.module === 'reading' && session.levelId === scope.id
+        : session.module === 'syllabification' && session.structureId === scope.id,
+    )
+    .sort((first, second) => Date.parse(second.completedAt) - Date.parse(first.completedAt))
+  const counts: Record<SessionRating, number> = {
+    independent: 0,
+    'with-help': 0,
+    hard: 0,
+    skip: 0,
+  }
+
+  for (const session of sessions) {
+    for (const rating of Object.keys(counts) as SessionRating[]) {
+      counts[rating] += session.counts[rating]
+    }
+  }
+
+  return {
+    scope,
+    sessions,
+    tasks: sumSessions(sessions, (session) => session.totalTasks),
+    counts,
+    lastPracticedAt: sessions[0]?.completedAt,
+  }
+}
+
 export const getModuleProgress = (
   progress: StoredProgress,
 ): ModuleProgressSummary[] =>
-  (['reading', 'syllabification'] as const).map((module) => {
+  (['syllabification', 'reading'] as const).map((module) => {
     const sessions = progress.sessions.filter((session) => session.module === module)
     const counts: Record<SessionRating, number> = {
       independent: 0,

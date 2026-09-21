@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { exerciseContent } from '../content'
 import {
+  createReadingSession,
   createSyllabificationSession,
   rateCurrentTask,
   type ReadingSession,
@@ -13,8 +14,9 @@ import {
   recordRepeatedSession,
 } from './localProgress'
 import { parseProgressBackup } from './progressBackup'
+import { getScopeProgress } from './progressSummary'
 
-describe('postępy w wersji 3', () => {
+describe('postępy w wersji 4', () => {
   it('migruje zapis wersji 1 i rozdziela klucze według rodzaju zadania', () => {
     const legacy = {
       version: 1,
@@ -39,7 +41,7 @@ describe('postępy w wersji 3', () => {
 
     const migrated = normalizeProgress(legacy)
 
-    expect(migrated.version).toBe(3)
+    expect(migrated.version).toBe(4)
     expect(migrated.totalPoints).toBe(7)
     expect(migrated.difficultItems).toEqual(['mama'])
     expect(migrated.materialProgress['reading:guided-reading:word-l1-mama']).toBeDefined()
@@ -60,7 +62,7 @@ describe('postępy w wersji 3', () => {
       },
     })
 
-    expect(parseProgressBackup(raw).progress.version).toBe(3)
+    expect(parseProgressBackup(raw).progress.version).toBe(4)
     expect(parseProgressBackup(raw).progress.totalPoints).toBe(3)
   })
 
@@ -97,6 +99,7 @@ describe('postępy w wersji 3', () => {
     ).toBe(true)
     expect(savedSession?.sessionTasks).toHaveLength(10)
     expect(savedSession?.attempts).toHaveLength(1)
+    expect(savedSession?.scopeSessionNumber).toBe(1)
   })
 
   it('zapisuje powtórkę w tej samej sesji i liczy tylko poprawę punktów', () => {
@@ -135,6 +138,7 @@ describe('postępy w wersji 3', () => {
     const savedSession = repeatedProgress.sessions[0]
 
     expect(repeatedProgress.sessions).toHaveLength(1)
+    expect(savedSession.scopeSessionNumber).toBe(1)
     expect(savedSession.attempts).toHaveLength(2)
     expect(savedSession.totalPoints).toBe(improvedAttempt.answers.reduce((sum, answer) => sum + answer.points, 0))
     expect(repeatedProgress.totalPoints).toBe(savedSession.totalPoints)
@@ -204,6 +208,55 @@ describe('postępy w wersji 3', () => {
 
     expect(migrated.sessions[0].attempts).toHaveLength(1)
     expect(migrated.sessions[0].sessionTasks).toBeUndefined()
+    expect(migrated.sessions[0].scopeSessionNumber).toBe(1)
     expect(canRepeatSession(migrated.sessions[0])).toBe(false)
+  })
+
+  it('numeruje nowe sesje osobno dla każdej struktury', () => {
+    let first = createSyllabificationSession(
+      'structure-1',
+      'partial-help',
+      true,
+      exerciseContent,
+    )
+
+    for (let index = 0; index < first.tasks.length; index += 1) {
+      first = rateCurrentTask(first, 'independent')
+    }
+
+    const progressAfterFirst = recordCompletedSession(createEmptyProgress(), first)
+    const second = { ...first, id: 'second-structure-1-session' }
+    const progressAfterSecond = recordCompletedSession(progressAfterFirst, second)
+
+    expect(progressAfterSecond.sessions.map((session) => session.scopeSessionNumber)).toEqual([1, 2])
+  })
+
+  it('zestawia szczegóły wyłącznie dla wybranego poziomu czytania', () => {
+    let readingSession = createReadingSession('level-1', exerciseContent)
+    let syllabificationSession = createSyllabificationSession(
+      'structure-1',
+      'partial-help',
+      true,
+      exerciseContent,
+    )
+
+    for (let index = 0; index < readingSession.tasks.length; index += 1) {
+      readingSession = rateCurrentTask(readingSession, 'independent')
+    }
+    for (let index = 0; index < syllabificationSession.tasks.length; index += 1) {
+      syllabificationSession = rateCurrentTask(syllabificationSession, 'with-help')
+    }
+
+    const progress = recordCompletedSession(
+      recordCompletedSession(createEmptyProgress(), readingSession),
+      syllabificationSession,
+    )
+    const levelOne = getScopeProgress(progress, { module: 'reading', id: 'level-1' })
+    const levelTwo = getScopeProgress(progress, { module: 'reading', id: 'level-2' })
+
+    expect(levelOne.sessions).toHaveLength(1)
+    expect(levelOne.tasks).toBe(readingSession.tasks.length)
+    expect(levelTwo.sessions).toHaveLength(0)
+    expect(levelTwo.tasks).toBe(0)
   })
 })

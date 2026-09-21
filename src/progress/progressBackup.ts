@@ -81,7 +81,7 @@ const isStoredProgress = (value: unknown): value is StoredProgress => {
   }
 
   return (
-    (progress.version === 1 || progress.version === 2 || progress.version === 3) &&
+    (progress.version === 1 || progress.version === 2 || progress.version === 3 || progress.version === 4) &&
     typeof progress.totalPoints === 'number' &&
     Array.isArray(progress.sessions) &&
     Array.isArray(progress.badges) &&

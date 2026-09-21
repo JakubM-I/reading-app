@@ -3,6 +3,7 @@ import './App.css'
 import {
   LevelScreen,
   ModuleChoiceScreen,
+  ProgressDetailsScreen,
   ProgressScreen,
   ResetScreen,
   SessionScreen,
@@ -29,6 +30,7 @@ import {
   recordRepeatedSession,
   saveProgress,
   type ProgressBadge,
+  type ProgressScope,
   type ProgressSessionRecord,
   type StoredProgress,
 } from './progress'
@@ -49,6 +51,7 @@ type AppView =
   | 'syllabification-mode'
   | 'session'
   | 'progress'
+  | 'progress-details'
   | 'reset'
 
 const levels = [...exerciseContent.levels].sort((a, b) => a.order - b.order)
@@ -136,6 +139,8 @@ function App() {
   const [progress, setProgress] = useState<StoredProgress>(() => loadProgress())
   const [latestSessionBadges, setLatestSessionBadges] = useState<ProgressBadge[]>([])
   const [repeatedSessionId, setRepeatedSessionId] = useState<string | null>(null)
+  const [selectedProgressScope, setSelectedProgressScope] =
+    useState<ProgressScope | null>(null)
   const selectedLevel = levels.find((level) => level.id === selectedLevelId) ?? levels[0]
   const selectedStructure =
     structures.find((structure) => structure.id === selectedStructureId) ?? structures[0]
@@ -386,6 +391,18 @@ function App() {
           onBack={() => setView('start')}
           onExportProgress={exportProgressBackup}
           onImportProgress={importProgressBackup}
+          onRepeatSession={repeatSavedSession}
+          onOpenScope={(scope) => {
+            setSelectedProgressScope(scope)
+            setView('progress-details')
+          }}
+        />
+      )}
+      {view === 'progress-details' && selectedProgressScope && (
+        <ProgressDetailsScreen
+          progress={progress}
+          scope={selectedProgressScope}
+          onBack={() => setView('progress')}
           onRepeatSession={repeatSavedSession}
         />
       )}

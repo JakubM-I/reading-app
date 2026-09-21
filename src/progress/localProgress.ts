@@ -21,7 +21,7 @@ const materialProgressKey = (
 ) => `${module}:${kind}:${materialId}`
 
 export const createEmptyProgress = (): StoredProgress => ({
-  version: 3,
+  version: 4,
   totalPoints: 0,
   sessions: [],
   badges: [],
@@ -63,6 +63,7 @@ export const recordCompletedSession = (
   const attempt = createAttempt(session, completedAt)
   const sessionRecord: ProgressSessionRecord = {
     id: session.id,
+    scopeSessionNumber: getNextScopeSessionNumber(progress.sessions, session),
     completedAt,
     module: session.module,
     levelId: session.module === 'reading' ? session.levelId : undefined,
@@ -199,19 +200,63 @@ export const normalizeProgress = (value: unknown): StoredProgress => {
     return createEmptyProgress()
   }
 
-  const sessions = value.sessions.map(normalizeSessionRecord)
+  const sessions = assignScopeSessionNumbers(
+    value.sessions.map(normalizeSessionRecord),
+  )
   const materialProgress = normalizeMaterialProgress(value.materialProgress)
 
   return {
     ...createEmptyProgress(),
     ...value,
-    version: 3,
+    version: 4,
     sessions,
     badges: value.badges,
     difficultItems: value.difficultItems,
     materialProgress,
   }
 }
+
+const getNextScopeSessionNumber = (
+  sessions: ProgressSessionRecord[],
+  session: ReadingSession,
+) => {
+  const sameScope = sessions.filter((item) =>
+    session.module === 'reading'
+      ? item.module === 'reading' && item.levelId === session.levelId
+      : item.module === 'syllabification' && item.structureId === session.structureId,
+  )
+
+  return Math.max(0, ...sameScope.map((item) => item.scopeSessionNumber)) + 1
+}
+
+const assignScopeSessionNumbers = (sessions: ProgressSessionRecord[]) => {
+  const nextByScope = new Map<string, number>()
+  const ordered = [...sessions].sort(
+    (first, second) => Date.parse(first.completedAt) - Date.parse(second.completedAt),
+  )
+  const assigned = new Map<string, number>()
+
+  for (const session of ordered) {
+    const scope = getSessionScopeKey(session)
+    const nextNumber = (nextByScope.get(scope) ?? 0) + 1
+    const number = session.scopeSessionNumber > 0
+      ? session.scopeSessionNumber
+      : nextNumber
+
+    nextByScope.set(scope, Math.max(nextNumber, number))
+    assigned.set(session.id, number)
+  }
+
+  return sessions.map((session) => ({
+    ...session,
+    scopeSessionNumber: assigned.get(session.id) ?? 1,
+  }))
+}
+
+const getSessionScopeKey = (session: ProgressSessionRecord) =>
+  session.module === 'reading'
+    ? `reading:${session.levelId ?? 'unknown'}`
+    : `syllabification:${session.structureId ?? 'unknown'}`
 
 const isStoredProgress = (value: unknown): value is StoredProgress => {
   if (!value || typeof value !== 'object') {
@@ -228,7 +273,7 @@ const isStoredProgress = (value: unknown): value is StoredProgress => {
   }
 
   return (
-    (progress.version === 1 || progress.version === 2 || progress.version === 3) &&
+    (progress.version === 1 || progress.version === 2 || progress.version === 3 || progress.version === 4) &&
     typeof progress.totalPoints === 'number' &&
     Array.isArray(progress.sessions) &&
     Array.isArray(progress.badges) &&

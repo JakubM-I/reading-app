@@ -39,6 +39,7 @@ export interface ProgressSessionAttempt {
 
 export interface ProgressSessionRecord {
   id: string
+  scopeSessionNumber: number
   completedAt: string
   module: SessionModule
   levelId?: string
@@ -70,7 +71,7 @@ export interface MaterialProgressRecord {
 }
 
 export interface StoredProgress {
-  version: 3
+  version: 4
   totalPoints: number
   sessions: ProgressSessionRecord[]
   badges: ProgressBadge[]

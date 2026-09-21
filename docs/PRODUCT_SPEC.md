@@ -107,6 +107,10 @@ lacznych, odznak i podsumowan liczy sie najlepszy punktowo wynik tej sesji.
 Powtorka aktualizuje lokalna historie materialu, ale nie zwieksza liczby sesji
 ani aktywnosci dnia, tygodnia lub miesiaca.
 
+Kazda nowa sesja otrzymuje staly numer w obrebie wybranej struktury albo
+poziomu. Powtorka zachowuje ten numer jako kolejne podejscie do tej samej
+sesji.
+
 Domyslna struktura sesji czytania:
 
 1. 3 zadania rozgrzewkowe.
@@ -163,5 +167,6 @@ MVP jest gotowe, gdy:
 - rodzic moze wyeksportowac i zaimportowac postepy jako plik JSON;
 - panel postepow pokazuje dzien, tydzien i miesiac;
 - panel postepow obejmuje oba moduly i pozwala przejrzec dziennik sesji;
+- rodzic moze wejsc do osobnych szczegolow struktury lub poziomu czytania;
 - reset sesji i reset aplikacji dzialaja zgodnie z opisem;
 - aplikacja nie wymaga internetu ani konta.
