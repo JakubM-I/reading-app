@@ -10,6 +10,7 @@ import { SummaryList } from './SummaryList'
 interface SessionSummaryProps {
   session: ReadingSession
   earnedBadges: ProgressBadge[]
+  isSessionReplay?: boolean
   onBack: () => void
   onReset: () => void
   onReturnHome: () => void
@@ -18,6 +19,7 @@ interface SessionSummaryProps {
 export function SessionSummary({
   session,
   earnedBadges,
+  isSessionReplay = false,
   onBack,
   onReset,
   onReturnHome,
@@ -75,7 +77,11 @@ export function SessionSummary({
 
         <div className="primary-actions">
           <button type="button" className="primary-button" onClick={onReset}>
-            {session.module === 'reading' ? 'Powtórz poziom' : 'Powtórz strukturę'}
+            {isSessionReplay
+              ? 'Powtórz tę sesję'
+              : session.module === 'reading'
+                ? 'Powtórz poziom'
+                : 'Powtórz strukturę'}
           </button>
           <button type="button" className="secondary-button" onClick={onBack}>
             {session.module === 'reading' ? 'Wybierz inny poziom' : 'Zmień ustawienia'}

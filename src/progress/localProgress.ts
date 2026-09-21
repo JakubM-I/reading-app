@@ -6,12 +6,14 @@ import {
 import { getEarnedBadges } from './progressBadges'
 import type {
   MaterialProgressRecord,
+  ProgressSessionAttempt,
   ProgressSessionRecord,
   ProgressTaskRecord,
   StoredProgress,
 } from './progressTypes'
 
 const STORAGE_KEY = 'reading-app-progress-v1'
+let attemptSequence = 0
 const materialProgressKey = (
   module: SessionModule,
   kind: ProgressTaskRecord['kind'],
@@ -19,7 +21,7 @@ const materialProgressKey = (
 ) => `${module}:${kind}:${materialId}`
 
 export const createEmptyProgress = (): StoredProgress => ({
-  version: 2,
+  version: 3,
   totalPoints: 0,
   sessions: [],
   badges: [],
@@ -58,9 +60,113 @@ export const recordCompletedSession = (
   session: ReadingSession,
 ): StoredProgress => {
   const completedAt = new Date().toISOString()
+  const attempt = createAttempt(session, completedAt)
+  const sessionRecord: ProgressSessionRecord = {
+    id: session.id,
+    completedAt,
+    module: session.module,
+    levelId: session.module === 'reading' ? session.levelId : undefined,
+    structureId:
+      session.module === 'syllabification' ? session.structureId : undefined,
+    supportMode:
+      session.module === 'syllabification' ? session.supportMode : undefined,
+    includePseudowords:
+      session.module === 'syllabification'
+        ? session.includePseudowords
+        : undefined,
+    totalTasks: attempt.totalTasks,
+    totalPoints: attempt.totalPoints,
+    counts: attempt.counts,
+    difficultTasks: attempt.difficultTasks,
+    skippedTasks: attempt.skippedTasks,
+    tasks: attempt.tasks,
+    sessionTasks: session.tasks,
+    attempts: [attempt],
+    bestAttemptId: attempt.id,
+  }
+  const totalPoints = progress.totalPoints + attempt.totalPoints
+  const difficultItems = uniqueRecentItems([
+    ...attempt.difficultTasks,
+    ...progress.difficultItems,
+  ])
+
+  return {
+    ...progress,
+    totalPoints,
+    sessions: [...progress.sessions, sessionRecord],
+    badges: getEarnedBadges(totalPoints, progress.badges, completedAt),
+    difficultItems,
+    materialProgress: updateMaterialProgress(
+      progress.materialProgress,
+      attempt.tasks,
+      completedAt,
+    ),
+  }
+}
+
+export const recordRepeatedSession = (
+  progress: StoredProgress,
+  sessionId: string,
+  session: ReadingSession,
+): StoredProgress => {
+  const recordIndex = progress.sessions.findIndex((item) => item.id === sessionId)
+
+  if (recordIndex < 0) {
+    return progress
+  }
+
+  const completedAt = new Date().toISOString()
+  const attempt = createAttempt(session, completedAt)
+  const currentRecord = progress.sessions[recordIndex]
+  const currentBest = getBestSessionAttempt(currentRecord)
+  const nextBest = attempt.totalPoints > currentBest.totalPoints ? attempt : currentBest
+  const nextRecord: ProgressSessionRecord = {
+    ...currentRecord,
+    totalTasks: nextBest.totalTasks,
+    totalPoints: nextBest.totalPoints,
+    counts: nextBest.counts,
+    difficultTasks: nextBest.difficultTasks,
+    skippedTasks: nextBest.skippedTasks,
+    tasks: nextBest.tasks,
+    attempts: [...currentRecord.attempts, attempt],
+    bestAttemptId: nextBest.id,
+  }
+  const sessions = [...progress.sessions]
+  sessions[recordIndex] = nextRecord
+  const totalPoints = progress.totalPoints + Math.max(0, attempt.totalPoints - currentBest.totalPoints)
+
+  return {
+    ...progress,
+    totalPoints,
+    sessions,
+    badges: getEarnedBadges(totalPoints, progress.badges, completedAt),
+    difficultItems: getRecentDifficultItems(sessions),
+    materialProgress: updateMaterialProgress(
+      progress.materialProgress,
+      attempt.tasks,
+      completedAt,
+    ),
+  }
+}
+
+export const getBestSessionAttempt = (
+  session: ProgressSessionRecord,
+): ProgressSessionAttempt =>
+  session.attempts.find((attempt) => attempt.id === session.bestAttemptId) ??
+  session.attempts[0]
+
+export const canRepeatSession = (session: ProgressSessionRecord) => {
+  const bestAttempt = getBestSessionAttempt(session)
+  return Boolean(session.sessionTasks) && bestAttempt.counts.independent < bestAttempt.totalTasks
+}
+
+const createAttempt = (
+  session: ReadingSession,
+  completedAt: string,
+): ProgressSessionAttempt => {
   const summary = getSessionSummary(session)
   const taskById = new Map(session.tasks.map((task) => [task.id, task]))
-  const taskRecords = session.answers.map((answer): ProgressTaskRecord => {
+  const tasks = session.answers.map((answer): ProgressTaskRecord => {
     const task = taskById.get(answer.taskId)
 
     return {
@@ -75,43 +181,16 @@ export const recordCompletedSession = (
       materialKind: task?.materialKind,
     }
   })
-  const sessionRecord: ProgressSessionRecord = {
-    id: session.id,
+
+  return {
+    id: `attempt-${session.id}-${Date.now()}-${attemptSequence++}`,
     completedAt,
-    module: session.module,
-    levelId: session.module === 'reading' ? session.levelId : undefined,
-    structureId:
-      session.module === 'syllabification' ? session.structureId : undefined,
-    supportMode:
-      session.module === 'syllabification' ? session.supportMode : undefined,
-    includePseudowords:
-      session.module === 'syllabification'
-        ? session.includePseudowords
-        : undefined,
     totalTasks: summary.totalTasks,
     totalPoints: summary.totalPoints,
     counts: summary.counts,
     difficultTasks: summary.difficultTasks,
     skippedTasks: summary.skippedTasks,
-    tasks: taskRecords,
-  }
-  const totalPoints = progress.totalPoints + summary.totalPoints
-  const difficultItems = uniqueRecentItems([
-    ...summary.difficultTasks,
-    ...progress.difficultItems,
-  ])
-
-  return {
-    ...progress,
-    totalPoints,
-    sessions: [...progress.sessions, sessionRecord],
-    badges: getEarnedBadges(totalPoints, progress.badges, completedAt),
-    difficultItems,
-    materialProgress: updateMaterialProgress(
-      progress.materialProgress,
-      taskRecords,
-      completedAt,
-    ),
+    tasks,
   }
 }
 
@@ -126,7 +205,7 @@ export const normalizeProgress = (value: unknown): StoredProgress => {
   return {
     ...createEmptyProgress(),
     ...value,
-    version: 2,
+    version: 3,
     sessions,
     badges: value.badges,
     difficultItems: value.difficultItems,
@@ -149,7 +228,7 @@ const isStoredProgress = (value: unknown): value is StoredProgress => {
   }
 
   return (
-    (progress.version === 1 || progress.version === 2) &&
+    (progress.version === 1 || progress.version === 2 || progress.version === 3) &&
     typeof progress.totalPoints === 'number' &&
     Array.isArray(progress.sessions) &&
     Array.isArray(progress.badges) &&
@@ -170,6 +249,13 @@ const uniqueRecentItems = (items: string[]) => {
 
   return uniqueItems.slice(0, 20)
 }
+
+const getRecentDifficultItems = (sessions: ProgressSessionRecord[]) =>
+  uniqueRecentItems(
+    [...sessions]
+      .sort((first, second) => Date.parse(second.completedAt) - Date.parse(first.completedAt))
+      .flatMap((session) => getBestSessionAttempt(session).difficultTasks),
+  )
 
 const updateMaterialProgress = (
   currentProgress: StoredProgress['materialProgress'],
@@ -204,16 +290,55 @@ const normalizeSessionRecord = (
   session: ProgressSessionRecord,
 ): ProgressSessionRecord => {
   const module = normalizeModule(session.module)
+  const attempts = Array.isArray(session.attempts) && session.attempts.length > 0
+    ? session.attempts.map((attempt) => normalizeAttempt(attempt, module))
+    : [createLegacyAttempt(session, module)]
+  const bestAttemptId = attempts.some((attempt) => attempt.id === session.bestAttemptId)
+    ? session.bestAttemptId
+    : attempts[0].id
+  const bestAttempt = attempts.find((attempt) => attempt.id === bestAttemptId) ?? attempts[0]
 
   return {
     ...session,
     module,
-    tasks: session.tasks.map((task) => ({
-      ...task,
-      module: normalizeModule(task.module, module),
-    })),
+    totalTasks: bestAttempt.totalTasks,
+    totalPoints: bestAttempt.totalPoints,
+    counts: bestAttempt.counts,
+    difficultTasks: bestAttempt.difficultTasks,
+    skippedTasks: bestAttempt.skippedTasks,
+    tasks: bestAttempt.tasks,
+    attempts,
+    bestAttemptId,
   }
 }
+
+const createLegacyAttempt = (
+  session: ProgressSessionRecord,
+  module: SessionModule,
+): ProgressSessionAttempt => ({
+  id: `legacy-${session.id}`,
+  completedAt: session.completedAt,
+  totalTasks: session.totalTasks,
+  totalPoints: session.totalPoints,
+  counts: session.counts,
+  difficultTasks: session.difficultTasks,
+  skippedTasks: session.skippedTasks,
+  tasks: session.tasks.map((task) => ({
+    ...task,
+    module: normalizeModule(task.module, module),
+  })),
+})
+
+const normalizeAttempt = (
+  attempt: ProgressSessionAttempt,
+  module: SessionModule,
+): ProgressSessionAttempt => ({
+  ...attempt,
+  tasks: attempt.tasks.map((task) => ({
+    ...task,
+    module: normalizeModule(task.module, module),
+  })),
+})
 
 const normalizeMaterialProgress = (
   progress: StoredProgress['materialProgress'],

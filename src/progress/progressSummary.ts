@@ -35,6 +35,14 @@ export interface StructureProgressSummary {
   lastPracticedAt?: string
 }
 
+export interface ModuleProgressSummary {
+  module: 'reading' | 'syllabification'
+  sessions: number
+  tasks: number
+  counts: Record<SessionRating, number>
+  lastPracticedAt?: string
+}
+
 export const getProgressOverview = (
   progress: StoredProgress,
   now = new Date(),
@@ -106,6 +114,35 @@ export const getStructureProgress = (
       tasks: tasks.length,
       counts,
       lastPracticedAt,
+    }
+  })
+
+export const getModuleProgress = (
+  progress: StoredProgress,
+): ModuleProgressSummary[] =>
+  (['reading', 'syllabification'] as const).map((module) => {
+    const sessions = progress.sessions.filter((session) => session.module === module)
+    const counts: Record<SessionRating, number> = {
+      independent: 0,
+      'with-help': 0,
+      hard: 0,
+      skip: 0,
+    }
+
+    for (const session of sessions) {
+      for (const rating of Object.keys(counts) as SessionRating[]) {
+        counts[rating] += session.counts[rating]
+      }
+    }
+
+    return {
+      module,
+      sessions: sessions.length,
+      tasks: sumSessions(sessions, (session) => session.totalTasks),
+      counts,
+      lastPracticedAt: sessions
+        .map((session) => session.completedAt)
+        .sort((first, second) => Date.parse(second) - Date.parse(first))[0],
     }
   })
 

@@ -2,6 +2,7 @@ import type { MaterialKind, StructureId } from '../content/contentTypes'
 import type {
   SessionModule,
   SessionRating,
+  SessionTask,
   SessionTaskKind,
   SyllabificationSupportMode,
 } from '../session'
@@ -25,6 +26,17 @@ export interface ProgressTaskRecord {
   materialKind?: MaterialKind
 }
 
+export interface ProgressSessionAttempt {
+  id: string
+  completedAt: string
+  totalTasks: number
+  totalPoints: number
+  counts: Record<SessionRating, number>
+  difficultTasks: string[]
+  skippedTasks: string[]
+  tasks: ProgressTaskRecord[]
+}
+
 export interface ProgressSessionRecord {
   id: string
   completedAt: string
@@ -39,6 +51,10 @@ export interface ProgressSessionRecord {
   difficultTasks: string[]
   skippedTasks: string[]
   tasks: ProgressTaskRecord[]
+  /** Pełny zestaw zadań nowych sesji, potrzebny do ich wiernego powtórzenia. */
+  sessionTasks?: SessionTask[]
+  attempts: ProgressSessionAttempt[]
+  bestAttemptId: string
 }
 
 export interface MaterialProgressRecord {
@@ -54,7 +70,7 @@ export interface MaterialProgressRecord {
 }
 
 export interface StoredProgress {
-  version: 2
+  version: 3
   totalPoints: number
   sessions: ProgressSessionRecord[]
   badges: ProgressBadge[]
